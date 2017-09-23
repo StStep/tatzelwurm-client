@@ -7,7 +7,9 @@ func _ready():
 	pass
 
 func Select():
+	get_node('Unit Marker/Sprite').set_modulate(Color('f6ff00')) # Yellow
 	print('Selected ' + get_name())
 
 func Deselect():
+	get_node('Unit Marker/Sprite').set_modulate('ffffff') # White
 	print('Deselected ' + get_name())
