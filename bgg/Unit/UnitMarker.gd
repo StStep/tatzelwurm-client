@@ -16,11 +16,12 @@ func _process(delta):
 	pass
 
 func _input(ev):
+	# Check if mouse within rect, rotate mouse instead of rect
 	if ev.type == InputEvent.MOUSE_BUTTON and ev.button_index == BUTTON_LEFT and ev.is_pressed():
-		var evpos = ev.global_pos
-		var gpos = get_global_pos()
-		var spriterect = Rect2(gpos.x-tsize.x/2, gpos.y-tsize.y/2, tsize.x, tsize.y)
-		if spriterect.has_point(evpos):
+		var lpos = get_global_pos() - ev.pos
+		var lrpos = lpos.rotated(-get_global_rot())
+		var spriterect = Rect2(-tsize.x/2, -tsize.y/2, tsize.x, tsize.y)
+		if spriterect.has_point(lrpos):
 			_clicked()
 			get_tree().set_input_as_handled()
 
