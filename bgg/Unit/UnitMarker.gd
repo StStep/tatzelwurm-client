@@ -5,8 +5,8 @@ var tsize = null
 
 func _ready():
 	# Set collider to sprite size
-	tsize=get_node("Sprite").get_texture().get_size()
-	get_node("CollisionShape2D").get_shape().set_extents(tsize/2)
+	tsize=get_node('Sprite').get_texture().get_size()
+	get_node('Shape').get_shape().set_extents(tsize/2)
 
 	# Enable Engine calbacks
 	set_process_input(true)
@@ -25,4 +25,4 @@ func _input(ev):
 			get_tree().set_input_as_handled()
 
 func _clicked():
-	get_node("/root/game_manager").selUnit = unit
+	get_node('/root/game_manager').selUnit = unit

@@ -8,7 +8,7 @@ func _ready():
 # Catch undhandled clicks
 func  _unhandled_input(event):
 	if event.type == InputEvent.MOUSE_BUTTON and event.button_index == BUTTON_LEFT and event.is_pressed():
-		get_node("/root/game_manager").DeselectUnit()
+		get_node('/root/game_manager').DeselectUnit()
 		get_tree().set_input_as_handled()
 
 func DeselectUnit():
