@@ -6,38 +6,40 @@
 
 [node name="Units" type="Node" parent="."]
 
-[node name="Unit_6" parent="Units" instance=ExtResource( 1 )]
+[node name="Unit_1" parent="Units" instance=ExtResource( 1 )]
 
-transform/pos = Vector2( 340.242, 531.573 )
+transform/pos = Vector2( 181.401, 168.767 )
+transform/rot = -149.479
+transform/scale = Vector2( 1, 1 )
 
 [node name="Unit_2" parent="Units" instance=ExtResource( 1 )]
 
 transform/pos = Vector2( 421.467, 76.7121 )
 transform/rot = -176.254
 
-[node name="Unit_1" parent="Units" instance=ExtResource( 1 )]
-
-transform/pos = Vector2( 181.401, 168.767 )
-transform/rot = -149.479
-
 [node name="Unit_3" parent="Units" instance=ExtResource( 1 )]
 
 transform/pos = Vector2( 784.273, 75.8095 )
 transform/rot = 133.172
+
+[node name="Unit_4" parent="Units" instance=ExtResource( 1 )]
+
+transform/pos = Vector2( 945.821, 291.508 )
+transform/rot = 89.3018
+transform/scale = Vector2( 1, 1 )
 
 [node name="Unit_5" parent="Units" instance=ExtResource( 1 )]
 
 transform/pos = Vector2( 738.245, 524.353 )
 transform/rot = 48.1615
 
+[node name="Unit_6" parent="Units" instance=ExtResource( 1 )]
+
+transform/pos = Vector2( 340.242, 531.573 )
+
 [node name="Unit_7" parent="Units" instance=ExtResource( 1 )]
 
 transform/pos = Vector2( 106.494, 474.716 )
 transform/rot = -42.9776
-
-[node name="Unit_4" parent="Units" instance=ExtResource( 1 )]
-
-transform/pos = Vector2( 945.821, 291.508 )
-transform/rot = 89.3018
 
 
