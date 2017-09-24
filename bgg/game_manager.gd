@@ -2,13 +2,19 @@
 
 extends Node
 
+signal miss_click
+
 var selUnit = null setget _selectUnit, _retSelUnit
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 func _selectUnit(value):
+	# Skip selecting if already selected
 	if value == selUnit:
 		return
 
-	DeselectUnit()
+	# Skip selecting if failed to deselect
+	if not DeselectUnit():
+		return
+
 	if value != null and value.has_method('Select'):
 		value.Select()
 
@@ -25,11 +31,15 @@ func _ready():
 # Catch 'missed' clicks
 func  _unhandled_input(event):
 	if event.type == InputEvent.MOUSE_BUTTON and event.button_index == BUTTON_LEFT and event.is_pressed():
-		get_node('/root/game_manager').DeselectUnit()
+		emit_signal("miss_click")
 		get_tree().set_input_as_handled()
 
-# Deselct the selected unit
+# Deselect the selected unit
+# Return success
 func DeselectUnit():
+	var ret = true
 	if selUnit != null and selUnit.has_method('Deselect'):
-		selUnit.Deselect()
-	selUnit = null
+		ret = selUnit.Deselect()
+	if ret:
+		selUnit = null
+	return ret

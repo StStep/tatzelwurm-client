@@ -18,12 +18,16 @@ onready var ghost = get_node('Ghost')
 func _ready():
 	set_process(true)
 	get_node('Marker').connect('left_click', self, '_on_marker_click')
+	get_node('/root/game_manager').connect('miss_click', self, '_on_miss_click')
 
 
 func _process(delta):
 	if state == STATE.Moving:
 		ghost.set_global_pos(get_viewport().get_mouse_pos())
 
+func _on_miss_click():
+	if IsSelected:
+		get_node('/root/game_manager').DeselectUnit()
 
 func _on_marker_click():
 	 get_node('/root/game_manager').selUnit = self
@@ -43,3 +47,4 @@ func Deselect():
 	ghost.hide()
 	get_node('Marker/Sprite').set_modulate('ffffff') # White
 	print('Deselected ' + get_name())
+	return true
