@@ -17,7 +17,7 @@ onready var ghost = get_node('Ghost')
 
 func _ready():
 	set_process(true)
-	get_node('Marker').connect('left_click', self, '_on_marker_click')
+	get_node('Marker').connect('single_click', self, '_on_marker_click')
 	get_node('/root/game_manager').connect('miss_click', self, '_on_miss_click')
 
 
@@ -29,8 +29,11 @@ func _on_miss_click():
 	if IsSelected:
 		get_node('/root/game_manager').DeselectUnit()
 
-func _on_marker_click():
-	 get_node('/root/game_manager').selUnit = self
+func _on_marker_click(button):
+	if button == BUTTON_LEFT:
+		 get_node('/root/game_manager').selUnit = self
+	else:
+		pass
 
 
 func Select():

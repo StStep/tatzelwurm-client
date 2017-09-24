@@ -5,7 +5,7 @@
 
 extends Area2D
 
-signal left_click
+signal single_click
 
 
 var colshape = null # Click area for _input handling
@@ -27,10 +27,20 @@ func _ready():
 
 # Check if mouse within shape, rotate mouse instead of shape
 func _input(ev):
+	# Skip events outside bounds
+	var lpos = get_global_pos() - ev.pos
+	var lrpos = lpos.rotated(-get_global_rot())
+	if colshape == null or not colshape.has_point(lrpos):
+		return
+
 	# Left Click
 	if ev.type == InputEvent.MOUSE_BUTTON and ev.button_index == BUTTON_LEFT and ev.is_pressed():
-		var lpos = get_global_pos() - ev.pos
-		var lrpos = lpos.rotated(-get_global_rot())
-		if colshape != null and colshape.has_point(lrpos):
-			emit_signal("left_click")
-			get_tree().set_input_as_handled()
+		emit_signal("single_click", BUTTON_LEFT)
+		get_tree().set_input_as_handled()
+	# Right Click
+	elif ev.type == InputEvent.MOUSE_BUTTON and ev.button_index == BUTTON_RIGHT and ev.is_pressed():
+		emit_signal("single_click", BUTTON_RIGHT)
+		get_tree().set_input_as_handled()
+	else:
+		pass
+
