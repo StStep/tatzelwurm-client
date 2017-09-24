@@ -25,9 +25,14 @@ func _process(delta):
 	if state == STATE.Moving:
 		ghost.set_global_pos(get_viewport().get_mouse_pos())
 
-func _on_miss_click():
-	if IsSelected:
-		get_node('/root/game_manager').DeselectUnit()
+
+func _on_miss_click(button):
+	if button == BUTTON_LEFT or button == BUTTON_RIGHT:
+		if IsSelected:
+			get_node('/root/game_manager').DeselectUnit()
+	else:
+		pass
+
 
 func _on_marker_click(button):
 	if button == BUTTON_LEFT:
