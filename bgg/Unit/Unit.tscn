@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=1]
 
 [ext_resource path="res://Unit/Unit.gd" type="Script" id=1]
-[ext_resource path="res://Unit/UnitMarker.gd" type="Script" id=2]
-[ext_resource path="res://Unit/Unit_Arr.tex" type="Texture" id=3]
+[ext_resource path="res://Unit/Unit_Arr.tex" type="Texture" id=2]
+[ext_resource path="res://Unit/UnitMarker.gd" type="Script" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 
@@ -12,6 +12,12 @@ extents = Vector2( 68, 32 )
 [node name="Unit" type="Node2D"]
 
 script/script = ExtResource( 1 )
+
+[node name="Ghost" type="Sprite" parent="."]
+
+visibility/visible = false
+visibility/opacity = 0.51
+texture = ExtResource( 2 )
 
 [node name="Unit Marker" type="Area2D" parent="."]
 
@@ -23,7 +29,7 @@ gravity_vec = Vector2( 0, 1 )
 gravity = 98.0
 linear_damp = 0.1
 angular_damp = 1.0
-script/script = ExtResource( 2 )
+script/script = ExtResource( 3 )
 __meta__ = {
 "_edit_group_": true
 }
@@ -36,6 +42,6 @@ _update_shape_index = 0
 
 [node name="Sprite" type="Sprite" parent="Unit Marker"]
 
-texture = ExtResource( 3 )
+texture = ExtResource( 2 )
 
 
