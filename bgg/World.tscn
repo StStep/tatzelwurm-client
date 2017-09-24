@@ -10,7 +10,6 @@
 
 transform/pos = Vector2( 181.401, 168.767 )
 transform/rot = -149.479
-transform/scale = Vector2( 1, 1 )
 
 [node name="Unit_2" parent="Units" instance=ExtResource( 1 )]
 
@@ -26,7 +25,6 @@ transform/rot = 133.172
 
 transform/pos = Vector2( 945.821, 291.508 )
 transform/rot = 89.3018
-transform/scale = Vector2( 1, 1 )
 
 [node name="Unit_5" parent="Units" instance=ExtResource( 1 )]
 
