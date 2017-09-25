@@ -41,7 +41,7 @@ func _on_miss_click(button):
 		STATE.None:
 			match button:
 				BUTTON_LEFT, BUTTON_RIGHT:
-					if IsSelected: get_node('/root/GameManager').DeselectUnit()
+					if IsSelected: get_node('/root/GameManager').TryDeselectUnit()
 		# Add Move or Deselect ----------
 		STATE.Moving:
 			match button:
@@ -64,7 +64,8 @@ func _on_marker_click(button):
 			pass
 
 func _on_marker_enter():
-	marker_sprite.set_modulate(C_HIGHLIGHT)
+	if not get_node('/root/GameManager').IsBusy():
+		marker_sprite.set_modulate(C_HIGHLIGHT)
 
 func _on_marker_exit():
 	marker_sprite.set_modulate(marker_color)
@@ -89,6 +90,12 @@ func ChangeState(s):
 
 	state = s
 
+# Determines if this unit can be deselected
+func IsBusy():
+	if state == STATE.None:
+		return false
+	else:
+		return true
 
 func Select():
 	IsSelected = true
@@ -98,11 +105,7 @@ func Select():
 
 
 func Deselect():
-	if state == STATE.None:
-		IsSelected = false
-		marker_sprite.set_modulate(C_IDLE)
-		marker_color = C_IDLE
-		print('Deselected ' + get_name())
-		return true
-	else:
-		return false
+	IsSelected = false
+	marker_sprite.set_modulate(C_IDLE)
+	marker_color = C_IDLE
+	print('Deselected ' + get_name())

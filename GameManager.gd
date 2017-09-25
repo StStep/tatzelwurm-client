@@ -11,8 +11,8 @@ func _selectUnit(value):
 	if value == selUnit:
 		return
 
-	# Skip selecting if failed to deselect
-	if not DeselectUnit():
+	# Skip selecting if failed to deselect, selected is busy
+	if not TryDeselectUnit():
 		return
 
 	if value != null and value.has_method('Select'):
@@ -39,12 +39,20 @@ func  _unhandled_input(event):
 	else:
 		pass
 
-# Deselect the selected unit
+# Deselect the selected unit if not busy
 # Return success
-func DeselectUnit():
+func TryDeselectUnit():
 	var ret = true
-	if selUnit != null and selUnit.has_method('Deselect'):
-		ret = selUnit.Deselect()
+	if selUnit != null and selUnit.has_method('IsBusy'):
+		ret = not selUnit.IsBusy()
 	if ret:
+		if selUnit != null and selUnit.has_method('Deselect'): selUnit.Deselect()
 		selUnit = null
 	return ret
+
+
+func IsBusy():
+	if selUnit != null and selUnit.has_method('IsBusy'):
+		return selUnit.IsBusy()
+	else:
+		return false
