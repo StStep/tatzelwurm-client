@@ -18,12 +18,12 @@ onready var ghost = get_node('Ghost')
 func _ready():
 	set_process(true)
 	get_node('Marker').connect('single_click', self, '_on_marker_click')
-	get_node('/root/game_manager').connect('miss_click', self, '_on_miss_click')
+	get_node('/root/GameManager').connect('miss_click', self, '_on_miss_click')
 
 
 func _process(delta):
 	if state == STATE.Moving:
-		ghost.set_global_pos(get_viewport().get_mouse_pos())
+		ghost.global_position = get_viewport().get_mouse_position()
 
 
 func _on_miss_click(button):
@@ -31,7 +31,7 @@ func _on_miss_click(button):
 	if state == STATE.None:
 		if button == BUTTON_LEFT or button == BUTTON_RIGHT:
 			if IsSelected:
-				get_node('/root/game_manager').DeselectUnit()
+				get_node('/root/GameManager').DeselectUnit()
 		else:
 			pass
 	# Add Move or Deselect
@@ -53,11 +53,12 @@ func _on_marker_click(button):
 			ChangeState(STATE.Moving)
 		else:
 			if button == BUTTON_LEFT:
-				get_node('/root/game_manager').selUnit = self
+				get_node('/root/GameManager').selUnit = self
 	elif state == STATE.Moving:
 		pass
 	else:
 		pass
+
 
 func ChangeState(s):
 	if s == state:
@@ -80,6 +81,7 @@ func ChangeState(s):
 		pass
 
 	state = s
+
 
 func Select():
 	IsSelected = true

@@ -30,10 +30,10 @@ func _ready():
 
 # Catch 'missed' clicks
 func  _unhandled_input(event):
-	if event.type == InputEvent.MOUSE_BUTTON and event.button_index == BUTTON_LEFT and event.is_pressed():
+	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.is_pressed():
 		emit_signal("miss_click", BUTTON_LEFT)
 		get_tree().set_input_as_handled()
-	elif event.type == InputEvent.MOUSE_BUTTON and event.button_index == BUTTON_RIGHT and event.is_pressed():
+	elif event is InputEventMouseButton and event.button_index == BUTTON_RIGHT and event.is_pressed():
 		emit_signal("miss_click", BUTTON_RIGHT)
 		get_tree().set_input_as_handled()
 	else:

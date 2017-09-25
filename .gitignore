@@ -2,7 +2,7 @@
 *.swp
 *.swo
 .fscache
-
+.import
 .DS_Store
 .DS_Store?
 ._*
