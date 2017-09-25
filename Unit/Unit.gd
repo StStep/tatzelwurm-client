@@ -10,14 +10,23 @@ enum STATE {
   Moving
 }
 
+const C_IDLE = Color('ffffff') # White
+const C_SELECTED = Color('f6ff00') # Yellow
+const C_HIGHLIGHT = Color('b6ff00') # Green-Yellow
+
+
 var IsSelected = false
 var state = STATE.None
+var marker_color = C_IDLE
 onready var ghost = get_node('Ghost')
+onready var marker_sprite = get_node('Marker/Sprite')
 
 
 func _ready():
 	set_process(true)
 	get_node('Marker').connect('single_click', self, '_on_marker_click')
+	get_node('Marker').connect('mouse_entered', self, '_on_marker_enter')
+	get_node('Marker').connect('mouse_exited', self, '_on_marker_exit')
 	get_node('/root/GameManager').connect('miss_click', self, '_on_miss_click')
 
 
@@ -54,6 +63,11 @@ func _on_marker_click(button):
 		STATE.Moving:
 			pass
 
+func _on_marker_enter():
+	marker_sprite.set_modulate(C_HIGHLIGHT)
+
+func _on_marker_exit():
+	marker_sprite.set_modulate(marker_color)
 
 func ChangeState(s):
 	if s == state:
@@ -78,14 +92,16 @@ func ChangeState(s):
 
 func Select():
 	IsSelected = true
-	get_node('Marker/Sprite').set_modulate(Color('f6ff00')) # Yellow
+	marker_sprite.set_modulate(C_SELECTED)
+	marker_color = C_SELECTED
 	print('Selected ' + get_name())
 
 
 func Deselect():
 	if state == STATE.None:
 		IsSelected = false
-		get_node('Marker/Sprite').set_modulate('ffffff') # White
+		marker_sprite.set_modulate(C_IDLE)
+		marker_color = C_IDLE
 		print('Deselected ' + get_name())
 		return true
 	else:
