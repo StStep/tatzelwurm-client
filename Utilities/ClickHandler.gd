@@ -25,12 +25,10 @@ func _ready():
 	# Enable Engine calbacks
 	set_process_input(true)
 
-# Check if mouse within shape, rotate mouse instead of shape
+# Check if mouse within shape
 func _input(ev):
 	# Skip events outside bounds
-	var lpos = global_position - ev.position
-	var lrpos = lpos.rotated(-global_rotation)
-	if colshape == null or not colshape.has_point(lrpos):
+	if colshape == null or not colshape.has_point(to_local(ev.position)):
 		return
 
 	# Left Click
