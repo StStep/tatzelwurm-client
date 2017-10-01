@@ -20,6 +20,7 @@ var state = STATE.None
 var marker_color = C_IDLE
 onready var ghost = get_node('Ghost')
 onready var marker_sprite = get_node('Marker/Sprite')
+onready var movePrev = get_node('MovePreview')
 
 
 func _ready():
@@ -32,7 +33,9 @@ func _ready():
 
 func _process(delta):
 	if state == STATE.Moving:
-		ghost.global_position = get_viewport().get_mouse_position()
+		var mpos = get_viewport().get_mouse_position()
+		ghost.global_position = mpos
+		movePrev.points = PoolVector2Array([Vector2(0,0), to_local(mpos)])
 
 
 func _on_miss_click(button):
@@ -79,6 +82,7 @@ func ChangeState(s):
 		STATE.None:
 			pass
 		STATE.Moving:
+			movePrev.points = PoolVector2Array()
 			ghost.hide()
 
 	# New State
