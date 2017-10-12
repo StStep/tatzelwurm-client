@@ -45,6 +45,7 @@ texture = ExtResource( 2 )
 points = PoolVector2Array( 737.505, 130.658 )
 width = 5.0
 default_color = Color( 0.4, 0.5, 1, 1 )
+texture_mode = 553311648
 sharp_limit = 2.0
 round_precision = 8
 

@@ -21,6 +21,7 @@ var marker_color = C_IDLE
 onready var ghost = get_node('Ghost')
 onready var marker_sprite = get_node('Marker/Sprite')
 onready var movePrev = get_node('MovePreview')
+var movCmd = load("res://Unit/MoveCmd.tscn")
 
 
 func _ready():
@@ -49,7 +50,7 @@ func _on_miss_click(button):
 		STATE.Moving:
 			match button:
 				BUTTON_LEFT:
-					print('Add move')
+					_addMoveSeg(ghost.position)
 				BUTTON_RIGHT:
 					ChangeState(STATE.None)
 
@@ -113,3 +114,10 @@ func Deselect():
 	marker_sprite.set_modulate(C_IDLE)
 	marker_color = C_IDLE
 	print('Deselected ' + get_name())
+
+func _addMoveSeg(pos):
+	print('Add move')
+	var inst = movCmd.instance()
+	inst.position = pos
+	inst.start = Vector2(0, 0)
+	add_child(inst)
