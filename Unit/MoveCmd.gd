@@ -12,7 +12,7 @@ var next = null
 var move = Vector2(0, 0)
 
 func _ready():
-	pass
+	get_node('Marker').connect('single_click', self, '_on_marker_click')
 
 func _setStart(value):
 	pass
@@ -27,6 +27,9 @@ func _setEnd(gpos):
 
 func _getEnd():
 	return to_global(Vector2(0,0))
+
+func _on_marker_click(button):
+	print("Click")
 
 func Update():
 	global_position = previous.end + move

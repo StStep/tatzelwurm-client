@@ -7,6 +7,20 @@ extends Area2D
 
 signal single_click
 
+class Circ2:
+	var radius = 0
+	var pos = Vector2(0, 0)
+
+	func _init(x, y, r):
+		pos = Vector2(x, y)
+		radius = r
+
+	func has_point(pnt):
+		if abs(pos.distance_to(pnt)) <= radius:
+			return true
+		else:
+			return false
+
 
 var colshape = null # Click area for _input handling
 
@@ -19,6 +33,10 @@ func _ready():
 	if get_node('Shape').get_shape() is RectangleShape2D:
 		get_node('Shape').get_shape().set_extents(tsize/2)
 		colshape = Rect2(-tsize.x/2, -tsize.y/2, tsize.x, tsize.y)
+	# If circle ct use rect2D
+	elif get_node('Shape').get_shape() is CircleShape2D:
+		get_node('Shape').get_shape().radius = tsize.x/2
+		colshape = Circ2.new(0, 0, tsize.x/2)
 	else:
 		print('Error: Unknown shape')
 
