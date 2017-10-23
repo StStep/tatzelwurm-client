@@ -23,6 +23,13 @@ onready var marker_sprite = get_node('Marker/Sprite')
 onready var movePrev = get_node('MovePreview')
 var movCmd = load("res://Unit/MoveCmd.tscn")
 
+# Tail of move cmd list
+var mvTail = self
+# For moveCmds to reference
+onready var end = global_position
+# First movecmd
+var next = null
+
 
 func _ready():
 	set_process(true)
@@ -50,7 +57,7 @@ func _on_miss_click(button):
 		STATE.Moving:
 			match button:
 				BUTTON_LEFT:
-					_addMoveSeg(ghost.position)
+					_addMoveSeg(ghost.global_position)
 				BUTTON_RIGHT:
 					ChangeState(STATE.None)
 
@@ -108,16 +115,17 @@ func Select():
 	marker_color = C_SELECTED
 	print('Selected ' + get_name())
 
-
 func Deselect():
 	IsSelected = false
 	marker_sprite.set_modulate(C_IDLE)
 	marker_color = C_IDLE
 	print('Deselected ' + get_name())
 
-func _addMoveSeg(pos):
+func _addMoveSeg(gpos):
 	print('Add move')
 	var inst = movCmd.instance()
-	inst.position = pos
-	inst.start = Vector2(0, 0)
 	add_child(inst)
+	inst.previous = mvTail
+	mvTail.next = inst
+	mvTail = inst
+	inst.end = gpos

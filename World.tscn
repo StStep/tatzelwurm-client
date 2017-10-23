@@ -27,5 +27,6 @@ position = Vector2( 480.524, 407.198 )
 
 position = Vector2( 248.524, 308.198 )
 rotation = 1.17038
+_sections_unfolded = [ "Transform" ]
 
 
