@@ -40,9 +40,6 @@ func _ready():
 	else:
 		print('Error: Unknown shape')
 
-	# Enable Engine calbacks
-	set_process_input(true)
-
 # Check if mouse within shape
 func _input(ev):
 	# Skip events outside bounds
@@ -60,3 +57,10 @@ func _input(ev):
 	else:
 		pass
 
+func Enable():
+	# Enable Engine calbacks
+	set_process_input(true)
+
+func Disable():
+	# Disable Engine calbacks
+	set_process_input(false)

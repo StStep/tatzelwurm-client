@@ -31,6 +31,14 @@ func _getEnd():
 func _on_marker_click(button):
 	print("Click")
 
+func Enable():
+	get_node('Marker').Enable()
+	get_node('Marker').show()
+
+func Disable():
+	get_node('Marker').Disable()
+	get_node('Marker').hide()
+
 func Update():
 	global_position = previous.end + move
 	get_node("Path").points = PoolVector2Array([to_local(previous.end), Vector2(0,0)]) # Takes local pos

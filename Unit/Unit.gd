@@ -113,12 +113,20 @@ func Select():
 	IsSelected = true
 	marker_sprite.set_modulate(C_SELECTED)
 	marker_color = C_SELECTED
+	var node = next
+	while node:
+		node.Enable()
+		node = node.next
 	print('Selected ' + get_name())
 
 func Deselect():
 	IsSelected = false
 	marker_sprite.set_modulate(C_IDLE)
 	marker_color = C_IDLE
+	var node = next
+	while node:
+		node.Disable()
+		node = node.next
 	print('Deselected ' + get_name())
 
 func _addMoveSeg(gpos):
