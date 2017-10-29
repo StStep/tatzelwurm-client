@@ -43,7 +43,7 @@ func _process(delta):
 	if state == STATE.Moving:
 		var mpos = get_viewport().get_mouse_position()
 		ghost.global_position = mpos
-		movePrev.points = PoolVector2Array([Vector2(0,0), to_local(mpos)])
+		movePrev.points = PoolVector2Array([to_local(mvTail.end), to_local(mpos)])
 
 
 func _on_miss_click(button):
