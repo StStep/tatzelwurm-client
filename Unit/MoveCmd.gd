@@ -11,6 +11,8 @@ var next = null
 # The move this command represents 
 var move = Vector2(0, 0)
 
+onready var path = get_node('Path')
+
 func _ready():
 	get_node('Marker').connect('single_click', self, '_on_marker_click')
 

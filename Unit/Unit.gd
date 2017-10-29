@@ -13,11 +13,15 @@ enum STATE {
 const C_IDLE = Color('ffffff') # White
 const C_SELECTED = Color('f6ff00') # Yellow
 const C_HIGHLIGHT = Color('b6ff00') # Green-Yellow
+const C_PATH_IDLE = Color('66ff68') # Pastel-Green
+const C_PATH_SELECTED = Color('16ab19') # Green
+const C_PATH_HIGHLIGHT = Color('b6ff00') # Green-Yellow
 
 
 var IsSelected = false
 var state = STATE.None
 var marker_color = C_IDLE
+var path_color = C_PATH_IDLE
 onready var ghost = get_node('Ghost')
 onready var start_marker_sprite = get_node('StartMarker/Sprite')
 onready var end_marker_sprite = get_node('EndMarker/Sprite')
@@ -83,12 +87,20 @@ func _on_marker_click(button):
 
 func _on_marker_enter():
 	if not get_node('/root/GameManager').IsBusy():
-		start_marker_sprite.set_modulate(C_HIGHLIGHT)
-		end_marker_sprite.set_modulate(C_HIGHLIGHT)
+		start_marker_sprite.modulate = C_HIGHLIGHT
+		end_marker_sprite.modulate = C_HIGHLIGHT
+		var node = next
+		while node:
+			node.path.modulate = C_PATH_HIGHLIGHT
+			node = node.next
 
 func _on_marker_exit():
-	start_marker_sprite.set_modulate(marker_color)
-	end_marker_sprite.set_modulate(marker_color)
+	start_marker_sprite.modulate = marker_color
+	end_marker_sprite.modulate = marker_color
+	var node = next
+	while node:
+		node.path.modulate = path_color
+		node = node.next
 
 func ChangeState(s):
 	if s == state:
@@ -120,23 +132,30 @@ func IsBusy():
 
 func Select():
 	IsSelected = true
-	start_marker_sprite.set_modulate(C_SELECTED)
-	end_marker_sprite.set_modulate(C_SELECTED)
+	start_marker_sprite.modulate = C_SELECTED
+	end_marker_sprite.modulate = C_SELECTED
 	marker_color = C_SELECTED
+	path_color = C_PATH_SELECTED
 	var node = next
 	while node:
 		node.Enable()
+		node.path.modulate = C_PATH_SELECTED
 		node = node.next
+	# Always hide last node under end marker
+	if mvTail != self:
+		mvTail.Disable()
 	print('Selected ' + get_name())
 
 func Deselect():
 	IsSelected = false
-	start_marker_sprite.set_modulate(C_IDLE)
-	end_marker_sprite.set_modulate(C_IDLE)
+	start_marker_sprite.modulate = C_IDLE
+	end_marker_sprite.modulate = C_IDLE
 	marker_color = C_IDLE
+	path_color = C_PATH_IDLE
 	var node = next
 	while node:
 		node.Disable()
+		node.path.modulate = C_PATH_IDLE
 		node = node.next
 	print('Deselected ' + get_name())
 
@@ -153,6 +172,7 @@ func _addMoveSeg(gpos):
 	mvTail.next = inst
 	mvTail = inst
 	inst.end = gpos
+	inst.path.modulate = C_PATH_SELECTED
 
 	# Move up ghost marker
 	endMarker.Enable()
