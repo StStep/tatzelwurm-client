@@ -19,8 +19,10 @@ var IsSelected = false
 var state = STATE.None
 var marker_color = C_IDLE
 onready var ghost = get_node('Ghost')
-onready var marker_sprite = get_node('Marker/Sprite')
+onready var start_marker_sprite = get_node('StartMarker/Sprite')
+onready var end_marker_sprite = get_node('EndMarker/Sprite')
 onready var movePrev = get_node('MovePreview')
+onready var endMarker = get_node("EndMarker")
 var movCmd = load("res://Unit/MoveCmd.tscn")
 
 # Tail of move cmd list
@@ -33,10 +35,15 @@ var next = null
 
 func _ready():
 	set_process(true)
-	get_node('Marker').connect('single_click', self, '_on_marker_click')
-	get_node('Marker').connect('mouse_entered', self, '_on_marker_enter')
-	get_node('Marker').connect('mouse_exited', self, '_on_marker_exit')
+	get_node('StartMarker').connect('single_click', self, '_on_marker_click')
+	get_node('EndMarker').connect('single_click', self, '_on_marker_click')
+	get_node('StartMarker').connect('mouse_entered', self, '_on_marker_enter')
+	get_node('StartMarker').connect('mouse_exited', self, '_on_marker_exit')
+	get_node('EndMarker').connect('mouse_entered', self, '_on_marker_enter')
+	get_node('EndMarker').connect('mouse_exited', self, '_on_marker_exit')
 	get_node('/root/GameManager').connect('miss_click', self, '_on_miss_click')
+	endMarker.Disable()
+	endMarker.hide()
 
 
 func _process(delta):
@@ -76,10 +83,12 @@ func _on_marker_click(button):
 
 func _on_marker_enter():
 	if not get_node('/root/GameManager').IsBusy():
-		marker_sprite.set_modulate(C_HIGHLIGHT)
+		start_marker_sprite.set_modulate(C_HIGHLIGHT)
+		end_marker_sprite.set_modulate(C_HIGHLIGHT)
 
 func _on_marker_exit():
-	marker_sprite.set_modulate(marker_color)
+	start_marker_sprite.set_modulate(marker_color)
+	end_marker_sprite.set_modulate(marker_color)
 
 func ChangeState(s):
 	if s == state:
@@ -111,7 +120,8 @@ func IsBusy():
 
 func Select():
 	IsSelected = true
-	marker_sprite.set_modulate(C_SELECTED)
+	start_marker_sprite.set_modulate(C_SELECTED)
+	end_marker_sprite.set_modulate(C_SELECTED)
 	marker_color = C_SELECTED
 	var node = next
 	while node:
@@ -121,7 +131,8 @@ func Select():
 
 func Deselect():
 	IsSelected = false
-	marker_sprite.set_modulate(C_IDLE)
+	start_marker_sprite.set_modulate(C_IDLE)
+	end_marker_sprite.set_modulate(C_IDLE)
 	marker_color = C_IDLE
 	var node = next
 	while node:
@@ -133,7 +144,17 @@ func _addMoveSeg(gpos):
 	print('Add move')
 	var inst = movCmd.instance()
 	add_child(inst)
+
+	# Disable point under end marker, enable prev hidden
+	if mvTail != self:
+		mvTail.Enable()
+	inst.Disable()
 	inst.previous = mvTail
 	mvTail.next = inst
 	mvTail = inst
 	inst.end = gpos
+
+	# Move up ghost marker
+	endMarker.Enable()
+	endMarker.show()
+	endMarker.global_position = mvTail.end

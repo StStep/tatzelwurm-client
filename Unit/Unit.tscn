@@ -20,8 +20,9 @@ modulate = Color( 1, 1, 1, 0.491961 )
 texture = ExtResource( 2 )
 _sections_unfolded = [ "Visibility" ]
 
-[node name="Marker" type="Area2D" parent="."]
+[node name="StartMarker" type="Area2D" parent="."]
 
+editor/display_folded = true
 input_pickable = true
 gravity_vec = Vector2( 0, 1 )
 gravity = 98.0
@@ -31,11 +32,31 @@ audio_bus_override = false
 audio_bus_name = "Master"
 script = ExtResource( 3 )
 
-[node name="Shape" type="CollisionShape2D" parent="Marker"]
+[node name="Shape" type="CollisionShape2D" parent="StartMarker"]
 
 shape = SubResource( 1 )
 
-[node name="Sprite" type="Sprite" parent="Marker"]
+[node name="Sprite" type="Sprite" parent="StartMarker"]
+
+texture = ExtResource( 2 )
+
+[node name="EndMarker" type="Area2D" parent="."]
+
+editor/display_folded = true
+input_pickable = true
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+audio_bus_override = false
+audio_bus_name = "Master"
+script = ExtResource( 3 )
+
+[node name="Shape" type="CollisionShape2D" parent="EndMarker"]
+
+shape = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="EndMarker"]
 
 texture = ExtResource( 2 )
 
