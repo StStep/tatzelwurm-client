@@ -66,7 +66,7 @@ func HandleInput(ev):
 			ret = true
 			if isHighlighted and ev.is_action_pressed("ui_accept"):
 				ChangeState(STATE.Add_mv_Cont)
-			elif ev.is_action_pressed("ui_accept") or ev.is_action_pressed("ui_cancel"):
+			elif (gm.highUnits.empty() and ev.is_action_pressed("ui_accept")) or ev.is_action_pressed("ui_cancel"):
 				gm.ReqDeselection()
 			else:
 				ret = false
