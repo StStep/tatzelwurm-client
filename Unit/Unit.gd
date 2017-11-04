@@ -39,8 +39,8 @@ var next = null
 
 func _ready():
 	set_process(true)
-	start_marker.connect('highlighted', self, '_start_marker_highlight')
-	end_marker.connect('highlighted', self, '_end_marker_highlight')
+	start_marker.connect('highlighted', self, '_marker_highlight', [start_marker])
+	end_marker.connect('highlighted', self, '_marker_highlight', [end_marker])
 	end_marker.hide()
 
 func _process(delta):
@@ -65,29 +65,17 @@ func _unhighlight():
 		node.path.modulate = path_color
 		node = node.next
 
-func _start_marker_highlight():
+func _marker_highlight(marker):
 	# Highlight everything if not yet selected
-	if state == STATE.Not_Selected and start_marker.is_highlighted:
+	if state == STATE.Not_Selected and marker.is_highlighted:
 		_highlight()
 	elif state == STATE.Not_Selected:
 		_unhighlight()
 	# Else only highlight self
-	elif start_marker.is_highlighted:
-		start_marker_sprite.modulate = C_HIGHLIGHT
+	elif marker.is_highlighted:
+		marker.get_node("Sprite").modulate = C_HIGHLIGHT
 	else:
-		start_marker_sprite.modulate = marker_color
-
-func _end_marker_highlight():
-	# Highlight everything if not yet selected
-	if state == STATE.Not_Selected and end_marker.is_highlighted:
-		_highlight()
-	elif state == STATE.Not_Selected:
-		_unhighlight()
-	# Else only highlight self
-	elif end_marker.is_highlighted:
-		end_marker_sprite.modulate = C_HIGHLIGHT
-	else:
-		end_marker_sprite.modulate = marker_color
+		marker.get_node("Sprite").modulate = marker_color
 
 func _on_select():
 	start_marker_sprite.modulate = C_SELECTED
