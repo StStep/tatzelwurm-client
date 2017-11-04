@@ -12,18 +12,17 @@ enum STATE {
 	Add_mv_Cont,
 }
 
-const C_IDLE = Color('ffffff') # White
+const C_NOT_SELECTED = Color('ffffff') # White
 const C_SELECTED = Color('f6ff00') # Yellow
 const C_HIGHLIGHT = Color('b6ff00') # Green-Yellow
-const C_PATH_IDLE = Color('66ff68') # Pastel-Green
+const C_PATH_NOT_SELECTED = Color('66ff68') # Pastel-Green
 const C_PATH_SELECTED = Color('16ab19') # Green
 const C_PATH_HIGHLIGHT = Color('b6ff00') # Green-Yellow
 
-
 var state = STATE.Not_Selected
 var isHighlighted = false
-var marker_color = C_IDLE
-var path_color = C_PATH_IDLE
+var marker_color = C_NOT_SELECTED
+var path_color = C_PATH_NOT_SELECTED
 onready var gm = get_node('/root/GameManager')
 onready var ghost = get_node('Ghost')
 onready var start_marker_sprite = get_node('StartMarker/Sprite')
@@ -152,14 +151,14 @@ func Deselect():
 	ChangeState(STATE.Not_Selected)
 
 func _deselect():
-	start_marker_sprite.modulate = C_IDLE
-	end_marker_sprite.modulate = C_IDLE
-	marker_color = C_IDLE
-	path_color = C_PATH_IDLE
+	start_marker_sprite.modulate = C_NOT_SELECTED
+	end_marker_sprite.modulate = C_NOT_SELECTED
+	marker_color = C_NOT_SELECTED
+	path_color = C_PATH_NOT_SELECTED
 	var node = next
 	while node:
 		node.Disable()
-		node.path.modulate = C_PATH_IDLE
+		node.path.modulate = C_PATH_NOT_SELECTED
 		node = node.next
 	print('Deselected ' + get_name())
 
