@@ -2,59 +2,63 @@
 
 extends Node
 
-var selUnit
-var highUnits = []
+var selected_unit = null
+var highlighted_units = []
 
 func _ready():
 	set_process_input(true)
 
 func _input(ev):
 	# Pass input through, stop once handled
-	if selUnit != null and selUnit.HandleInput(ev):
+	if selected_unit != null and selected_unit.handle_input(ev):
 		return
 
-	for u in highUnits:
-		if u.HandleInput(ev):
+	for u in highlighted_units:
+		if u.handle_input(ev):
 			return
 
-func ReqSelection(value):
-	if value == null or value == selUnit:
+func req_selection(value):
+	if value == null or value == selected_unit:
 		return
 
 	# Check for highlight i/f
-	if not value.has_method("Select") or not value.has_method("Deselect") or not value.has_method("HandleInput") \
-			or not value.has_method("IsBusy"):
-		print("Warning: Selected unit missing Select functions")
+	if not value.has_method("select") \
+			or not value.has_method("deselect") \
+			or not value.has_method("handle_input") \
+			or not value.has_method("is_busy"):
+		print("Warning: Selected unit missing select functions")
 		return
 
-	ReqDeselection()
-	selUnit = value
-	value.Select()
+	req_deselection()
+	selected_unit = value
+	value.select()
 
-func ReqDeselection():
-	if selUnit == null:
+func req_deselection():
+	if selected_unit == null:
 		return
-	selUnit.Deselect()
-	selUnit = null
+	selected_unit.deselect()
+	selected_unit = null
 
-func ReqHighlight(value):
-	if value == null or value in highUnits:
+func req_highlight(value):
+	if value == null or value in highlighted_units:
 		return
 
 	# Check for highlight i/f
-	if not value.has_method("Highlight") or not value.has_method("Unhighlight") or not value.has_method("HandleInput"):
+	if not value.has_method("highlight") \
+			or not value.has_method("unhighlight") \
+			or not value.has_method("handle_input"):
 		print("Warning: Hightlighted unit missing hightlight functions")
 		return
 
 	# Only highlight others if selected is not busy
-	if selUnit != null and selUnit.IsBusy():
+	if selected_unit != null and selected_unit.is_busy():
 		return
 
-	highUnits.append(value)
-	value.Highlight()
+	highlighted_units.append(value)
+	value.highlight()
 
-func ReqUnhighlight(value):
-	if value == null or not value in highUnits:
+func req_unhighlight(value):
+	if value == null or not value in highlighted_units:
 		return
-	highUnits.erase(value)
-	value.Unhighlight()
+	highlighted_units.erase(value)
+	value.unhighlight()

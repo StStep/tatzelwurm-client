@@ -25,16 +25,16 @@ onready var gm = get_node('/root/GameManager')
 onready var ghost = get_node('Ghost')
 onready var start_marker_sprite = get_node('StartMarker/Sprite')
 onready var end_marker_sprite = get_node('EndMarker/Sprite')
-onready var movePrev = get_node('MovePreview')
+onready var move_prev = get_node('MovePreview')
 onready var start_marker = get_node("StartMarker")
 onready var end_marker = get_node("EndMarker")
-var movCmd = load("res://Unit/MoveCmd.tscn")
+var mov_cmd = load("res://Unit/MoveCmd.tscn")
 
 # Tail of move cmd list
-var mvTail = self
+var mv_tail = self
 # For moveCmds to reference
 onready var end = global_position
-# First movecmd
+# First MoveCmd
 var next = null
 
 func _ready():
@@ -47,7 +47,7 @@ func _process(delta):
 	if state == STATE.Add_mv_Cont:
 		var mpos = get_viewport().get_mouse_position()
 		ghost.global_position = mpos
-		movePrev.points = PoolVector2Array([to_local(mvTail.end), to_local(mpos)])
+		move_prev.points = PoolVector2Array([to_local(mv_tail.end), to_local(mpos)])
 
 func _highlight():
 	start_marker_sprite.modulate = C_HIGHLIGHT
@@ -84,12 +84,12 @@ func _on_select():
 	path_color = C_PATH_SELECTED
 	var node = next
 	while node:
-		node.Enable()
+		node.enable()
 		node.path.modulate = C_PATH_SELECTED
 		node = node.next
 	# Always hide last node under end marker
-	if mvTail != self:
-		mvTail.Disable()
+	if mv_tail != self:
+		mv_tail.disable()
 	print('Selected ' + get_name())
 
 func _on_deselect():
@@ -99,19 +99,19 @@ func _on_deselect():
 	path_color = C_PATH_NOT_SELECTED
 	var node = next
 	while node:
-		node.Disable()
+		node.disable()
 		node.path.modulate = C_PATH_NOT_SELECTED
 		node = node.next
 	print('Deselected ' + get_name())
 
-func _changeState(s):
+func _change_state(s):
 	if s == state:
 		return
 
 	# Prev State
 	match state:
 		STATE.Add_mv_Cont:
-			movePrev.points = PoolVector2Array()
+			move_prev.points = PoolVector2Array()
 			ghost.hide()
 		_:
 			pass
@@ -129,27 +129,27 @@ func _changeState(s):
 
 	state = s
 
-func _addMoveSeg(gpos):
+func _add_move_seg(gpos):
 	print('Add move')
-	var inst = movCmd.instance()
+	var inst = mov_cmd.instance()
 	add_child(inst)
 
-	# Disable point under end marker, enable prev hidden
-	if mvTail != self:
-		mvTail.Enable()
-	inst.Disable()
-	inst.previous = mvTail
-	mvTail.next = inst
-	mvTail = inst
+	# disable point under end marker, enable prev hidden
+	if mv_tail != self:
+		mv_tail.enable()
+	inst.disable()
+	inst.previous = mv_tail
+	mv_tail.next = inst
+	mv_tail = inst
 	inst.end = gpos
 	inst.path.modulate = C_PATH_SELECTED
 
 	# Move up ghost marker
 	end_marker.show()
-	end_marker.global_position = mvTail.end
+	end_marker.global_position = mv_tail.end
 
 # Determines if this unit can be deselected
-func IsBusy():
+func is_busy():
 	if state == STATE.Not_Selected or state == STATE.Idle:
 		return false
 	else:
@@ -157,39 +157,42 @@ func IsBusy():
 
 # Selectable Interface
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-func HandleInput(ev):
+func handle_input(ev):
 	var ret = false
 	match state:
-		# Select if hightlighted
+		# select if hightlighted
 		STATE.Not_Selected:
-			if (start_marker.is_highlighted or end_marker.is_highlighted) and ev.is_action_pressed("ui_accept"):
-				gm.ReqSelection(self)
+			if (start_marker.is_highlighted or end_marker.is_highlighted) \
+					and ev.is_action_pressed("ui_accept"):
+				gm.req_selection(self)
 				ret = true
 		# Start adding moves if hightlighted or deselect
 		STATE.Idle:
 			ret = true
-			if (start_marker.is_highlighted or end_marker.is_highlighted) and ev.is_action_pressed("ui_accept"):
-				_changeState(STATE.Add_mv_Cont)
-			elif (gm.highUnits.empty() and ev.is_action_pressed("ui_accept")) or ev.is_action_pressed("ui_cancel"):
-				gm.ReqDeselection()
+			if (start_marker.is_highlighted or end_marker.is_highlighted) \
+					and ev.is_action_pressed("ui_accept"):
+				_change_state(STATE.Add_mv_Cont)
+			elif (gm.highlighted_units.empty() and ev.is_action_pressed("ui_accept")) \
+					or ev.is_action_pressed("ui_cancel"):
+				gm.req_deselection()
 			else:
 				ret = false
 		# Add Move or Return to Idle
 		STATE.Add_mv_Cont:
 			ret = true
 			if ev.is_action_pressed("ui_accept"):
-				_addMoveSeg(ghost.global_position)
+				_add_move_seg(ghost.global_position)
 			elif ev.is_action_pressed("ui_cancel"):
-				_changeState(STATE.Idle)
+				_change_state(STATE.Idle)
 			else:
 				ret = false
 		_:
 			pass
 	return ret
 
-func Select():
-	_changeState(STATE.Idle)
+func select():
+	_change_state(STATE.Idle)
 
-func Deselect():
-	_changeState(STATE.Not_Selected)
+func deselect():
+	_change_state(STATE.Not_Selected)
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

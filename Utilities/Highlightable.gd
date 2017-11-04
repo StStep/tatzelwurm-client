@@ -17,21 +17,21 @@ func _ready():
 	connect('mouse_exited', self, '_on_mouse_exit')
 
 func _on_mouse_enter():
-	gm.ReqHighlight(self)
+	gm.req_highlight(self)
 
 func _on_mouse_exit():
-	gm.ReqUnhighlight(self)
+	gm.req_unhighlight(self)
 
 # Highlightable Interface
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-func HandleInput(ev):
-	par.HandleInput(ev)
+func handle_input(ev):
+	par.handle_input(ev)
 
-func Highlight():
+func highlight():
 	is_highlighted = true
 	emit_signal("highlighted")
 
-func Unhighlight():
+func unhighlight():
 	is_highlighted = false
 	emit_signal("highlighted")
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
