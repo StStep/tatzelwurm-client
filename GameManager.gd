@@ -2,57 +2,60 @@
 
 extends Node
 
-signal miss_click
+var selUnit
 
-var selUnit = null setget _selectUnit, _retSelUnit
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-func _selectUnit(value):
-	# Skip selecting if already selected
-	if value == selUnit:
+func ReqSelection(value):
+	if value == null or value == selUnit:
 		return
 
-	# Skip selecting if failed to deselect, selected is busy
-	if not TryDeselectUnit():
+	# Check for highlight i/f
+	if not value.has_method("Select") or not value.has_method("Deselect") or not value.has_method("HandleInput") \
+			or not value.has_method("IsBusy"):
+		print("Warning: Selected unit missing Select functions")
 		return
 
-	if value != null and value.has_method('Select'):
-		value.Select()
-
+	ReqDeselection()
 	selUnit = value
+	value.Select()
 
-func _retSelUnit():
-	return selUnit
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+func ReqDeselection():
+	if selUnit == null:
+		return
+	selUnit.Deselect()
+	selUnit = null
 
+var highUnits = []
+
+func ReqHighlight(value):
+	if value == null or value in highUnits:
+		return
+
+	# Check for highlight i/f
+	if not value.has_method("Highlight") or not value.has_method("Unhighlight") or not value.has_method("HandleInput"):
+		print("Warning: Hightlighted unit missing hightlight functions")
+		return
+
+	# Only highlight others if selected is not busy
+	if selUnit != null and selUnit.IsBusy():
+		return
+
+	highUnits.append(value)
+	value.Highlight()
+
+func ReqUnhighlight(value):
+	if value == null or not value in highUnits:
+		return
+	highUnits.erase(value)
+	value.Unhighlight()
 
 func _ready():
-	set_process_unhandled_input(true)
+	set_process_input(true)
 
-# Catch 'missed' clicks
-func  _unhandled_input(event):
-	if event is InputEventMouseButton and event.button_index == BUTTON_LEFT and event.is_pressed():
-		emit_signal("miss_click", BUTTON_LEFT)
-		get_tree().set_input_as_handled()
-	elif event is InputEventMouseButton and event.button_index == BUTTON_RIGHT and event.is_pressed():
-		emit_signal("miss_click", BUTTON_RIGHT)
-		get_tree().set_input_as_handled()
-	else:
-		pass
+func _input(ev):
+	# Pass input through, stop once handled
+	if selUnit != null and selUnit.HandleInput(ev):
+		return
 
-# Deselect the selected unit if not busy
-# Return success
-func TryDeselectUnit():
-	var ret = true
-	if selUnit != null and selUnit.has_method('IsBusy'):
-		ret = not selUnit.IsBusy()
-	if ret:
-		if selUnit != null and selUnit.has_method('Deselect'): selUnit.Deselect()
-		selUnit = null
-	return ret
-
-
-func IsBusy():
-	if selUnit != null and selUnit.has_method('IsBusy'):
-		return selUnit.IsBusy()
-	else:
-		return false
+	for u in highUnits:
+		if u.HandleInput(ev):
+			return

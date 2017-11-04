@@ -40,27 +40,10 @@ func _ready():
 	else:
 		print('Error: Unknown shape')
 
-# Check if mouse within shape
-func _input(ev):
-	# Skip events outside bounds
-	if colshape == null or not colshape.has_point(to_local(ev.position)):
-		return
-
-	# Left Click
-	if ev is InputEventMouseButton and ev.button_index == BUTTON_LEFT and ev.is_pressed():
-		emit_signal("single_click", BUTTON_LEFT)
-		get_tree().set_input_as_handled()
-	# Right Click
-	elif ev is InputEventMouseButton and ev.button_index == BUTTON_RIGHT and ev.is_pressed():
-		emit_signal("single_click", BUTTON_RIGHT)
-		get_tree().set_input_as_handled()
-	else:
-		pass
-
 func Enable():
 	# Enable Engine calbacks
-	set_process_input(true)
+	pass
 
 func Disable():
 	# Disable Engine calbacks
-	set_process_input(false)
+	pass
