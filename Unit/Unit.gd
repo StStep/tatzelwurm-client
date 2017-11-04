@@ -19,7 +19,6 @@ const C_PATH_SELECTED = Color('16ab19') # Green
 const C_PATH_HIGHLIGHT = Color('b6ff00') # Green-Yellow
 
 var state = STATE.Not_Selected
-var isHighlighted = false
 var marker_color = C_NOT_SELECTED
 var path_color = C_PATH_NOT_SELECTED
 onready var gm = get_node('/root/GameManager')
@@ -27,7 +26,8 @@ onready var ghost = get_node('Ghost')
 onready var start_marker_sprite = get_node('StartMarker/Sprite')
 onready var end_marker_sprite = get_node('EndMarker/Sprite')
 onready var movePrev = get_node('MovePreview')
-onready var endMarker = get_node("EndMarker")
+onready var start_marker = get_node("StartMarker")
+onready var end_marker = get_node("EndMarker")
 var movCmd = load("res://Unit/MoveCmd.tscn")
 
 # Tail of move cmd list
@@ -39,11 +39,9 @@ var next = null
 
 func _ready():
 	set_process(true)
-	get_node('StartMarker').connect('mouse_entered', self, '_on_marker_enter')
-	get_node('StartMarker').connect('mouse_exited', self, '_on_marker_exit')
-	get_node('EndMarker').connect('mouse_entered', self, '_on_marker_enter')
-	get_node('EndMarker').connect('mouse_exited', self, '_on_marker_exit')
-	endMarker.hide()
+	start_marker.connect('highlighted', self, '_start_marker_highlight')
+	end_marker.connect('highlighted', self, '_end_marker_highlight')
+	end_marker.hide()
 
 func _process(delta):
 	if state == STATE.Add_mv_Cont:
@@ -51,11 +49,45 @@ func _process(delta):
 		ghost.global_position = mpos
 		movePrev.points = PoolVector2Array([to_local(mvTail.end), to_local(mpos)])
 
-func _on_marker_enter():
-	gm.ReqHighlight(self)
+func _highlight():
+	start_marker_sprite.modulate = C_HIGHLIGHT
+	end_marker_sprite.modulate = C_HIGHLIGHT
+	var node = next
+	while node:
+		node.path.modulate = C_PATH_HIGHLIGHT
+		node = node.next
 
-func _on_marker_exit():
-	gm.ReqUnhighlight(self)
+func _unhighlight():
+	start_marker_sprite.modulate = marker_color
+	end_marker_sprite.modulate = marker_color
+	var node = next
+	while node:
+		node.path.modulate = path_color
+		node = node.next
+
+func _start_marker_highlight():
+	# Highlight everything if not yet selected
+	if state == STATE.Not_Selected and start_marker.is_highlighted:
+		_highlight()
+	elif state == STATE.Not_Selected:
+		_unhighlight()
+	# Else only highlight self
+	elif start_marker.is_highlighted:
+		start_marker_sprite.modulate = C_HIGHLIGHT
+	else:
+		start_marker_sprite.modulate = marker_color
+
+func _end_marker_highlight():
+	# Highlight everything if not yet selected
+	if state == STATE.Not_Selected and end_marker.is_highlighted:
+		_highlight()
+	elif state == STATE.Not_Selected:
+		_unhighlight()
+	# Else only highlight self
+	elif end_marker.is_highlighted:
+		end_marker_sprite.modulate = C_HIGHLIGHT
+	else:
+		end_marker_sprite.modulate = marker_color
 
 func _on_select():
 	start_marker_sprite.modulate = C_SELECTED
@@ -90,13 +122,11 @@ func _changeState(s):
 
 	# Prev State
 	match state:
-		STATE.Not_Selected:
-			pass
-		STATE.Idle:
-			pass
 		STATE.Add_mv_Cont:
 			movePrev.points = PoolVector2Array()
 			ghost.hide()
+		_:
+			pass
 
 	# New State
 	match s:
@@ -106,6 +136,8 @@ func _changeState(s):
 			_on_select()
 		STATE.Add_mv_Cont:
 			ghost.show()
+		_:
+			pass
 
 	state = s
 
@@ -125,8 +157,8 @@ func _addMoveSeg(gpos):
 	inst.path.modulate = C_PATH_SELECTED
 
 	# Move up ghost marker
-	endMarker.show()
-	endMarker.global_position = mvTail.end
+	end_marker.show()
+	end_marker.global_position = mvTail.end
 
 # Determines if this unit can be deselected
 func IsBusy():
@@ -135,20 +167,20 @@ func IsBusy():
 	else:
 		return true
 
-# Selectable and Highlightable Interface
+# Selectable Interface
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 func HandleInput(ev):
 	var ret = false
 	match state:
 		# Select if hightlighted
 		STATE.Not_Selected:
-			if isHighlighted and ev.is_action_pressed("ui_accept"):
+			if (start_marker.is_highlighted or end_marker.is_highlighted) and ev.is_action_pressed("ui_accept"):
 				gm.ReqSelection(self)
 				ret = true
 		# Start adding moves if hightlighted or deselect
 		STATE.Idle:
 			ret = true
-			if isHighlighted and ev.is_action_pressed("ui_accept"):
+			if (start_marker.is_highlighted or end_marker.is_highlighted) and ev.is_action_pressed("ui_accept"):
 				_changeState(STATE.Add_mv_Cont)
 			elif (gm.highUnits.empty() and ev.is_action_pressed("ui_accept")) or ev.is_action_pressed("ui_cancel"):
 				gm.ReqDeselection()
@@ -172,23 +204,4 @@ func Select():
 
 func Deselect():
 	_changeState(STATE.Not_Selected)
-
-func Highlight():
-	isHighlighted = true
-	start_marker_sprite.modulate = C_HIGHLIGHT
-	end_marker_sprite.modulate = C_HIGHLIGHT
-	var node = next
-	while node:
-		node.path.modulate = C_PATH_HIGHLIGHT
-		node = node.next
-
-func Unhighlight():
-	isHighlighted = false
-	start_marker_sprite.modulate = marker_color
-	end_marker_sprite.modulate = marker_color
-	var node = next
-	while node:
-		node.path.modulate = path_color
-		node = node.next
-
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
