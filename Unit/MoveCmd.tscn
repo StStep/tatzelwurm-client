@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Unit/MoveCmd.gd" type="Script" id=1]
-[ext_resource path="res://Utilities/ClickHandler.gd" type="Script" id=2]
-[ext_resource path="res://Unit/Member.png" type="Texture" id=3]
+[ext_resource path="res://Unit/Member.png" type="Texture" id=2]
 
 [sub_resource type="CircleShape2D" id=1]
 
@@ -32,16 +31,15 @@ linear_damp = 0.1
 angular_damp = 1.0
 audio_bus_override = false
 audio_bus_name = "Master"
-script = ExtResource( 2 )
 
 [node name="Shape" type="CollisionShape2D" parent="Marker"]
 
 shape = SubResource( 1 )
-_sections_unfolded = [ "Transform" ]
+_sections_unfolded = [ "Transform", "Z" ]
 
 [node name="Sprite" type="Sprite" parent="Marker"]
 
-texture = ExtResource( 3 )
+texture = ExtResource( 2 )
 _sections_unfolded = [ "Offset" ]
 
 

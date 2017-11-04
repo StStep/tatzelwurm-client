@@ -3,6 +3,19 @@
 extends Node
 
 var selUnit
+var highUnits = []
+
+func _ready():
+	set_process_input(true)
+
+func _input(ev):
+	# Pass input through, stop once handled
+	if selUnit != null and selUnit.HandleInput(ev):
+		return
+
+	for u in highUnits:
+		if u.HandleInput(ev):
+			return
 
 func ReqSelection(value):
 	if value == null or value == selUnit:
@@ -23,8 +36,6 @@ func ReqDeselection():
 		return
 	selUnit.Deselect()
 	selUnit = null
-
-var highUnits = []
 
 func ReqHighlight(value):
 	if value == null or value in highUnits:
@@ -47,15 +58,3 @@ func ReqUnhighlight(value):
 		return
 	highUnits.erase(value)
 	value.Unhighlight()
-
-func _ready():
-	set_process_input(true)
-
-func _input(ev):
-	# Pass input through, stop once handled
-	if selUnit != null and selUnit.HandleInput(ev):
-		return
-
-	for u in highUnits:
-		if u.HandleInput(ev):
-			return

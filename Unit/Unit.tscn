@@ -1,13 +1,12 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Unit/Unit.gd" type="Script" id=1]
 [ext_resource path="res://Unit/Unit_Arr.png" type="Texture" id=2]
-[ext_resource path="res://Utilities/ClickHandler.gd" type="Script" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 
 custom_solver_bias = 0.0
-extents = Vector2( 10, 10 )
+extents = Vector2( 68, 32.5 )
 
 [node name="Unit" type="Node2D"]
 
@@ -22,7 +21,6 @@ _sections_unfolded = [ "Visibility" ]
 
 [node name="StartMarker" type="Area2D" parent="."]
 
-editor/display_folded = true
 input_pickable = true
 gravity_vec = Vector2( 0, 1 )
 gravity = 98.0
@@ -30,19 +28,19 @@ linear_damp = 0.1
 angular_damp = 1.0
 audio_bus_override = false
 audio_bus_name = "Master"
-script = ExtResource( 3 )
 
 [node name="Shape" type="CollisionShape2D" parent="StartMarker"]
 
 shape = SubResource( 1 )
+_sections_unfolded = [ "Transform" ]
 
 [node name="Sprite" type="Sprite" parent="StartMarker"]
 
 texture = ExtResource( 2 )
+_sections_unfolded = [ "Transform" ]
 
 [node name="EndMarker" type="Area2D" parent="."]
 
-editor/display_folded = true
 input_pickable = true
 gravity_vec = Vector2( 0, 1 )
 gravity = 98.0
@@ -50,15 +48,16 @@ linear_damp = 0.1
 angular_damp = 1.0
 audio_bus_override = false
 audio_bus_name = "Master"
-script = ExtResource( 3 )
 
 [node name="Shape" type="CollisionShape2D" parent="EndMarker"]
 
 shape = SubResource( 1 )
+_sections_unfolded = [ "Transform" ]
 
 [node name="Sprite" type="Sprite" parent="EndMarker"]
 
 texture = ExtResource( 2 )
+_sections_unfolded = [ "Transform" ]
 
 [node name="MovePreview" type="Line2D" parent="."]
 
