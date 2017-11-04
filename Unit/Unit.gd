@@ -6,8 +6,10 @@
 extends Node2D
 
 enum STATE {
-  None,
-  Moving
+	Not_Selected,
+	Idle,
+	Add_Mv_Single,
+	Add_mv_Cont,
 }
 
 const C_IDLE = Color('ffffff') # White
@@ -18,8 +20,7 @@ const C_PATH_SELECTED = Color('16ab19') # Green
 const C_PATH_HIGHLIGHT = Color('b6ff00') # Green-Yellow
 
 
-var IsSelected = false
-var state = STATE.None
+var state = STATE.Not_Selected
 var marker_color = C_IDLE
 var path_color = C_PATH_IDLE
 onready var ghost = get_node('Ghost')
@@ -51,7 +52,7 @@ func _ready():
 
 
 func _process(delta):
-	if state == STATE.Moving:
+	if state == STATE.Add_mv_Cont:
 		var mpos = get_viewport().get_mouse_position()
 		ghost.global_position = mpos
 		movePrev.points = PoolVector2Array([to_local(mvTail.end), to_local(mpos)])
@@ -60,30 +61,25 @@ func _process(delta):
 func _on_miss_click(button):
 	match state:
 		# Deselect ----------------------
-		STATE.None:
-			match button:
-				BUTTON_LEFT, BUTTON_RIGHT:
-					if IsSelected: get_node('/root/GameManager').TryDeselectUnit()
+		STATE.Idle:
+			if button == BUTTON_LEFT or button == BUTTON_RIGHT:
+				get_node('/root/GameManager').TryDeselectUnit()
 		# Add Move or Deselect ----------
-		STATE.Moving:
+		STATE.Add_mv_Cont:
 			match button:
 				BUTTON_LEFT:
 					_addMoveSeg(ghost.global_position)
 				BUTTON_RIGHT:
-					ChangeState(STATE.None)
+					ChangeState(STATE.Idle)
 
 
 func _on_marker_click(button):
 	match state:
-		# Select or start moving if selected
-		STATE.None:
-			if IsSelected:
-				ChangeState(STATE.Moving)
-			else:
-				if button == BUTTON_LEFT:
-					get_node('/root/GameManager').selUnit = self
-		STATE.Moving:
-			pass
+		STATE.Not_Selected:
+			if button == BUTTON_LEFT:
+				get_node('/root/GameManager').selUnit = self
+		STATE.Idle:
+			ChangeState(STATE.Add_mv_Cont)
 
 func _on_marker_enter():
 	if not get_node('/root/GameManager').IsBusy():
@@ -108,30 +104,36 @@ func ChangeState(s):
 
 	# Prev State
 	match state:
-		STATE.None:
+		STATE.Not_Selected:
 			pass
-		STATE.Moving:
+		STATE.Idle:
+			pass
+		STATE.Add_mv_Cont:
 			movePrev.points = PoolVector2Array()
 			ghost.hide()
 
 	# New State
 	match s:
-		STATE.None:
-			pass
-		STATE.Moving:
+		STATE.Not_Selected:
+			_deselect()
+		STATE.Idle:
+			_select()
+		STATE.Add_mv_Cont:
 			ghost.show()
 
 	state = s
 
 # Determines if this unit can be deselected
 func IsBusy():
-	if state == STATE.None:
+	if state == STATE.Not_Selected or state == STATE.Idle:
 		return false
 	else:
 		return true
 
 func Select():
-	IsSelected = true
+	ChangeState(STATE.Idle)
+
+func _select():
 	start_marker_sprite.modulate = C_SELECTED
 	end_marker_sprite.modulate = C_SELECTED
 	marker_color = C_SELECTED
@@ -147,7 +149,9 @@ func Select():
 	print('Selected ' + get_name())
 
 func Deselect():
-	IsSelected = false
+	ChangeState(STATE.Not_Selected)
+
+func _deselect():
 	start_marker_sprite.modulate = C_IDLE
 	end_marker_sprite.modulate = C_IDLE
 	marker_color = C_IDLE
