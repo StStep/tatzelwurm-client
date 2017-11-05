@@ -17,9 +17,17 @@ func _ready():
 	connect('mouse_exited', self, '_on_mouse_exit')
 
 func _on_mouse_enter():
-	gm.req_highlight(self)
+	mark_as_highlighted()
 
 func _on_mouse_exit():
+	mark_as_unhighlighted()
+
+# For when markers are manually moved
+func mark_as_highlighted():
+	gm.req_highlight(self)
+
+# For when markers are manually moved
+func mark_as_unhighlighted():
 	gm.req_unhighlight(self)
 
 # Highlightable Interface

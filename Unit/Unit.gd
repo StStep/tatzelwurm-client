@@ -129,6 +129,10 @@ func _change_state(s):
 
 	state = s
 
+	# Refresh marker colors
+	_marker_highlight(end_marker)
+	_marker_highlight(start_marker)
+
 func _add_move_seg(gpos):
 	print('Add move')
 	var inst = mov_cmd.instance()
