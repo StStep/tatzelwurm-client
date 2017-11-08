@@ -17,6 +17,13 @@ func _input(ev):
 		if u.handle_input(ev):
 			return
 
+func is_selection_allowed():
+	if selected_unit != null and selected_unit.is_busy():
+		return false
+	else:
+		return true
+
+
 func req_selection(value):
 	if value == null or value == selected_unit:
 		return
@@ -48,10 +55,6 @@ func req_highlight(value):
 			or not value.has_method("unhighlight") \
 			or not value.has_method("handle_input"):
 		print("Warning: Hightlighted unit missing hightlight functions")
-		return
-
-	# Only highlight others if selected is not busy
-	if selected_unit != null and selected_unit.is_busy():
 		return
 
 	highlighted_units.append(value)

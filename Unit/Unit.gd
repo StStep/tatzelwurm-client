@@ -67,9 +67,11 @@ func _unhighlight():
 
 func _marker_highlight(marker):
 	# Highlight everything if not yet selected
-	if state == STATE.Not_Selected and marker.is_highlighted:
+	if state == STATE.Not_Selected and marker.is_highlighted \
+			and gm.is_selection_allowed():
 		_highlight()
-	elif state == STATE.Not_Selected:
+	# If busy or not selected, don't highlight anything
+	elif state == STATE.Not_Selected or is_busy():
 		_unhighlight()
 	# Else only highlight self
 	elif marker.is_highlighted:
@@ -167,7 +169,8 @@ func handle_input(ev):
 		# select if hightlighted
 		STATE.Not_Selected:
 			if (start_marker.is_highlighted or end_marker.is_highlighted) \
-					and ev.is_action_pressed("ui_accept"):
+					and ev.is_action_pressed("ui_accept") \
+					and gm.is_selection_allowed():
 				gm.req_selection(self)
 				ret = true
 		# Start adding moves if hightlighted or deselect
