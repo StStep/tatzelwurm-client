@@ -39,8 +39,8 @@ var next = null
 
 func _ready():
 	set_process(true)
-	start_marker.connect('highlighted', self, '_marker_highlight', [start_marker])
-	end_marker.connect('highlighted', self, '_marker_highlight', [end_marker])
+	start_marker.connect('highlighted', self, '_render_marker_highlight', [start_marker])
+	end_marker.connect('highlighted', self, '_render_marker_highlight', [end_marker])
 	end_marker.hide()
 
 func _process(delta):
@@ -65,7 +65,7 @@ func _unhighlight():
 		node.path.modulate = path_color
 		node = node.next
 
-func _marker_highlight(marker):
+func _render_marker_highlight(marker):
 	# Highlight everything if not yet selected
 	if state == STATE.Not_Selected and marker.is_highlighted \
 			and gm.is_selection_allowed():
@@ -132,8 +132,7 @@ func _change_state(s):
 	state = s
 
 	# Refresh marker colors
-	_marker_highlight(end_marker)
-	_marker_highlight(start_marker)
+	gm.refresh_highlighted_render()
 
 func _add_move_seg(gpos):
 	print('Add move')

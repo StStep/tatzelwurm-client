@@ -23,6 +23,9 @@ func is_selection_allowed():
 	else:
 		return true
 
+func refresh_highlighted_render():
+	for h in highlighted_units:
+		h.highlight()
 
 func req_selection(value):
 	if value == null or value == selected_unit:
