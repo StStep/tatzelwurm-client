@@ -106,6 +106,13 @@ func _on_deselect():
 		node = node.next
 	print('Deselected ' + get_name())
 
+func _on_mv_reset():
+	mv_tail = self
+	if next:
+		next.erase()
+		next = null
+	end_marker.hide()
+
 func _change_state(s):
 	if s == state:
 		return
@@ -175,8 +182,10 @@ func handle_input(ev):
 		# Start adding moves if hightlighted or deselect
 		STATE.Idle:
 			ret = true
-			if (start_marker.is_highlighted or end_marker.is_highlighted) \
-					and ev.is_action_pressed("ui_accept"):
+			if start_marker.is_highlighted and ev.is_action_pressed("ui_accept"):
+				_on_mv_reset()
+				_change_state(STATE.Add_mv_Cont)
+			elif end_marker.is_highlighted and ev.is_action_pressed("ui_accept"):
 				_change_state(STATE.Add_mv_Cont)
 			elif (gm.highlighted_units.empty() and ev.is_action_pressed("ui_accept")) \
 					or ev.is_action_pressed("ui_cancel"):

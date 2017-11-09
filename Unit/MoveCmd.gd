@@ -44,3 +44,7 @@ func update():
 		PoolVector2Array([to_local(previous.end), Vector2(0,0)])
 	if next: next.update()
 
+func erase():
+	if next: next.erase()
+	queue_free()
+
