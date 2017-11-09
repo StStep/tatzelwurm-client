@@ -6,11 +6,11 @@
 
 extends Area2D
 
+signal state_changed
+
 onready var par = get_parent()
 onready var gm = get_node('/root/GameManager')
 var is_highlighted = false
-
-signal highlighted
 
 func _ready():
 	connect('mouse_entered', self, '_on_mouse_enter')
@@ -37,9 +37,9 @@ func handle_input(ev):
 
 func highlight():
 	is_highlighted = true
-	emit_signal("highlighted")
+	emit_signal("state_changed")
 
 func unhighlight():
 	is_highlighted = false
-	emit_signal("highlighted")
+	emit_signal("state_changed")
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

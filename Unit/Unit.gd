@@ -39,8 +39,8 @@ var next = null
 
 func _ready():
 	set_process(true)
-	start_marker.connect('highlighted', self, '_render_marker_highlight', [start_marker])
-	end_marker.connect('highlighted', self, '_render_marker_highlight', [end_marker])
+	start_marker.connect('state_changed', self, '_render_marker_highlight', [start_marker])
+	end_marker.connect('state_changed', self, '_render_marker_highlight', [end_marker])
 	end_marker.hide()
 
 func _process(delta):
