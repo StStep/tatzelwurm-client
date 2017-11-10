@@ -66,5 +66,7 @@ func erase():
 	queue_free()
 
 func handle_input(ev):
-	pass
+	if marker.is_highlighted:
+		unit.mv_adj = self
+		unit.handle_input(ev)
 

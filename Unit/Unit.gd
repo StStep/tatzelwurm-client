@@ -8,7 +8,8 @@ enum STATE {
 	Not_Selected,
 	Idle,
 	Add_Mv_Single,
-	Add_mv_Cont,
+	Add_Mv_Cont,
+	Adj_Mv_Cmd
 }
 
 const C_NOT_SELECTED = Color('ffffff') # White
@@ -34,6 +35,8 @@ var mov_cmd = load("res://Unit/MoveCmd.tscn")
 var mv_tail = null
 # First MoveCmd
 var mv_head = null
+# MvCmd Adjusting
+var mv_adj = null
 
 func _ready():
 	set_process(true)
@@ -42,11 +45,16 @@ func _ready():
 	end_marker.hide()
 
 func _process(delta):
-	if state == STATE.Add_mv_Cont:
-		var mpos = get_viewport().get_mouse_position()
-		ghost.global_position = mpos
-		var end = mv_tail.end if mv_tail else global_position
-		move_prev.points = PoolVector2Array([to_local(end), to_local(mpos)])
+	match state:
+		STATE.Add_Mv_Cont:
+			var mpos = get_viewport().get_mouse_position()
+			ghost.global_position = mpos
+			var end = mv_tail.end if mv_tail else global_position
+			move_prev.points = PoolVector2Array([to_local(end), to_local(mpos)])
+		STATE.Adj_Mv_Cmd:
+			print('Adjusting')
+		_:
+			pass
 
 func _highlight():
 	start_marker_sprite.modulate = C_HIGHLIGHT
@@ -118,7 +126,7 @@ func _change_state(s):
 
 	# Prev State
 	match state:
-		STATE.Add_mv_Cont:
+		STATE.Add_Mv_Cont:
 			move_prev.points = PoolVector2Array()
 			ghost.hide()
 		_:
@@ -130,7 +138,7 @@ func _change_state(s):
 			_on_deselect()
 		STATE.Idle:
 			_on_select()
-		STATE.Add_mv_Cont:
+		STATE.Add_Mv_Cont:
 			ghost.show()
 		_:
 			pass
@@ -162,6 +170,9 @@ func _add_move_seg(gpos):
 	end_marker.show()
 	end_marker.global_position = mv_tail.end
 
+func _adj_move_seg(gpos):
+	print('Adjust Move')
+
 # Determines if this unit can be deselected
 func is_busy():
 	if state == STATE.Not_Selected or state == STATE.Idle:
@@ -186,19 +197,30 @@ func handle_input(ev):
 			ret = true
 			if start_marker.is_highlighted and ev.is_action_pressed("ui_accept"):
 				_on_mv_reset()
-				_change_state(STATE.Add_mv_Cont)
+				_change_state(STATE.Add_Mv_Cont)
 			elif end_marker.is_highlighted and ev.is_action_pressed("ui_accept"):
-				_change_state(STATE.Add_mv_Cont)
+				_change_state(STATE.Add_Mv_Cont)
+			elif mv_adj and mv_adj.marker.is_highlighted and ev.is_action_pressed("ui_accept"):
+				_change_state(STATE.Adj_Mv_Cmd)
 			elif (gm.highlighted_units.empty() and ev.is_action_pressed("ui_accept")) \
 					or ev.is_action_pressed("ui_cancel"):
 				gm.req_deselection()
 			else:
 				ret = false
 		# Add Move or Return to Idle
-		STATE.Add_mv_Cont:
+		STATE.Add_Mv_Cont:
 			ret = true
 			if ev.is_action_pressed("ui_accept"):
 				_add_move_seg(ghost.global_position)
+			elif ev.is_action_pressed("ui_cancel"):
+				_change_state(STATE.Idle)
+			else:
+				ret = false
+		# Adjust MvCmd or Return to Idle
+		STATE.Adj_Mv_Cmd:
+			ret = true
+			if ev.is_action_pressed("ui_accept"):
+				_adj_move_seg(ghost.global_position)
 			elif ev.is_action_pressed("ui_cancel"):
 				_change_state(STATE.Idle)
 			else:
