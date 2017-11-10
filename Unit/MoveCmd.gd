@@ -2,6 +2,11 @@
 
 extends Node2D
 
+const C_NOT_HIGHLIGHTED = Color('ffffff') # White
+const C_HIGHLIGHT = Color('b6ff00') # Green-Yellow
+
+onready var marker = get_node('Marker')
+
 # Parent Unit
 var unit
 # Global start point
@@ -18,7 +23,7 @@ var move = Vector2(0, 0)
 onready var path = get_node('Path')
 
 func _ready():
-	pass
+	marker.connect('state_changed', self, '_render_marker_highlight')
 
 func _set_start(value):
 	pass
@@ -37,6 +42,13 @@ func _set_end(gpos):
 func _get_end():
 	return to_global(Vector2(0,0))
 
+# Not visible when not-selected, so logic works out
+func _render_marker_highlight():
+	if not unit.is_busy() and marker.is_highlighted:
+		marker.get_node("Sprite").modulate = C_HIGHLIGHT
+	else:
+		marker.get_node("Sprite").modulate = C_NOT_HIGHLIGHTED
+
 func enable():
 	get_node('Marker').show()
 
@@ -52,4 +64,7 @@ func update():
 func erase():
 	if next: next.erase()
 	queue_free()
+
+func handle_input(ev):
+	pass
 

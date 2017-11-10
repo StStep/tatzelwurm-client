@@ -1,6 +1,6 @@
 # Handles highlighting of Area2Ds
 #
-# Expects Selectable Parent
+# Expects Parent to have handle_input()
 # Expects children:
 # 	Shape - CollisionShape2D
 
