@@ -31,11 +31,9 @@ onready var end_marker = get_node("EndMarker")
 var mov_cmd = load("res://Unit/MoveCmd.tscn")
 
 # Tail of move cmd list
-var mv_tail = self
-# For moveCmds to reference
-onready var end = global_position
+var mv_tail = null
 # First MoveCmd
-var next = null
+var mv_head = null
 
 func _ready():
 	set_process(true)
@@ -47,12 +45,13 @@ func _process(delta):
 	if state == STATE.Add_mv_Cont:
 		var mpos = get_viewport().get_mouse_position()
 		ghost.global_position = mpos
-		move_prev.points = PoolVector2Array([to_local(mv_tail.end), to_local(mpos)])
+		var end = mv_tail.end if mv_tail else global_position
+		move_prev.points = PoolVector2Array([to_local(end), to_local(mpos)])
 
 func _highlight():
 	start_marker_sprite.modulate = C_HIGHLIGHT
 	end_marker_sprite.modulate = C_HIGHLIGHT
-	var node = next
+	var node = mv_head
 	while node:
 		node.path.modulate = C_PATH_HIGHLIGHT
 		node = node.next
@@ -60,7 +59,7 @@ func _highlight():
 func _unhighlight():
 	start_marker_sprite.modulate = marker_color
 	end_marker_sprite.modulate = marker_color
-	var node = next
+	var node = mv_head
 	while node:
 		node.path.modulate = path_color
 		node = node.next
@@ -84,13 +83,13 @@ func _on_select():
 	end_marker_sprite.modulate = C_SELECTED
 	marker_color = C_SELECTED
 	path_color = C_PATH_SELECTED
-	var node = next
+	var node = mv_head
 	while node:
 		node.enable()
 		node.path.modulate = C_PATH_SELECTED
 		node = node.next
 	# Always hide last node under end marker
-	if mv_tail != self:
+	if mv_tail:
 		mv_tail.disable()
 	print('Selected ' + get_name())
 
@@ -99,7 +98,7 @@ func _on_deselect():
 	end_marker_sprite.modulate = C_NOT_SELECTED
 	marker_color = C_NOT_SELECTED
 	path_color = C_PATH_NOT_SELECTED
-	var node = next
+	var node = mv_head
 	while node:
 		node.disable()
 		node.path.modulate = C_PATH_NOT_SELECTED
@@ -107,10 +106,10 @@ func _on_deselect():
 	print('Deselected ' + get_name())
 
 func _on_mv_reset():
-	mv_tail = self
-	if next:
-		next.erase()
-		next = null
+	mv_tail = null
+	if mv_head:
+		mv_head.erase()
+		mv_head = null
 	end_marker.hide()
 
 func _change_state(s):
@@ -144,14 +143,17 @@ func _change_state(s):
 func _add_move_seg(gpos):
 	print('Add move')
 	var inst = mov_cmd.instance()
+	inst.unit = self
 	add_child(inst)
 
 	# disable point under end marker, enable prev hidden
-	if mv_tail != self:
+	if not mv_head:
+		mv_head = inst
+	else:
 		mv_tail.enable()
+		mv_tail.next = inst
 	inst.disable()
 	inst.previous = mv_tail
-	mv_tail.next = inst
 	mv_tail = inst
 	inst.end = gpos
 	inst.path.modulate = C_PATH_SELECTED
