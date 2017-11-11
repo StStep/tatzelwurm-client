@@ -7,9 +7,9 @@ extends Node2D
 enum STATE {
 	Not_Selected,
 	Idle,
-	Add_Mv_Single,
-	Add_Mv_Cont,
-	Adj_Mv_Cmd
+	Add_Move_Single,
+	Add_Move_Cont,
+	Adjust_Move_Node
 }
 
 const C_NOT_SELECTED = Color('ffffff') # White
@@ -29,13 +29,13 @@ onready var end_marker_sprite = get_node('EndMarker/Sprite')
 onready var move_prev = get_node('MovePreview')
 onready var start_marker = get_node("StartMarker")
 onready var end_marker = get_node("EndMarker")
-var mov_cmd = load("res://Unit/MoveCmd.tscn")
+var move_node = load("res://Unit/MoveNode.tscn")
 
-# Tail of move cmd list
+# Tail of move node list
 var mv_tail = null
-# First MoveCmd
+# First Move Node
 var mv_head = null
-# MvCmd Adjusting
+# Move Node Adjusting
 var mv_adj = null
 
 func _ready():
@@ -47,11 +47,11 @@ func _ready():
 func _process(delta):
 	var mpos = get_viewport().get_mouse_position()
 	match state:
-		STATE.Add_Mv_Cont:
+		STATE.Add_Move_Cont:
 			ghost.global_position = mpos
 			var end = mv_tail.end if mv_tail else global_position
 			move_prev.points = PoolVector2Array([to_local(end), to_local(mpos)])
-		STATE.Adj_Mv_Cmd:
+		STATE.Adjust_Move_Node:
 			if mv_adj:
 				mv_adj.end = mpos
 				end_marker.global_position = mv_tail.end
@@ -129,7 +129,7 @@ func _change_state(s):
 
 	# Prev State
 	match state:
-		STATE.Add_Mv_Cont:
+		STATE.Add_Move_Cont:
 			move_prev.points = PoolVector2Array()
 			ghost.hide()
 		_:
@@ -141,7 +141,7 @@ func _change_state(s):
 			_on_deselect()
 		STATE.Idle:
 			_on_select()
-		STATE.Add_Mv_Cont:
+		STATE.Add_Move_Cont:
 			ghost.show()
 		_:
 			pass
@@ -151,9 +151,9 @@ func _change_state(s):
 	# Refresh marker colors
 	gm.refresh_highlighted_render()
 
-func _add_move_seg(gpos):
+func _add_move_node(gpos):
 	print('Add move')
-	var inst = mov_cmd.instance()
+	var inst = move_node.instance()
 	inst.unit = self
 	add_child(inst)
 
@@ -173,7 +173,7 @@ func _add_move_seg(gpos):
 	end_marker.show()
 	end_marker.global_position = mv_tail.end
 
-func _rm_last_move_seg():
+func _rm_last_move_node():
 	mv_adj = null
 	var inst = mv_tail.previous
 	mv_tail.erase()
@@ -209,30 +209,30 @@ func handle_input(ev):
 			ret = true
 			if start_marker.is_highlighted and ev.is_action_pressed("ui_accept"):
 				_on_mv_reset()
-				_change_state(STATE.Add_Mv_Cont)
+				_change_state(STATE.Add_Move_Cont)
 			elif end_marker.is_highlighted and ev.is_action_pressed("ui_accept"):
-				_change_state(STATE.Add_Mv_Cont)
+				_change_state(STATE.Add_Move_Cont)
 			elif mv_adj and mv_adj.marker.is_highlighted and ev.is_action_pressed("ui_accept"):
-				_change_state(STATE.Adj_Mv_Cmd)
+				_change_state(STATE.Adjust_Move_Node)
 			elif (gm.highlighted_units.empty() and ev.is_action_pressed("ui_accept")) \
 					or ev.is_action_pressed("ui_cancel"):
 				gm.req_deselection()
 			else:
 				ret = false
 		# Add Move or Return to Idle
-		STATE.Add_Mv_Cont:
+		STATE.Add_Move_Cont:
 			ret = true
 			# Move end marker if click on, undo last
 			if ev.is_action_pressed("ui_accept") and end_marker.is_highlighted:
-				_rm_last_move_seg()
+				_rm_last_move_node()
 			elif ev.is_action_pressed("ui_accept"):
-				_add_move_seg(ghost.global_position)
+				_add_move_node(ghost.global_position)
 			elif ev.is_action_pressed("ui_cancel"):
 				_change_state(STATE.Idle)
 			else:
 				ret = false
 		# Return to idle once done, adj happens in _process()
-		STATE.Adj_Mv_Cmd:
+		STATE.Adjust_Move_Node:
 			ret = true
 			if ev.is_action_pressed("ui_accept") or ev.is_action_pressed("ui_cancel"):
 				_change_state(STATE.Idle)
