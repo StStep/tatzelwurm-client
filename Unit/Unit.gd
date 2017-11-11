@@ -45,14 +45,16 @@ func _ready():
 	end_marker.hide()
 
 func _process(delta):
+	var mpos = get_viewport().get_mouse_position()
 	match state:
 		STATE.Add_Mv_Cont:
-			var mpos = get_viewport().get_mouse_position()
 			ghost.global_position = mpos
 			var end = mv_tail.end if mv_tail else global_position
 			move_prev.points = PoolVector2Array([to_local(end), to_local(mpos)])
 		STATE.Adj_Mv_Cmd:
-			print('Adjusting')
+			if mv_adj:
+				mv_adj.end = mpos
+				end_marker.global_position = mv_tail.end
 		_:
 			pass
 
@@ -115,6 +117,7 @@ func _on_deselect():
 
 func _on_mv_reset():
 	mv_tail = null
+	mv_adj = null
 	if mv_head:
 		mv_head.erase()
 		mv_head = null
@@ -170,8 +173,17 @@ func _add_move_seg(gpos):
 	end_marker.show()
 	end_marker.global_position = mv_tail.end
 
-func _adj_move_seg(gpos):
-	print('Adjust Move')
+func _rm_last_move_seg():
+	mv_adj = null
+	var inst = mv_tail.previous
+	mv_tail.erase()
+	mv_tail = inst
+	if mv_tail:
+		mv_tail.next = null
+		mv_tail.disable()
+		end_marker.global_position = mv_tail.end
+	else:
+		_on_mv_reset()
 
 # Determines if this unit can be deselected
 func is_busy():
@@ -210,18 +222,19 @@ func handle_input(ev):
 		# Add Move or Return to Idle
 		STATE.Add_Mv_Cont:
 			ret = true
-			if ev.is_action_pressed("ui_accept"):
+			# Move end marker if click on, undo last
+			if ev.is_action_pressed("ui_accept") and end_marker.is_highlighted:
+				_rm_last_move_seg()
+			elif ev.is_action_pressed("ui_accept"):
 				_add_move_seg(ghost.global_position)
 			elif ev.is_action_pressed("ui_cancel"):
 				_change_state(STATE.Idle)
 			else:
 				ret = false
-		# Adjust MvCmd or Return to Idle
+		# Return to idle once done, adj happens in _process()
 		STATE.Adj_Mv_Cmd:
 			ret = true
-			if ev.is_action_pressed("ui_accept"):
-				_adj_move_seg(ghost.global_position)
-			elif ev.is_action_pressed("ui_cancel"):
+			if ev.is_action_pressed("ui_accept") or ev.is_action_pressed("ui_cancel"):
 				_change_state(STATE.Idle)
 			else:
 				ret = false
