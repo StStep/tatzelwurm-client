@@ -66,7 +66,7 @@ func update():
 	var l_vec = to_local(_get_start())
 	path.points = PoolVector2Array([l_vec, Vector2(0,0)])
 	var shape = RectangleShape2D.new()
-	shape.extents = Vector2(10, l_vec.length()/2)
+	shape.extents = Vector2(20, l_vec.length()/2)
 	path_shape.set_shape(shape)
 	path_shape.rotation = l_vec.angle() + PI/2
 	path_shape.position = l_vec/2

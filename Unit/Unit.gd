@@ -50,7 +50,8 @@ func _process(delta):
 	var mpos = get_viewport().get_mouse_position()
 	match state:
 		STATE.Idle:
-			if high_path and high_path.path_area.is_highlighted:
+			if high_path and high_path.path_area.is_highlighted \
+					and gm.highlighted_units.size() == 1:
 				ghost.show()
 				ghost.global_position = high_path.closest_pnt_on_path(mpos)
 			else:
@@ -126,6 +127,7 @@ func _on_deselect():
 func _on_mv_reset():
 	mv_tail = null
 	mv_adj = null
+	high_path = null
 	if mv_head:
 		mv_head.erase()
 		mv_head = null
@@ -185,6 +187,7 @@ func _add_move_node(gpos):
 
 func _rm_last_move_node():
 	mv_adj = null
+	high_path = null
 	var inst = mv_tail.previous
 	mv_tail.erase()
 	mv_tail = inst
