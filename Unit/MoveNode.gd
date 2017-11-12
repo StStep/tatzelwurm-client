@@ -6,6 +6,7 @@ const C_NOT_HIGHLIGHTED = Color('ffffff') # White
 const C_HIGHLIGHT = Color('b6ff00') # Green-Yellow
 
 onready var marker = get_node('Marker')
+onready var path_area = get_node('PathArea')
 
 # Parent Unit
 var unit
@@ -21,9 +22,11 @@ var next = null
 var move = Vector2(0, 0)
 
 onready var path = get_node('Path')
+onready var path_shape = get_node('PathArea/Shape')
 
 func _ready():
 	marker.connect('state_changed', self, '_render_marker_highlight')
+	path_area.connect('state_changed', self, '_render_path_highlight')
 
 func _set_start(value):
 	pass
@@ -49,6 +52,9 @@ func _render_marker_highlight():
 	else:
 		marker.get_node("Sprite").modulate = C_NOT_HIGHLIGHTED
 
+func _render_path_highlight():
+	print('On')
+
 func enable():
 	get_node('Marker').show()
 
@@ -57,8 +63,13 @@ func disable():
 
 func update():
 	global_position = _get_start() + move
-	get_node("Path").points = \
-		PoolVector2Array([to_local(_get_start()), Vector2(0,0)])
+	var l_vec = to_local(_get_start())
+	path.points = PoolVector2Array([l_vec, Vector2(0,0)])
+	var shape = RectangleShape2D.new()
+	shape.extents = Vector2(2.5, l_vec.length()/2)
+	path_shape.set_shape(shape)
+	path_shape.rotation = l_vec.angle() + PI/2
+	path_shape.position = l_vec/2
 	if next: next.update()
 
 func erase():

@@ -1,14 +1,18 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Unit/MoveNode.gd" type="Script" id=1]
 [ext_resource path="res://Utilities/Highlightable.gd" type="Script" id=2]
 [ext_resource path="res://Unit/Member.png" type="Texture" id=3]
 
-
 [sub_resource type="CircleShape2D" id=1]
 
 custom_solver_bias = 0.0
 radius = 12.0
+
+[sub_resource type="RectangleShape2D" id=2]
+
+custom_solver_bias = 0.0
+extents = Vector2( 2.5, 0 )
 
 [node name="MoveCmd" type="Node2D"]
 
@@ -34,6 +38,7 @@ angular_damp = 1.0
 audio_bus_override = false
 audio_bus_name = "Master"
 script = ExtResource( 2 )
+_sections_unfolded = [ "Audio Bus", "Collision", "Pickable" ]
 
 [node name="Shape" type="CollisionShape2D" parent="Marker"]
 
@@ -43,6 +48,23 @@ _sections_unfolded = [ "Transform", "Z" ]
 [node name="Sprite" type="Sprite" parent="Marker"]
 
 texture = ExtResource( 3 )
-_sections_unfolded = [ "Offset" ]
+_sections_unfolded = [ "Material", "Offset", "Visibility" ]
+
+[node name="PathArea" type="Area2D" parent="."]
+
+input_pickable = true
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+audio_bus_override = false
+audio_bus_name = "Master"
+script = ExtResource( 2 )
+_sections_unfolded = [ "Collision", "Material", "Pickable", "Visibility" ]
+
+[node name="Shape" type="CollisionShape2D" parent="PathArea"]
+
+shape = SubResource( 2 )
+_sections_unfolded = [ "Material", "Transform", "Visibility" ]
 
 
