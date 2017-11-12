@@ -37,6 +37,8 @@ var mv_tail = null
 var mv_head = null
 # Move Node Adjusting
 var mv_adj = null
+# Path Highlighting
+var high_path = null
 
 func _ready():
 	set_process(true)
@@ -47,6 +49,12 @@ func _ready():
 func _process(delta):
 	var mpos = get_viewport().get_mouse_position()
 	match state:
+		STATE.Idle:
+			if high_path and high_path.path_area.is_highlighted:
+				ghost.show()
+				ghost.global_position = mpos
+			else:
+				ghost.hide()
 		STATE.Add_Move_Cont:
 			ghost.global_position = mpos
 			var end = mv_tail.end if mv_tail else global_position
@@ -129,6 +137,8 @@ func _change_state(s):
 
 	# Prev State
 	match state:
+		STATE.Idle:
+			ghost.hide()
 		STATE.Add_Move_Cont:
 			move_prev.points = PoolVector2Array()
 			ghost.hide()
@@ -188,6 +198,13 @@ func _rm_last_move_node():
 # Determines if this unit can be deselected
 func is_busy():
 	if state == STATE.Not_Selected or state == STATE.Idle:
+		return false
+	else:
+		return true
+
+# Determines if this unit can be deselected
+func is_selected():
+	if state == STATE.Not_Selected:
 		return false
 	else:
 		return true

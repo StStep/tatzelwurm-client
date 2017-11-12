@@ -45,15 +45,15 @@ func _set_end(gpos):
 func _get_end():
 	return to_global(Vector2(0,0))
 
-# Not visible when not-selected, so logic works out
 func _render_marker_highlight():
-	if not unit.is_busy() and marker.is_highlighted:
+	if unit.is_selected() and not unit.is_busy() and marker.is_highlighted:
 		marker.get_node("Sprite").modulate = C_HIGHLIGHT
 	else:
 		marker.get_node("Sprite").modulate = C_NOT_HIGHLIGHTED
 
 func _render_path_highlight():
-	print('On')
+	if unit.is_selected() and not unit.is_busy() and path_area.is_highlighted:
+		unit.high_path = self
 
 func enable():
 	get_node('Marker').show()
@@ -66,7 +66,7 @@ func update():
 	var l_vec = to_local(_get_start())
 	path.points = PoolVector2Array([l_vec, Vector2(0,0)])
 	var shape = RectangleShape2D.new()
-	shape.extents = Vector2(2.5, l_vec.length()/2)
+	shape.extents = Vector2(10, l_vec.length()/2)
 	path_shape.set_shape(shape)
 	path_shape.rotation = l_vec.angle() + PI/2
 	path_shape.position = l_vec/2
