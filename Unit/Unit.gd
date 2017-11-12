@@ -46,6 +46,10 @@ func _ready():
 	end_marker.connect('state_changed', self, '_render_marker_highlight', [end_marker])
 	end_marker.hide()
 
+func _exit_tree():
+	if is_selected():
+		gm.req_deselection()
+
 func _process(delta):
 	var mpos = get_viewport().get_mouse_position()
 	match state:
