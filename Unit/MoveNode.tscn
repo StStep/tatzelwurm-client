@@ -38,7 +38,7 @@ angular_damp = 1.0
 audio_bus_override = false
 audio_bus_name = "Master"
 script = ExtResource( 2 )
-_sections_unfolded = [ "Audio Bus", "Collision", "Pickable" ]
+_sections_unfolded = [ "Audio Bus", "Collision", "Pickable", "Transform", "Z" ]
 
 [node name="Shape" type="CollisionShape2D" parent="Marker"]
 

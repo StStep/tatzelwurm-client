@@ -57,9 +57,10 @@ func _process(delta):
 			else:
 				ghost.hide()
 		STATE.Add_Move_Cont:
-			ghost.global_position = mpos
 			var end = mv_tail.end if mv_tail else global_position
 			move_prev.points = PoolVector2Array([to_local(end), to_local(mpos)])
+			ghost.global_position = mpos
+			ghost.global_rotation = mpos.angle_to_point(end) + PI/2
 		STATE.Adjust_Move_Node:
 			if mv_adj:
 				mv_adj.end = mpos
@@ -181,9 +182,10 @@ func _add_move_node(gpos):
 	inst.end = gpos
 	inst.path.modulate = C_PATH_SELECTED
 
-	# Move up ghost marker
+	# Move up end marker
 	end_marker.show()
 	end_marker.global_position = mv_tail.end
+	end_marker.global_rotation = mv_tail.global_rotation
 
 func _rm_last_move_node():
 	mv_adj = null
@@ -195,6 +197,7 @@ func _rm_last_move_node():
 		mv_tail.next = null
 		mv_tail.disable()
 		end_marker.global_position = mv_tail.end
+		end_marker.global_rotation = mv_tail.global_rotation
 	else:
 		_on_mv_reset()
 

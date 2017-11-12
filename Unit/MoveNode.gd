@@ -40,6 +40,7 @@ func _get_start():
 func _set_end(gpos):
 	move = gpos - _get_start()
 	global_position = gpos
+	global_rotation = move.angle() + PI/2
 	update()
 
 func _get_end():
