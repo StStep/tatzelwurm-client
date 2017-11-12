@@ -52,7 +52,7 @@ func _process(delta):
 		STATE.Idle:
 			if high_path and high_path.path_area.is_highlighted:
 				ghost.show()
-				ghost.global_position = mpos
+				ghost.global_position = high_path.closest_pnt_on_path(mpos)
 			else:
 				ghost.hide()
 		STATE.Add_Move_Cont:

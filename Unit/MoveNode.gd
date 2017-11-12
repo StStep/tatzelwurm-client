@@ -76,6 +76,12 @@ func erase():
 	if next: next.erase()
 	queue_free()
 
+func closest_pnt_on_path(gpos):
+	var pnt = to_local(gpos)
+	var dir = to_local(_get_start()).normalized()
+	var dot = pnt.dot(dir)
+	return to_global(dir*dot)
+
 func handle_input(ev):
 	if marker.is_highlighted and not unit.is_busy():
 		unit.mv_adj = self
