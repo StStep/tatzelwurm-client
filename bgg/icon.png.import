@@ -2,7 +2,11 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Unit_Arr.png-145df1d197483fde53b9d7a97a3aead5.stex"
+path="res://.import/icon.png-487276ed1e3a0c39cad0279d744ee560.stex"
+
+[deps]
+
+source_md5="ae7e641067601e2184afcade49abd283"
 
 [params]
 

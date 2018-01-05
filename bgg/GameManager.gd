@@ -11,10 +11,12 @@ func _ready():
 func _input(ev):
 	# Pass input through, stop once handled
 	if selected_unit != null and selected_unit.handle_input(ev):
+		# TODO: Mark as handled
 		return
 
 	for u in highlighted_units:
 		if u.handle_input(ev):
+			# TODO: Mark as handled
 			return
 
 func is_selection_allowed():
