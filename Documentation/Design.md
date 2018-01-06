@@ -58,74 +58,74 @@ Units will have hard-coded stats, which include:
 
 1. It is a simultaneous turn strategy game
 
-  1. The focus is on 1v1 multiplayer
-  2. Each player controls an army made of units
-  3. About a 30 min estimated match-time for knowledgeable and available players
-  4. It is top-down, with 2D graphics
-  5. There is not perfect information for either player
-  6. Commands are given on a unit basis
-  7. Player will not know the win conditions when making an army
-  8. Each player knows the win objectives during a match
-  9. A match has a set maximum number of turns
-  10. The game has simultaneous turn resolution
-
-    1. The players submit orders for their turn, which are sent to a server for resolution
-    2. The server provides the resolution to both players once they have both submitted orders
-    3. The next turn cannot be planned until the resolution for the previous turn has been generated
-    4. The match can be played asynchronously, and a player can have multiple ongoing matches
-    5. A max time for order submission can be selected, where it generates a resolution despite missing orders
+    1. The focus is on 1v1 multiplayer
+    2. Each player controls an army made of units
+    3. About a 30 min estimated match-time for knowledgeable and available players
+    4. It is top-down, with 2D graphics
+    5. There is not perfect information for either player
+    6. Commands are given on a unit basis
+    7. Player will not know the win conditions when making an army
+    8. Each player knows the win objectives during a match
+    9. A match has a set maximum number of turns
+    10. The game has simultaneous turn resolution
+  
+        1. The players submit orders for their turn, which are sent to a server for resolution
+        2. The server provides the resolution to both players once they have both submitted orders
+        3. The next turn cannot be planned until the resolution for the previous turn has been generated
+        4. The match can be played asynchronously, and a player can have multiple ongoing matches
+        5. A max time for order submission can be selected, where it generates a resolution despite missing orders
 
 2. Predictability with surprise
 
-  1. Enemy composition is predictable
-
-    1. The narrative setting determines the available factions
-    2. Each faction provides an armylist of possible units
-    3. An army has a faction and is made of units chosen from the faction armylist
-    4. Player has a chosen faction and knows the enemy faction when creating an army
-
-  2. Enemy movement predictable, know how units can move in most cases
-  3. Unit match-up winners are predictable, but not guaranteed if close in power
-  4. Owned unit reactions predictable, know how a unit will respond to an unexpected charge
+    1. Enemy composition is predictable
+  
+        1. The narrative setting determines the available factions
+        2. Each faction provides an armylist of possible units
+        3. An army has a faction and is made of units chosen from the faction armylist
+        4. Player has a chosen faction and knows the enemy faction when creating an army
+  
+    2. Enemy movement predictable, know how units can move in most cases
+    3. Unit match-up winners are predictable, but not guaranteed if close in power
+    4. Owned unit reactions predictable, know how a unit will respond to an unexpected charge
 
 3. Battle-field has terrain
 
-  1. Terrain affects movement
-  2. Terrain affects ranged attacks
-  3. Different units can move through easier or ignore some terrain altogether
-  4. There is beneficial terrain, choke-points, hills, etc
+    1. Terrain affects movement
+    2. Terrain affects ranged attacks
+    3. Different units can move through easier or ignore some terrain altogether
+    4. There is beneficial terrain, choke-points, hills, etc
 
 4. Army creation is important to strategy
 
-  1. Units have hard and soft counter-units
-  2. Certain units will be limited in the number that can be brought
-  3. Certain units will be required to create a base for the army
+    1. Units have hard and soft counter-units
+    2. Certain units will be limited in the number that can be brought
+    3. Certain units will be required to create a base for the army
 
 5. Morale is important to strategy
 
-  1. Units will have varying leadership levels
-  2. Low quality troops will more likely flee when the situation is unfavorable
-  3. Leadership units can counteract low leadership levels
-  4. Loss of leadership hurts morale
-  5. A retreat due to low morale is more common than all unit members being killed
+    1. Units will have varying leadership levels
+    2. Low quality troops will more likely flee when the situation is unfavorable
+    3. Leadership units can counteract low leadership levels
+    4. Loss of leadership hurts morale
+    5. A retreat due to low morale is more common than all unit members being killed
 
 6. Exhaustion is important to strategy
 
-  1. Soft stamina acts as a balance for short-term exertion, especially in relation to movement speed
-  2. Hard stamina balances overall usage of units, range from fresh to exhausted
-  3. Fresh troops are more effective than exhausted troops
-  4. Units will try and disengage after critical exhaustion
+    1. Soft stamina acts as a balance for short-term exertion, especially in relation to movement speed
+    2. Hard stamina balances overall usage of units, range from fresh to exhausted
+    3. Fresh troops are more effective than exhausted troops
+    4. Units will try and disengage after critical exhaustion
 
 7. Location is important to strategy
 
-  1. Facing of a unit has strategic importance
+    1. Facing of a unit has strategic importance
 
 8. The available units are configurable
 
-  1. The available narrative settings, factions, army-lists and units are configurable
-  2. A wide variety of settings, from fantastical to historical narrative settings will be supported
-  3. Matches, therefore balancing, will only occur within a single narrative setting
-  4. The server enforces the chosen configuration
+    1. The available narrative settings, factions, army-lists and units are configurable
+    2. A wide variety of settings, from fantastical to historical narrative settings will be supported
+    3. Matches, therefore balancing, will only occur within a single narrative setting
+    4. The server enforces the chosen configuration
 
 
 ## Implementation Details
