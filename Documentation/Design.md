@@ -1,5 +1,7 @@
 # Design Notes
 
+
+
 ## Summary
 
 Code name Tatzelwurm is a simultaneous-turn mass-battle game.
@@ -15,72 +17,83 @@ This game targets the following ideas:
 A match has the following flow:
 
 1. Faction selection - player knows possible enemy factions
-1. Army Selection - player knows selected enemy faction
-1. Deployment - player knows about most of the enemy army, terrain, and what the win conditions are
-1. Council of War - players knows non-hidden enemy deployment and can perform last minute changes
-1. Battle commences, consists of turns
-1. Battle ends once a player meets the win conditions, or after a set number of turns
+2. Army Selection - player knows selected enemy faction
+3. Deployment - player knows about most of the enemy army, terrain, and what the win conditions are
+4. Council of War - players knows non-hidden enemy deployment and can perform last minute changes
+5. Battle commences, consists of turns
+6. Battle ends once a player meets the win conditions, or after a set number of turns
  
 A turn within a battle has the following flow:
 
 1. Give commands to units
-1. Click to complete turn
-1. Wait for opponent to do the same
-1. Review the provided turn resolution
-1. Continue to next turn
+2. Click to complete turn
+3. Wait for opponent to do the same
+4. Review the provided turn resolution
+5. Continue to next turn
+
+
 
 ## Development Stages
 
+
 ### Stage 1
 
-This is the proposed first implementation.
-The game will have a basic flow, it starts mid battle and commands can be given, no enemeies.
-You can export commands to simulation friendly format.
-The simulator simply converts input to output, which can be displayed as a resolution.
+This stage focuses on the initial mid-game UI, unit movement, and simulator hooks.
 
-Flow:
+The game will start mid battle with units on the field.
+Only move commands can be given, and there are no enemies.
+The turn can be resolved, and the resolution should be displayed.
+At this time, the simulator can be very simple, but the import/export formats need a definition.
 
-1. Give commands to units
-1. Click resolve, export to sim. and import result
-1. Display resolution
-1. Repeat
-
-Units exist, have hard-coded or default stats.
-
-Stats:
+Units will have hard-coded stats, which include:
 
 * Max/Min speed
 * Max Acceleration
 * Turning Radius v Speed
 * Min turn radius
 
-You can give march commands, display expected movement in time.
-You can scrub through time.
+
 
 ## Requirements
 
 1. It is multiplayer, 1 vs 1
-1. It is a simultaneous turn strategy game
-1. Battle-field has terrain
-1. Units have predictable autonomy
-1. Units have counter-units
-1. Range attack viability affected by terrain, range, and other units
-1. Morale is a major component
-1. Fresh troops are more effective than tired troops
-1. Units will try and disengage after critical exhaustion
-1. Commands are given no a unit basis
-1. Opposing armies will have a predictable composition
-1. Match begins with army deployment
-1. Council of War held after all players deploy
-1. Battle starts after council of war
-1. Narrative setting determines available factions
-1. Fantasy, ancient, to medieval narrative settings will all be supported
-1. Facing of a unit has strategic importance
-1. Factions, army-lists and units are configurable
-1. Narrative setting determines factions, factions determine unit descriptions
-1. Matches occur within a single narrative setting
+2. It is a simultaneous turn strategy game
+3. Battle-field has terrain
+4. Units have predictable autonomy
+5. Units have counter-units
+6. Range attack viability affected by terrain, range, and other units
+7. Morale is a major component
+8. Fresh troops are more effective than tired troops
+9. Units will try and disengage after critical exhaustion
+10. Commands are given no a unit basis
+11. Opposing armies will have a predictable composition
+12. Match begins with army deployment
+13. Council of War held after all players deploy
+14. Battle starts after council of war
+15. Narrative setting determines available factions
+16. Fantasy, ancient, to medieval narrative settings will all be supported
+17. Facing of a unit has strategic importance
+18. Factions, army-lists and units are configurable
+19. Narrative setting determines factions, factions determine unit descriptions
+20. Matches occur within a single narrative setting
+
+
 
 ## Implementation Details
+
+
+### Game Flow
+
+How a player experiences the game.
+
+#### Stage 1
+
+The player can commands movement to units and see how they move with the resolution.
+
+1. Player clicks on units and creates the commands
+2. Player clicks on the resolve button
+3. Player can view the resolution
+4. Repeat
 
 
 ### Units
@@ -156,6 +169,7 @@ Thoughts:
 * Pavase front-line, pike second, than guns
 * Wagon with a bunch of guns firing out the sides
 
+
 ### Commands
 
 I want to support common mass-battle tactics.
@@ -187,16 +201,18 @@ Movement consists of:
 
 Turn angle calculations:
 
-> R = turn radius from center
-> D = distance from center to edge
-> V_1 = outer edge speed
-> V_2 = inner edge speed
-> V_1, V_2 >= 0, except when rotating, restricts mobility, too complicated otherwise
-> V_1, V_2 <= V_max
-> V_1 - V_2 <= V_shear, turning is slower than a straight line
-> V_1 - V_2 = turn shear, similar/related to turning radius
-> V = (V_1 + V_2)/2
-> R(V_1^-1 - V_2^-1) = D(V_1^-1 + V_2^-1)
+```
+R = turn radius from center
+D = distance from center to edge
+V_1 = outer edge speed
+V_2 = inner edge speed
+V_1, V_2 >= 0, except when rotating, restricts mobility, too complicated otherwise
+V_1, V_2 <= V_max
+V_1 - V_2 <= V_shear, turning is slower than a straight line
+V_1 - V_2 = turn shear, similar/related to turning radius
+V = (V_1 + V_2)/2
+R(V_1^-1 - V_2^-1) = D(V_1^-1 + V_2^-1)
+```
 
 #### Overrides
 
@@ -212,6 +228,7 @@ Overrides occur when:
 * Enemy disengages
   * Hold
   * Follow
+
 
 ### Combat
 
@@ -254,6 +271,7 @@ Equipment Ideas
   * bow, medium range and accuracy, fast fire rate
   * gun, bad range and accuracy, slow but armor piercing
 * Ultimately determined by narrative
+
 
 ### User Interface
 
