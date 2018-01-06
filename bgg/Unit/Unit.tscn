@@ -1,8 +1,12 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Unit/Unit.gd" type="Script" id=1]
-[ext_resource path="res://Unit/Unit_Arr.png" type="Texture" id=2]
-[ext_resource path="res://Utilities/Highlightable.gd" type="Script" id=3]
+[ext_resource path="res://unit/unit.gd" type="Script" id=1]
+[ext_resource path="res://unit/block_with_direction.png" type="Texture" id=2]
+[ext_resource path="res://utilities/select_item.gd" type="Script" id=3]
+
+
+
+
 
 [sub_resource type="RectangleShape2D" id=1]
 
@@ -13,14 +17,14 @@ extents = Vector2( 68, 32.5 )
 
 script = ExtResource( 1 )
 
-[node name="Ghost" type="Sprite" parent="."]
+[node name="Ghost" type="Sprite" parent="." index="0"]
 
 visible = false
 modulate = Color( 1, 1, 1, 0.491961 )
 texture = ExtResource( 2 )
 _sections_unfolded = [ "Visibility" ]
 
-[node name="StartMarker" type="Area2D" parent="."]
+[node name="StartMarker" type="Area2D" parent="." index="1"]
 
 input_pickable = true
 gravity_vec = Vector2( 0, 1 )
@@ -31,17 +35,17 @@ audio_bus_override = false
 audio_bus_name = "Master"
 script = ExtResource( 3 )
 
-[node name="Shape" type="CollisionShape2D" parent="StartMarker"]
+[node name="Shape" type="CollisionShape2D" parent="StartMarker" index="0"]
 
 shape = SubResource( 1 )
 _sections_unfolded = [ "Transform" ]
 
-[node name="Sprite" type="Sprite" parent="StartMarker"]
+[node name="Sprite" type="Sprite" parent="StartMarker" index="1"]
 
 texture = ExtResource( 2 )
 _sections_unfolded = [ "Transform" ]
 
-[node name="EndMarker" type="Area2D" parent="."]
+[node name="EndMarker" type="Area2D" parent="." index="2"]
 
 input_pickable = true
 gravity_vec = Vector2( 0, 1 )
@@ -52,17 +56,17 @@ audio_bus_override = false
 audio_bus_name = "Master"
 script = ExtResource( 3 )
 
-[node name="Shape" type="CollisionShape2D" parent="EndMarker"]
+[node name="Shape" type="CollisionShape2D" parent="EndMarker" index="0"]
 
 shape = SubResource( 1 )
 _sections_unfolded = [ "Transform" ]
 
-[node name="Sprite" type="Sprite" parent="EndMarker"]
+[node name="Sprite" type="Sprite" parent="EndMarker" index="1"]
 
 texture = ExtResource( 2 )
 _sections_unfolded = [ "Transform" ]
 
-[node name="MovePreview" type="Line2D" parent="."]
+[node name="MovePreview" type="Line2D" parent="." index="3"]
 
 points = PoolVector2Array( 737.505, 130.658 )
 width = 5.0

@@ -11,12 +11,13 @@ config_version=3
 [application]
 
 config/name="bgg"
-run/main_scene="res://World.tscn"
+run/main_scene="res://start.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-GameManager="*res://GameManager.gd"
+SelectManager="*res://Utilities/select_manager.gd"
+GameManager="*res://game_manager.gd"
 
 [gdnative]
 

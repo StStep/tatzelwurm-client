@@ -55,7 +55,7 @@ func req_highlight(value):
 	if value == null or value in highlighted_units:
 		return
 
-	# Check for highlight i/f
+	# Check for select_item i/f
 	if not value.has_method("highlight") \
 			or not value.has_method("unhighlight") \
 			or not value.has_method("handle_input"):

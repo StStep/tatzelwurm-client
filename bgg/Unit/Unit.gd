@@ -22,14 +22,14 @@ const C_PATH_HIGHLIGHT = Color('b6ff00') # Green-Yellow
 var state = STATE.Not_Selected
 var marker_color = C_NOT_SELECTED
 var path_color = C_PATH_NOT_SELECTED
-onready var gm = get_node('/root/GameManager')
+onready var gm = get_node('/root/SelectManager')
 onready var ghost = get_node('Ghost')
 onready var start_marker_sprite = get_node('StartMarker/Sprite')
 onready var end_marker_sprite = get_node('EndMarker/Sprite')
 onready var move_prev = get_node('MovePreview')
 onready var start_marker = get_node("StartMarker")
 onready var end_marker = get_node("EndMarker")
-var move_node = load("res://Unit/MoveNode.tscn")
+var move_node = load("res://unit/position_node.tscn")
 
 # Tail of move node list
 var mv_tail = null
@@ -43,7 +43,9 @@ var high_path = null
 func _ready():
 	set_process(true)
 	start_marker.connect('state_changed', self, '_render_marker_highlight', [start_marker])
+	start_marker.connect('item_event_occured', self, 'handle_input')
 	end_marker.connect('state_changed', self, '_render_marker_highlight', [end_marker])
+	end_marker.connect('item_event_occured', self, 'handle_input')
 	end_marker.hide()
 
 func _exit_tree():

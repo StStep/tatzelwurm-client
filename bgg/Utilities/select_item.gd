@@ -1,15 +1,13 @@
-# Handles highlighting of Area2Ds
+# Handles selection of Area2Ds
 #
-# Expects Parent to have handle_input()
 # Expects children:
 # 	Shape - CollisionShape2D
 
 extends Area2D
 
-signal state_changed
+signal state_changed()
+signal item_event_occured(event)
 
-onready var par = get_parent()
-onready var gm = get_node('/root/GameManager')
 var is_highlighted = false
 
 func _ready():
@@ -28,16 +26,16 @@ func _on_mouse_exit():
 
 # For when markers are manually moved
 func mark_as_highlighted():
-	gm.req_highlight(self)
+	SelectManager.req_highlight(self)
 
 # For when markers are manually moved
 func mark_as_unhighlighted():
-	gm.req_unhighlight(self)
+	SelectManager.req_unhighlight(self)
 
 # Highlightable Interface
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 func handle_input(ev):
-	par.handle_input(ev)
+	emit_signal('item_event_occured', ev)
 
 func highlight():
 	is_highlighted = true

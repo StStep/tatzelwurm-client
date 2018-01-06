@@ -26,7 +26,9 @@ onready var path_shape = get_node('PathArea/Shape')
 
 func _ready():
 	marker.connect('state_changed', self, '_render_marker_highlight')
+	marker.connect('item_event_occured', self, 'handle_input')
 	path_area.connect('state_changed', self, '_render_path_highlight')
+	path_area.connect('item_event_occured', self, 'handle_input')
 
 func _set_start(value):
 	pass
