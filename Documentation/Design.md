@@ -33,27 +33,6 @@ A turn within a battle has the following flow:
 
 
 
-## Development Stages
-
-
-### Stage 1
-
-This stage focuses on the initial mid-game UI, unit movement, and simulator hooks.
-
-The game will start mid battle with units on the field.
-Only move commands can be given, and there are no enemies.
-The turn can be resolved, and the resolution should be displayed.
-At this time, the simulator can be very simple, but the import/export formats need a definition.
-
-Units will have hard-coded stats, which include:
-
-* Max/Min speed
-* Max Acceleration
-* Turning Radius v Speed
-* Min turn radius
-
-
-
 ## Requirements
 
 1. It is a simultaneous turn strategy game
@@ -126,6 +105,28 @@ Units will have hard-coded stats, which include:
     2. A wide variety of settings, from fantastical to historical narrative settings will be supported
     3. Matches, therefore balancing, will only occur within a single narrative setting
     4. The server enforces the chosen configuration
+
+
+
+## Development Stages
+
+
+### Stage 1 (0.1)
+
+This stage focuses on the initial mid-game UI, unit movement, and simulator hooks.
+
+The game will start mid battle with units on the field.
+Only move commands can be given, and there are no enemies.
+The turn can be resolved, and the resolution should be displayed.
+At this time, the simulator can be very simple, but the import/export formats need a definition.
+
+Units will have hard-coded stats, which include:
+
+* Max/Min speed
+* Max Acceleration
+* Turning Radius v Speed
+* Min turn radius
+
 
 
 ## Implementation Details
