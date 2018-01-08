@@ -25,10 +25,15 @@ onready var path = get_node('Path')
 onready var path_shape = get_node('PathArea/Shape')
 
 func _ready():
-	marker.connect('state_changed', self, '_render_marker_highlight')
-	marker.connect('item_event_occured', self, 'handle_input')
-	path_area.connect('state_changed', self, '_render_path_highlight')
-	path_area.connect('item_event_occured', self, 'handle_input')
+	marker.connect('mouse_hover_changed', self, '_render_marker_highlight')
+	marker.connect('event_while_hovering_occured', self, '_accept_marker_event')
+	path_area.connect('mouse_hover_changed', self, '_render_path_highlight')
+
+func _accept_marker_event(ev):
+	if not unit.is_busy():
+		unit.mv_adj = self
+		if unit.handle_input(ev):
+			get_tree().set_input_as_handled()
 
 func _set_start(value):
 	pass
@@ -49,20 +54,22 @@ func _get_end():
 	return to_global(Vector2(0,0))
 
 func _render_marker_highlight():
-	if unit.is_selected() and not unit.is_busy() and marker.is_highlighted:
+	if unit.is_selected() and not unit.is_busy() and marker.is_mouse_hovering:
 		marker.get_node("Sprite").modulate = C_HIGHLIGHT
 	else:
 		marker.get_node("Sprite").modulate = C_NOT_HIGHLIGHTED
 
 func _render_path_highlight():
-	if unit.is_selected() and not unit.is_busy() and path_area.is_highlighted:
+	if unit.is_selected() and not unit.is_busy() and path_area.is_mouse_hovering:
 		unit.high_path = self
 
 func enable():
 	get_node('Marker').show()
+	set_process_input(true)
 
 func disable():
 	get_node('Marker').hide()
+	set_process_input(false)
 
 func update():
 	global_position = _get_start() + move
@@ -84,9 +91,3 @@ func closest_pnt_on_path(gpos):
 	var dir = to_local(_get_start()).normalized()
 	var dot = pnt.dot(dir)
 	return to_global(dir*dot)
-
-func handle_input(ev):
-	if marker.is_highlighted and not unit.is_busy():
-		unit.mv_adj = self
-		unit.handle_input(ev)
-

@@ -1,10 +1,8 @@
 [gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://unit/position_node.gd" type="Script" id=1]
-[ext_resource path="res://utilities/select_item.gd" type="Script" id=2]
+[ext_resource path="res://utilities/mouse_detector.gd" type="Script" id=2]
 [ext_resource path="res://unit/circle_with_direction.png" type="Texture" id=3]
-
-
 
 [sub_resource type="CircleShape2D" id=1]
 

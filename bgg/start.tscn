@@ -2,7 +2,7 @@
 
 [ext_resource path="res://unit/unit.tscn" type="PackedScene" id=1]
 
-[node name="World" type="Node" index="0"]
+[node name="World" type="Node"]
 
 [node name="Unit" parent="." index="0" instance=ExtResource( 1 )]
 

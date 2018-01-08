@@ -3,7 +3,6 @@
 extends Node
 
 var selected_unit = null
-var highlighted_units = []
 
 func _ready():
 	set_process_input(true)
@@ -11,13 +10,8 @@ func _ready():
 func _input(ev):
 	# Pass input through, stop once handled
 	if selected_unit != null and selected_unit.handle_input(ev):
-		# TODO: Mark as handled
+		get_tree().set_input_as_handled()
 		return
-
-	for u in highlighted_units:
-		if u.handle_input(ev):
-			# TODO: Mark as handled
-			return
 
 func is_selection_allowed():
 	if selected_unit != null and selected_unit.is_busy():
@@ -25,15 +19,11 @@ func is_selection_allowed():
 	else:
 		return true
 
-func refresh_highlighted_render():
-	for h in highlighted_units:
-		h.highlight()
-
 func req_selection(value):
 	if value == null or value == selected_unit:
 		return
 
-	# Check for highlight i/f
+	# Check for select_item i/f
 	if not value.has_method("select") \
 			or not value.has_method("deselect") \
 			or not value.has_method("handle_input") \
@@ -50,23 +40,3 @@ func req_deselection():
 		return
 	selected_unit.deselect()
 	selected_unit = null
-
-func req_highlight(value):
-	if value == null or value in highlighted_units:
-		return
-
-	# Check for select_item i/f
-	if not value.has_method("highlight") \
-			or not value.has_method("unhighlight") \
-			or not value.has_method("handle_input"):
-		print("Warning: Hightlighted unit missing hightlight functions")
-		return
-
-	highlighted_units.append(value)
-	value.highlight()
-
-func req_unhighlight(value):
-	if value == null or not value in highlighted_units:
-		return
-	highlighted_units.erase(value)
-	value.unhighlight()

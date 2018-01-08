@@ -42,10 +42,10 @@ var high_path = null
 
 func _ready():
 	set_process(true)
-	start_marker.connect('state_changed', self, '_render_marker_highlight', [start_marker])
-	start_marker.connect('item_event_occured', self, 'handle_input')
-	end_marker.connect('state_changed', self, '_render_marker_highlight', [end_marker])
-	end_marker.connect('item_event_occured', self, 'handle_input')
+	start_marker.connect('mouse_hover_changed', self, '_render_marker_highlight', [start_marker])
+	start_marker.connect('event_while_hovering_occured', self, '_accept_event')
+	end_marker.connect('mouse_hover_changed', self, '_render_marker_highlight', [end_marker])
+	end_marker.connect('event_while_hovering_occured', self, '_accept_event')
 	end_marker.hide()
 
 func _exit_tree():
@@ -56,8 +56,7 @@ func _process(delta):
 	var mpos = get_viewport().get_mouse_position()
 	match state:
 		STATE.Idle:
-			if high_path and high_path.path_area.is_highlighted \
-					and gm.highlighted_units.size() == 1:
+			if high_path and high_path.path_area.is_mouse_hovering:
 				ghost.show()
 				ghost.global_position = high_path.closest_pnt_on_path(mpos)
 			else:
@@ -73,6 +72,10 @@ func _process(delta):
 				end_marker.global_position = mv_tail.end
 		_:
 			pass
+
+func _accept_event(ev):
+	if handle_input(ev):
+		get_tree().set_input_as_handled()
 
 func _highlight():
 	start_marker_sprite.modulate = C_HIGHLIGHT
@@ -92,14 +95,14 @@ func _unhighlight():
 
 func _render_marker_highlight(marker):
 	# Highlight everything if not yet selected
-	if state == STATE.Not_Selected and marker.is_highlighted \
+	if state == STATE.Not_Selected and marker.is_mouse_hovering \
 			and gm.is_selection_allowed():
 		_highlight()
 	# If busy or not selected, don't highlight anything
 	elif state == STATE.Not_Selected or is_busy():
 		_unhighlight()
 	# Else only highlight self
-	elif marker.is_highlighted:
+	elif marker.is_mouse_hovering:
 		marker.get_node("Sprite").modulate = C_HIGHLIGHT
 	else:
 		marker.get_node("Sprite").modulate = marker_color
@@ -167,9 +170,6 @@ func _change_state(s):
 
 	state = s
 
-	# Refresh marker colors
-	gm.refresh_highlighted_render()
-
 func _add_move_node(gpos):
 	print('Add move')
 	var inst = move_node.instance()
@@ -221,14 +221,14 @@ func is_selected():
 	else:
 		return true
 
-# Selectable Interface
+# select_item Interface
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 func handle_input(ev):
 	var ret = false
 	match state:
 		# select if hightlighted
 		STATE.Not_Selected:
-			if (start_marker.is_highlighted or end_marker.is_highlighted) \
+			if (start_marker.is_mouse_hovering or end_marker.is_mouse_hovering) \
 					and ev.is_action_pressed("ui_accept") \
 					and gm.is_selection_allowed():
 				gm.req_selection(self)
@@ -236,15 +236,14 @@ func handle_input(ev):
 		# Start adding moves if hightlighted or deselect
 		STATE.Idle:
 			ret = true
-			if start_marker.is_highlighted and ev.is_action_pressed("ui_accept"):
+			if start_marker.is_mouse_hovering and ev.is_action_pressed("ui_accept"):
 				_on_mv_reset()
 				_change_state(STATE.Add_Move_Cont)
-			elif end_marker.is_highlighted and ev.is_action_pressed("ui_accept"):
+			elif end_marker.is_mouse_hovering and ev.is_action_pressed("ui_accept"):
 				_change_state(STATE.Add_Move_Cont)
-			elif mv_adj and mv_adj.marker.is_highlighted and ev.is_action_pressed("ui_accept"):
+			elif mv_adj and mv_adj.marker.is_mouse_hovering and ev.is_action_pressed("ui_accept"):
 				_change_state(STATE.Adjust_Move_Node)
-			elif (gm.highlighted_units.empty() and ev.is_action_pressed("ui_accept")) \
-					or ev.is_action_pressed("ui_cancel"):
+			elif ev.is_action_pressed("ui_cancel"):
 				gm.req_deselection()
 			else:
 				ret = false
@@ -252,7 +251,7 @@ func handle_input(ev):
 		STATE.Add_Move_Cont:
 			ret = true
 			# Move end marker if click on, undo last
-			if ev.is_action_pressed("ui_accept") and end_marker.is_highlighted:
+			if ev.is_action_pressed("ui_accept") and end_marker.is_mouse_hovering:
 				_rm_last_move_node()
 			elif ev.is_action_pressed("ui_accept"):
 				_add_move_node(ghost.global_position)

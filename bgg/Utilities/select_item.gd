@@ -1,47 +1,28 @@
-# Handles selection of Area2Ds
-#
-# Expects children:
-# 	Shape - CollisionShape2D
+# Allows for selection by select_manager
 
-extends Area2D
+extends Node
 
-signal state_changed()
+signal selection_changed(is_selected)
 signal item_event_occured(event)
 
-var is_highlighted = false
+# Set externally
+var is_busy = false
 
-func _ready():
-	connect('mouse_entered', self, '_on_mouse_enter')
-	connect('mouse_exited', self, '_on_mouse_exit')
+# Set internally
+var is_selected = false setget ,_is_selected_get
+func _is_selected_get():
+	return is_selected
 
-func _exit_tree():
-	if is_highlighted:
-		mark_as_unhighlighted()
+func select():
+	is_selected = true
+	emit_signal("selection_changed", is_selected)
 
-func _on_mouse_enter():
-	mark_as_highlighted()
+func deselect():
+	is_selected = false
+	emit_signal("selection_changed", is_selected)
 
-func _on_mouse_exit():
-	mark_as_unhighlighted()
-
-# For when markers are manually moved
-func mark_as_highlighted():
-	SelectManager.req_highlight(self)
-
-# For when markers are manually moved
-func mark_as_unhighlighted():
-	SelectManager.req_unhighlight(self)
-
-# Highlightable Interface
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 func handle_input(ev):
-	emit_signal('item_event_occured', ev)
+	emit_signal("item_event_occured", ev)
 
-func highlight():
-	is_highlighted = true
-	emit_signal("state_changed")
-
-func unhighlight():
-	is_highlighted = false
-	emit_signal("state_changed")
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+func is_busy():
+	return is_busy
