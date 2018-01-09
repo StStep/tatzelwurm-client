@@ -115,12 +115,15 @@ The client application contains the user interfaces for match creation, command 
 
 ### Stage 1 (0.1)
 
-This stage focuses on the initial mid-game UI, unit movement, and simulator hooks.
+This stage focuses on the initial mid-game UI, unit movement, and simulator input.
 
 The game will start mid battle with units on the field.
 Only move commands can be given, and there are no enemies.
-The turn can be resolved, and the resolution should be displayed.
-At this time, the simulator can be very simple, but the import/export formats need a definition.
+The turn can be resolved, but the output is a text file
+
+The implementation will be of the Client Turn Component only, in a test-harness.
+Combat related commands will not be included, and the resources used will be dummy data.
+Overall, the GUI should work, but their will be no simulator or resolution component to display result.
 
 Units will have hard-coded stats, which include:
 
@@ -135,9 +138,7 @@ The player can commands movement to units and see how they move with the resolut
 
 1. Player clicks on units and creates the commands
 2. Player clicks on the resolve button
-3. Player can view the resolution
-4. Repeat
-
+4. Player can view output text file
 
 ## Client
 
