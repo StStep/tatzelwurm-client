@@ -22,13 +22,13 @@ const C_PATH_HIGHLIGHT = Color('b6ff00') # Green-Yellow
 var state = STATE.Not_Selected
 var marker_color = C_NOT_SELECTED
 var path_color = C_PATH_NOT_SELECTED
-onready var gm = get_node('/root/SelectManager')
 onready var ghost = get_node('Ghost')
 onready var start_marker_sprite = get_node('StartMarker/Sprite')
 onready var end_marker_sprite = get_node('EndMarker/Sprite')
 onready var move_prev = get_node('MovePreview')
 onready var start_marker = get_node("StartMarker")
 onready var end_marker = get_node("EndMarker")
+onready var select_item = get_node('SelectItem')
 var move_node = load("res://unit/position_node.tscn")
 
 # Tail of move node list
@@ -46,11 +46,13 @@ func _ready():
 	start_marker.connect('event_while_hovering_occured', self, '_accept_event')
 	end_marker.connect('mouse_hover_changed', self, '_render_marker_highlight', [end_marker])
 	end_marker.connect('event_while_hovering_occured', self, '_accept_event')
+	select_item.connect('selection_changed', self, '_on_sel_change')
+	select_item.connect('item_event_occured', self, '_accept_event')
 	end_marker.hide()
 
 func _exit_tree():
 	if is_selected():
-		gm.req_deselection()
+		SelectManager.req_selection(null)
 
 func _process(delta):
 	var mpos = get_viewport().get_mouse_position()
@@ -77,6 +79,12 @@ func _accept_event(ev):
 	if handle_input(ev):
 		get_tree().set_input_as_handled()
 
+func _on_sel_change(is_sel):
+	if is_sel:
+		_change_state(STATE.Idle)
+	else:
+		_change_state(STATE.Not_Selected)
+
 func _highlight():
 	start_marker_sprite.modulate = C_HIGHLIGHT
 	end_marker_sprite.modulate = C_HIGHLIGHT
@@ -96,7 +104,7 @@ func _unhighlight():
 func _render_marker_highlight(marker):
 	# Highlight everything if not yet selected
 	if state == STATE.Not_Selected and marker.is_mouse_hovering \
-			and gm.is_selection_allowed():
+			and SelectManager.is_selection_allowed():
 		_highlight()
 	# If busy or not selected, don't highlight anything
 	elif state == STATE.Not_Selected or is_busy():
@@ -207,22 +215,12 @@ func _rm_last_move_node():
 	else:
 		_on_mv_reset()
 
-# Determines if this unit can be deselected
 func is_busy():
-	if state == STATE.Not_Selected or state == STATE.Idle:
-		return false
-	else:
-		return true
+	return select_item.is_busy
 
-# Determines if this unit can be deselected
 func is_selected():
-	if state == STATE.Not_Selected:
-		return false
-	else:
-		return true
+	return select_item.is_selected
 
-# select_item Interface
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 func handle_input(ev):
 	var ret = false
 	match state:
@@ -230,8 +228,8 @@ func handle_input(ev):
 		STATE.Not_Selected:
 			if (start_marker.is_mouse_hovering or end_marker.is_mouse_hovering) \
 					and ev.is_action_pressed("ui_accept") \
-					and gm.is_selection_allowed():
-				gm.req_selection(self)
+					and SelectManager.is_selection_allowed():
+				SelectManager.req_selection(select_item)
 				ret = true
 		# Start adding moves if hightlighted or deselect
 		STATE.Idle:
@@ -244,7 +242,8 @@ func handle_input(ev):
 			elif mv_adj and mv_adj.marker.is_mouse_hovering and ev.is_action_pressed("ui_accept"):
 				_change_state(STATE.Adjust_Move_Node)
 			elif ev.is_action_pressed("ui_cancel"):
-				gm.req_deselection()
+				if SelectManager.is_selection_allowed():
+					SelectManager.req_selection(null)
 			else:
 				ret = false
 		# Add Move or Return to Idle
@@ -269,10 +268,3 @@ func handle_input(ev):
 		_:
 			pass
 	return ret
-
-func select():
-	_change_state(STATE.Idle)
-
-func deselect():
-	_change_state(STATE.Not_Selected)
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

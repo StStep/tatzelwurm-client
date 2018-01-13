@@ -21,7 +21,7 @@ func deselect():
 	is_selected = false
 	emit_signal("selection_changed", is_selected)
 
-func handle_input(ev):
+func accept_input(ev):
 	emit_signal("item_event_occured", ev)
 
 func is_busy():
