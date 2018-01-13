@@ -250,7 +250,26 @@ Displays current commands with an interface to add new commands to display
 
 ##### Controllable Rendering
 
-Hide, show, highlight, warnings, ghosts
+Proposed render commands include:
+
+* Add command node
+* Add movement line/arc
+* Highlight
+* Warning
+* Outside of Turn
+* Mark Transition in Speed
+* Add terrain
+* Add tooltip region
+* Translate node and children
+* Add unit marker
+* Denote Speed
+* Show ghosts
+
+Want to be able to partially recolor movement paths, be able to recursively translate.
+
+##### Provide Feedback on Object Hovering
+
+Provide signals for when things are hovered over
 
 #### Command GUI
 
