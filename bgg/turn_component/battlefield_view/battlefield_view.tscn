@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://turn_component/battlefield_view/battlefield_view.gd" type="Script" id=1]
+
+[node name="BattlefieldView" type="Node"]
+
+script = ExtResource( 1 )
+block_scene = "res://turn_component/battlefield_view/block.tscn"
+cmd_scene = "res://turn_component/battlefield_view/cmd_node.tscn"
+path_scene = "res://turn_component/battlefield_view/path.tscn"
+
+

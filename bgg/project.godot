@@ -11,7 +11,7 @@ config_version=3
 [application]
 
 config/name="bgg"
-run/main_scene="res://start.tscn"
+run/main_scene="res://turn_component/battlefield_view/test_harness.tscn"
 config/icon="res://icon.png"
 
 [autoload]
