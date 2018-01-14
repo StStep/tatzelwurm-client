@@ -41,7 +41,7 @@ func _test_1():
 	yield()
 
 	# Add Generic Command 2
-	battlefield_view.add_cmd(unit_ref, Vector2(-130,130))
+	battlefield_view.add_cmd(unit_ref, Vector2(-60,60), ['reposition', 'rotation'], Vector2(.5,1))
 	yield()
 
 	# Mark as moving at end-of-turn
@@ -70,7 +70,7 @@ func _test_2():
 	yield()
 
 	# Add Generic Command 1
-	battlefield_view.add_cmd(unit_ref, Vector2(130,-130))
+	battlefield_view.add_cmd(unit_ref, Vector2(130,-130), 'rotation', Vector2(-130,-130))
 	yield()
 
 	# Add Generic Command 2
@@ -78,4 +78,41 @@ func _test_2():
 	yield()
 
 	print('Completed Test Two')
+	return null
+
+func test_3():
+	if _cur_func:
+		print('Wait for previous test to complete')
+		return
+	_cur_func = _test_3()
+
+func _test_3():
+	print('Running Test Three...')
+	var unit_ref = 'unit_3'
+
+	# Clear
+	battlefield_view.clear()
+	yield()
+
+	# Add Unit
+	battlefield_view.new_unit(unit_ref, Vector2(200,200), Vector2(1,1))
+	battlefield_view.display_eot_move(unit_ref, true)
+	yield()
+
+	# Add Generic Command 1
+	battlefield_view.add_cmd(unit_ref, Vector2(130,130))
+	yield()
+
+	# Add Generic Command 2
+	battlefield_view.add_cmd(unit_ref, Vector2(5,10), 'wheel')
+	yield()
+
+	# Add Generic Command 3
+	battlefield_view.add_cmd(unit_ref, Vector2(50,-100), 'reposition', Vector2(5,10))
+	yield()
+
+	battlefield_view.add_cmd(unit_ref, Vector2(10,5), 'wheel')
+	yield()
+
+	print('Completed Test Three')
 	return null
