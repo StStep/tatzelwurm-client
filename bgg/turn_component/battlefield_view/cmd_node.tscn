@@ -3,7 +3,7 @@
 [ext_resource path="res://turn_component/battlefield_view/cmd_node.gd" type="Script" id=1]
 [ext_resource path="res://turn_component/battlefield_view/circle_with_direction.png" type="Texture" id=2]
 
-[node name="CmdNode" type="Node2D" index="0"]
+[node name="CmdNode" type="Node2D"]
 
 show_behind_parent = true
 script = ExtResource( 1 )

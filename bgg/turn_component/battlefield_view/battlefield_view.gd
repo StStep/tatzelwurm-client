@@ -36,7 +36,8 @@ func new_unit(ref, gpos, gdir):
 	inst.move_ind.visible = DEFAULT_EOT_MV_EN
 	_update_eot_move(ref)
 
-func add_cmd(ref, lpos, annotation = '', gdir = lpos, visible = true):
+# Params = annotation, gdir, visible
+func add_cmd(ref, lpos, params = {}):
 	if not _unit_queues.has(ref):
 		print('WARNING: Unknown _unit_queues ref %s' % [ref])
 		return
@@ -46,14 +47,17 @@ func add_cmd(ref, lpos, annotation = '', gdir = lpos, visible = true):
 	par.add_child(inst_n)
 	_unit_queues[ref].append(inst_n)
 	inst_n.global_position = par.global_position + lpos
+	var gdir = params['gdir'] if 'gdir' in params else lpos
 	inst_n.global_rotation = gdir.angle() + PI/2
-	if annotation != null:
-		if typeof(annotation) == TYPE_ARRAY:
-			for i in annotation:
+	if 'annotation' in params:
+		var a = params['annotation']
+		if typeof(a) == TYPE_ARRAY:
+			for i in a:
 				inst_n.set_annotation(i)
 		else:
-			inst_n.set_annotation(annotation)
-	inst_n.display_sprite(visible)
+			inst_n.set_annotation(a)
+	if 'visible' in params:
+		inst_n.display_sprite(params['visible'])
 	# Path
 	var inst_p = path_node.instance()
 	inst_n.add_child(inst_p)
