@@ -144,8 +144,7 @@ func _test_4():
 	yield()
 
 	# Add Arc
-	# TODO
-	battlefield_view.add_cmd(unit_ref, Vector2(-60,60))
+	battlefield_view.add_cmd(unit_ref, Vector2(130, 40), {'arc' : true})
 	yield()
 
 	print('Completed Test Four')

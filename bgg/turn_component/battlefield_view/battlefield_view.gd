@@ -36,7 +36,7 @@ func new_unit(ref, gpos, gdir):
 	inst.move_ind.visible = DEFAULT_EOT_MV_EN
 	_update_eot_move(ref)
 
-# Params = annotation, gdir, visible
+# Params = annotation, gdir, visible, arc
 func add_cmd(ref, lpos, params = {}):
 	if not _unit_queues.has(ref):
 		print('WARNING: Unknown _unit_queues ref %s' % [ref])
@@ -61,7 +61,10 @@ func add_cmd(ref, lpos, params = {}):
 	# Path
 	var inst_p = path_node.instance()
 	inst_n.add_child(inst_p)
-	inst_p.points = PoolVector2Array([inst_p.to_local(par.global_position), Vector2(0, 0)])
+	if 'arc' in params and params['arc']:
+		pass # TODO
+	else:
+		inst_p.set_line(inst_p.to_local(par.global_position), Vector2(0, 0))
 	_update_eot_move(ref)
 
 func display_eot_move(ref, en):
