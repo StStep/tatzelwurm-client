@@ -1,5 +1,7 @@
 extends Node
 
+const Trig = preload('res://utilities/trig.gd')
+
 onready var battlefield_view = get_node('BattlefieldView')
 
 var _t_wait = 0
@@ -10,6 +12,7 @@ func _ready():
 		print('Error, no BattlefieldView found')
 		return
 	set_process(true)
+	Trig.unit_test()
 
 func _process(delta):
 	if _cur_func:
@@ -42,7 +45,7 @@ func _test_1():
 
 	# Add Generic Command 2
 	battlefield_view.add_cmd(unit_ref, Vector2(-60,60),
-			{'annotation' :  ['reposition', 'rotation'], 'gdir' :  Vector2(.5,1)})
+			{'annotation' :  ['reposition', 'rotation'], 'end_gdir' :  Vector2(.5,1)})
 	yield()
 
 	# Mark as moving at end-of-turn
@@ -72,7 +75,7 @@ func _test_2():
 
 	# Add Generic Command 1
 	battlefield_view.add_cmd(unit_ref, Vector2(130,-130),
-			{'annotation' : 'rotation', 'gdir' : Vector2(-130,-130)})
+			{'annotation' : 'rotation', 'end_gdir' : Vector2(-130,-130)})
 	yield()
 
 	# Add Generic Command 2
@@ -111,7 +114,7 @@ func _test_3():
 
 	# Add Generic Command 3
 	battlefield_view.add_cmd(unit_ref, Vector2(50,-100),
-			{'annotation' : 'reposition', 'gdir' : Vector2(5,10)})
+			{'annotation' : 'reposition', 'end_gdir' : Vector2(5,10)})
 	yield()
 
 	battlefield_view.add_cmd(unit_ref, Vector2(10,5), {'annotation' : 'wheel'})
@@ -144,7 +147,7 @@ func _test_4():
 	yield()
 
 	# Add Arc
-	battlefield_view.add_cmd(unit_ref, Vector2(130, 40), {'arc' : true})
+	battlefield_view.add_cmd(unit_ref, Vector2(130, 40), {'arc_gdir' : Vector2(1,1)})
 	yield()
 
 	print('Completed Test Four')
