@@ -37,7 +37,7 @@ func new_unit(ref, gpos, gdir):
 	_update_eot_move(ref)
 
 # Params = annotation, end_gdir, visible, arc_gdir
-func add_cmd(ref, lpos, params = {}):
+func add_cmd(ref, gpos, params = {}):
 	if not _unit_queues.has(ref):
 		print('WARNING: Unknown _unit_queues ref %s' % [ref])
 		return
@@ -46,8 +46,8 @@ func add_cmd(ref, lpos, params = {}):
 	var inst_n = cmd_node.instance()
 	par.add_child(inst_n)
 	_unit_queues[ref].append(inst_n)
-	inst_n.global_position = par.global_position + lpos
-	var gdir = params['end_gdir'] if 'end_gdir' in params else lpos
+	inst_n.global_position = gpos
+	var gdir = params['end_gdir'] if 'end_gdir' in params else gpos - par.global_position
 	inst_n.global_rotation = gdir.angle() + PI/2
 	if 'annotation' in params:
 		var a = params['annotation']
@@ -62,9 +62,9 @@ func add_cmd(ref, lpos, params = {}):
 	var inst_p = path_node.instance()
 	inst_n.add_child(inst_p)
 	if 'arc_gdir' in params:
-		inst_p.set_arc(inst_p.to_local(par.global_position), Vector2(0, 0), params['arc_gdir'])
+		inst_p.set_arc(par.global_position, params['arc_gdir'], inst_n.global_position)
 	else:
-		inst_p.set_line(inst_p.to_local(par.global_position), Vector2(0, 0))
+		inst_p.set_line(par.global_position, inst_n.global_position)
 	_update_eot_move(ref)
 
 func display_eot_move(ref, en):

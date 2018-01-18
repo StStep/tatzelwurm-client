@@ -29,9 +29,18 @@ class Arc2D:
 	var end_ray = Ray2D.new() setget ,_end_ray_get
 	func _end_ray_get():
 		return end_ray
-	var center_pnt = Vector2(0,0) setget ,_center_pnt_get
-	func _center_pnt_get():
-		return center_pnt
+	var center = Vector2(0,0) setget ,_center_get
+	func _center_get():
+		return center
+	var radius = 0 setget ,_radius_get
+	func _radius_get():
+		return radius
+	var arc_angle = 0 setget ,_arc_angle_get
+	func _arc_angle_get():
+		return arc_angle
+	var arc_length = 0 setget ,_arc_length_get
+	func _arc_length_get():
+		return arc_length
 
 	func _init(s, e, c):
 		if not s.is_valid() or not e.is_valid() or typeof(c) != TYPE_VECTOR2:
@@ -39,13 +48,39 @@ class Arc2D:
 		else:
 			start_ray = s
 			end_ray = e
-			center_pnt = c
+			center = c
+			radius = start_ray.offset.distance_to(center)
+			arc_angle = (start_ray.offset - center).angle_to(end_ray.offset - center)
+			arc_length = 2 * PI * radius * abs(arc_angle/(2 * PI))
 
 	func is_valid():
 		if start_ray.is_valid() and end_ray.is_valid():
 			return true
 		else:
 			false
+
+	func get_point(dist):
+		if dist >= arc_length:
+			return end_ray.offset
+
+		var angle = (dist / arc_length) * arc_angle;
+		var x = cos(angle) * radius
+		var y = sin(angle) * radius
+		var pnt = Vector2(x, y)
+
+		# Rotate appropriately
+		var cord = end_ray.offset - start_ray.offset
+		var body_ang = Vector2(0,1).angle_to(start_ray.direction)
+		var pnt_ang = start_ray.direction.angle_to(cord)
+		if pnt_ang > 0:
+			pnt = pnt.rotated(body_ang)
+		else:
+			pnt = pnt.rotated(body_ang - PI)
+
+		# Add center offset
+		pnt.x += center.x
+		pnt.y += center.y
+		return pnt
 
 enum Orientation { FRONT, BACK, LEFT, RIGHT}
 
