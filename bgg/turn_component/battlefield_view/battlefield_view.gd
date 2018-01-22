@@ -13,13 +13,12 @@
 # ## Instanced Scenes:
 #
 # * unit_rep.tscn - Represents a unit on the field, includes the move indictor
-# * cmd_rep.tscn - Represents a command given to unit
-# * path.tscn - Represents the movement of a unit, one precedes each represented command
+# * cmd_rep.tscn - Represents a command given to unit, includes the preceding path
 #
 # ## Signals
 #
-# * mouse_entered_item - Given when a mouse enters the collision
-# * mouse_exited_item
+# * mouse_entered_item - Given when a mouse enters the collision area of a represented item
+# * mouse_exited_item - Given when a mouse exits the collision area of a represented item
 
 extends Node
 
@@ -46,11 +45,9 @@ signal mouse_exited_item(unit_ref, ind, is_path)
 # <<<<
 export(String, FILE, '*.tscn') var unit_rep_scene
 export(String, FILE, '*.tscn') var cmd_rep_scene
-export(String, FILE, '*.tscn') var path_scene
 
 onready var _unit_rep_node = load(unit_rep_scene)
 onready var _cmd_rep_node = load(cmd_rep_scene)
-onready var _path_node = load(path_scene)
 # >>>>
 
 # A dictionary of lists, representing a queue for unit references
@@ -105,7 +102,7 @@ func new_unit(ref, gpos, gdir):
 #     * annotation - (String or [Strings]) Enable displayed annoations, see cmd_rep.gd
 #     * end_gdir - (Vector2) Vector pointing the global direction for command
 #           facing, defualts to directly away from previous unit queue entry
-#     * visible - (Bool) If true show path, else hide path, defualts to true
+#     * visible - (Bool) If false show only the cmd rep path, else show everything, defualts to true
 #     * arc_gdir - (Vector2) If given, arc the path for the command with the given
 #           initial global direction vector
 func add_cmd(ref, gpos, params = {}):
@@ -114,28 +111,26 @@ func add_cmd(ref, gpos, params = {}):
 		return
 	# Command
 	var par = _unit_queues[ref].back()
-	var inst_c = _cmd_rep_node.instance()
-	par.add_child(inst_c)
-	_unit_queues[ref].append(inst_c)
-	inst_c.global_position = gpos
+	var inst = _cmd_rep_node.instance()
+	par.add_child(inst)
+	_unit_queues[ref].append(inst)
+	inst.global_position = gpos
 	var gdir = params['end_gdir'] if 'end_gdir' in params else gpos - par.global_position
-	inst_c.global_rotation = gdir.angle() + PI/2
+	inst.global_rotation = gdir.angle() + PI/2
 	if 'annotation' in params:
 		var a = params['annotation']
 		if typeof(a) == TYPE_ARRAY:
 			for i in a:
-				inst_c.set_annotation(i)
+				inst.set_annotation(i)
 		else:
-			inst_c.set_annotation(a)
+			inst.set_annotation(a)
 	if 'visible' in params:
-		inst_c.display_sprite(params['visible'])
+		inst.display_sprite(params['visible'])
 	# Path
-	var inst_p = _path_node.instance()
-	inst_c.add_child(inst_p)
 	if 'arc_gdir' in params:
-		inst_p.set_arc(par.global_position, params['arc_gdir'], inst_c.global_position)
+		inst.set_arc(par.global_position, params['arc_gdir'], inst.global_position)
 	else:
-		inst_p.set_line(par.global_position, inst_c.global_position)
+		inst.set_line(par.global_position, inst.global_position)
 	_update_eot_move(ref)
 
 # Enable/Disable the end-of-turn movement indicator for a unit

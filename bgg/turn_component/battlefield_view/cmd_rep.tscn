@@ -3,7 +3,7 @@
 [ext_resource path="res://turn_component/battlefield_view/cmd_rep.gd" type="Script" id=1]
 [ext_resource path="res://turn_component/battlefield_view/circle_with_direction.png" type="Texture" id=2]
 
-[node name="CmdRep" type="Node2D" index="0"]
+[node name="CmdRep" type="Node2D"]
 
 show_behind_parent = true
 script = ExtResource( 1 )
@@ -58,5 +58,15 @@ _sections_unfolded = [ "Capping" ]
 
 texture = ExtResource( 2 )
 _sections_unfolded = [ "Transform" ]
+
+[node name="Path" type="Line2D" parent="." index="4"]
+
+show_behind_parent = true
+points = PoolVector2Array(  )
+width = 5.0
+default_color = Color( 0.4, 0.5, 1, 1 )
+sharp_limit = 2.0
+round_precision = 8
+_sections_unfolded = [ "Visibility" ]
 
 

@@ -1,9 +1,12 @@
 extends Node
 
+const Trig = preload('res://utilities/trig.gd')
+
 onready var sprite_node = get_node('Sprite')
 onready var reposition_node = get_node('Reposition')
 onready var wheel_node = get_node('Wheel')
 onready var rotation_node = get_node('Rotation')
+onready var path_node = get_node('Path')
 
 onready var _annotation = {
 	'reposition' : reposition_node,
@@ -29,3 +32,20 @@ func set_annotation(ref):
 		print('WARNING: Unknown _annotation ref %s' % [ref])
 		return
 	_annotation[ref].show()
+
+# Use global
+func set_line(start, end):
+	path_node.points = PoolVector2Array([to_local(start), to_local(end)])
+
+# Use global
+func set_arc(start, start_dir, end):
+	var a = Trig.get_arc(Trig.Ray2D.new(start, start_dir), end)
+	if a == null:
+		print('Error: invalid arc')
+		return
+	var pnts = []
+	var seg_num = 20
+	var seg = a.arc_length/seg_num
+	for i in range(seg_num):
+		pnts.append(to_local(a.get_point(seg * i)))
+	path_node.points = PoolVector2Array(pnts)
