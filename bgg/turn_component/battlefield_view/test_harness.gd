@@ -48,9 +48,6 @@ func _test_1():
 			{'annotation' :  ['reposition', 'rotation'], 'end_gdir' :  Vector2(.5,1)})
 	yield()
 
-	# Mark as moving at end-of-turn
-	battlefield_view.display_eot_move(unit_ref, true)
-
 	print('Completed Test One')
 	return null
 
@@ -117,6 +114,7 @@ func _test_3():
 			{'annotation' : 'reposition', 'end_gdir' : Vector2(5,10)})
 	yield()
 
+	# Add Generic Command 4
 	battlefield_view.add_cmd(unit_ref, Vector2(395,245), {'annotation' : 'wheel'})
 	yield()
 
@@ -146,7 +144,7 @@ func _test_4():
 	battlefield_view.add_cmd(unit_ref, Vector2(330,330))
 	yield()
 
-	# Add Arc
+	# Add Generic Command 2
 	battlefield_view.add_cmd(unit_ref, Vector2(460, 370), {'arc_gdir' : Vector2(1,1), 'end_gdir' : Vector2(0.982305, -0.187288)})
 	yield()
 

@@ -2,7 +2,7 @@
 
 [ext_resource path="res://turn_component/battlefield_view/path.gd" type="Script" id=1]
 
-[node name="Path" type="Line2D"]
+[node name="Path" type="Line2D" index="0"]
 
 show_behind_parent = true
 points = PoolVector2Array( 842.589, 255.53 )

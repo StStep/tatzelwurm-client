@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://turn_component/battlefield_view/cmd_node.gd" type="Script" id=1]
+[ext_resource path="res://turn_component/battlefield_view/cmd_rep.gd" type="Script" id=1]
 [ext_resource path="res://turn_component/battlefield_view/circle_with_direction.png" type="Texture" id=2]
 
-[node name="CmdNode" type="Node2D"]
+[node name="CmdRep" type="Node2D" index="0"]
 
 show_behind_parent = true
 script = ExtResource( 1 )
@@ -34,6 +34,7 @@ position = Vector2( -28.7639, -13.3852 )
 points = PoolVector2Array( -14.4379, -15.5218, 22.7924, -15.6378, -12.4662, -34.5429 )
 width = 2.0
 default_color = Color( 0.0873299, 0.40625, 0.0603027, 1 )
+texture_mode = 553311648
 sharp_limit = 2.0
 round_precision = 8
 

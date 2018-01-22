@@ -29,4 +29,3 @@ func set_annotation(ref):
 		print('WARNING: Unknown _annotation ref %s' % [ref])
 		return
 	_annotation[ref].show()
-

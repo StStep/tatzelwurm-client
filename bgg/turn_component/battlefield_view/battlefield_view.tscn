@@ -5,8 +5,8 @@
 [node name="BattlefieldView" type="Node" index="0"]
 
 script = ExtResource( 1 )
-block_scene = "res://turn_component/battlefield_view/block.tscn"
-cmd_scene = "res://turn_component/battlefield_view/cmd_node.tscn"
+unit_rep_scene = "res://turn_component/battlefield_view/unit_rep.tscn"
+cmd_rep_scene = "res://turn_component/battlefield_view/cmd_rep.tscn"
 path_scene = "res://turn_component/battlefield_view/path.tscn"
 
 
