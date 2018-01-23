@@ -1,6 +1,20 @@
+# cmd_rep.gd
+#
+# This Scene renders a command in the battlefield view
+
 extends Node
 
+#### Constants
+
 const Trig = preload('res://utilities/trig.gd')
+
+#### Signals
+
+# TODO
+
+#### Variables
+
+# TODO Make Private
 
 onready var sprite_node = get_node('Sprite')
 onready var reposition_node = get_node('Reposition')
@@ -8,14 +22,20 @@ onready var wheel_node = get_node('Wheel')
 onready var rotation_node = get_node('Rotation')
 onready var path_node = get_node('Path')
 
+# Possible annotations that can be displayed
 onready var _annotation = {
 	'reposition' : reposition_node,
 	'wheel' : wheel_node,
 	'rotation' : rotation_node,
 }
 
+#### Private Function
+
+# Node function, called once all children are ready
 func _ready():
 	clear_annotations()
+
+#### Public Functions
 
 func display_sprite(en):
 	sprite_node.visible = en
@@ -32,6 +52,9 @@ func set_annotation(ref):
 		print('WARNING: Unknown _annotation ref %s' % [ref])
 		return
 	_annotation[ref].show()
+
+func clear_line():
+	path_node.points = PoolVector2Array([])
 
 # Use global
 func set_line(start, end):

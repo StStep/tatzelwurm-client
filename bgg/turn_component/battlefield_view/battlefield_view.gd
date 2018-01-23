@@ -90,7 +90,7 @@ func new_unit(ref, gpos, gdir):
 	inst.global_position = gpos
 	inst.global_rotation = gdir.angle() + PI/2
 	_unit_queues[ref] = [inst]
-	inst.move_ind.visible = DEFAULT_EOT_MV_EN
+	inst.display_move_ind(DEFAULT_EOT_MV_EN)
 	_update_eot_move(ref)
 
 # Add a command to a unit to be rendered
@@ -141,5 +141,5 @@ func display_eot_move(ref, en):
 	if not _unit_queues.has(ref):
 		print('WARNING: Unknown _unit_queues ref %s' % [ref])
 		return
-	_unit_queues[ref].front().move_ind.visible = en
+	_unit_queues[ref].front().display_move_ind(en)
 	_update_eot_move(ref)

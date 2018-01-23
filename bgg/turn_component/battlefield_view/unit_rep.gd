@@ -1,12 +1,27 @@
+# unit_rep.gd
+#
+# This Scene renders a unit in the battlefield view
+
 extends Node
 
-onready var move_ind = get_node('MoveIndicator') setget ,_move_ind_get
-func _move_ind_get():
-	return move_ind
+#### Signals
+
+# TODO
+
+#### Variables
+
+onready var _move_ind_node = get_node('MoveIndicator')
+
+#### Private Function
 
 func _ready():
 	pass
 
+#### Public Functions
+
+func display_move_ind(en):
+	_move_ind_node.visible = en
+
 func set_move_ind(gpos, grot):
-	move_ind.global_position = gpos
-	move_ind.global_rotation = grot
+	_move_ind_node.global_position = gpos
+	_move_ind_node.global_rotation = grot
