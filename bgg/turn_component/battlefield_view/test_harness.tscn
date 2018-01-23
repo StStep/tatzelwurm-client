@@ -1,13 +1,17 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://turn_component/battlefield_view/test_harness.gd" type="Script" id=1]
-[ext_resource path="res://turn_component/battlefield_view/battlefield_view.tscn" type="PackedScene" id=2]
+[ext_resource path="res://turn_component/battlefield_view/battlefield_view.gd" type="Script" id=2]
 
 [node name="TestHarness" type="Node" index="0"]
 
 script = ExtResource( 1 )
 
-[node name="BattlefieldView" parent="." index="0" instance=ExtResource( 2 )]
+[node name="BattlefieldView" type="Node" parent="." index="0"]
+
+script = ExtResource( 2 )
+unit_rep_scene = "res://turn_component/battlefield_view/unit_rep.tscn"
+cmd_rep_scene = "res://turn_component/battlefield_view/cmd_rep.tscn"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." index="1"]
 
