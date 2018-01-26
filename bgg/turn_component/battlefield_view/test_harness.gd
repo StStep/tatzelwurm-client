@@ -18,7 +18,7 @@ var _t_wait = 0
 # Used to track function executing as test
 var _cur_func = null
 
-#### Private Function
+#### Private Functions
 
 # Node function, called once all children are ready
 func _ready():

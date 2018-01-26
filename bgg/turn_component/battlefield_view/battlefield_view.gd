@@ -54,7 +54,7 @@ onready var _cmd_rep_node = load(cmd_rep_scene)
 # Queue index 0 = unit rep, with following being cmd reps
 var _unit_queues = {}
 
-#### Private Function
+#### Private Functions
 
 # Node function, called once all children are ready
 func _ready():
@@ -63,7 +63,7 @@ func _ready():
 # Move the EOT move indicator to the position/rotation of last command in queue
 func _update_eot_move(ref):
 	var last = _unit_queues[ref].back()
-	_unit_queues[ref].front().set_move_ind(last.global_position, last.global_rotation)
+	_unit_queues[ref].front().place_move_ind(last.global_position, last.global_rotation)
 
 #### Public Functions
 
@@ -121,16 +121,16 @@ func add_cmd(ref, gpos, params = {}):
 		var a = params['annotation']
 		if typeof(a) == TYPE_ARRAY:
 			for i in a:
-				inst.set_annotation(i)
+				inst.add_annotation(i)
 		else:
-			inst.set_annotation(a)
+			inst.add_annotation(a)
 	if 'visible' in params:
-		inst.display_sprite(params['visible'])
+		inst.display_cmd(params['visible'])
 	# Path
 	if 'arc_gdir' in params:
-		inst.set_arc(par.global_position, params['arc_gdir'], inst.global_position)
+		inst.set_path_as_arc(par.global_position, params['arc_gdir'])
 	else:
-		inst.set_line(par.global_position, inst.global_position)
+		inst.set_path_as_line(par.global_position)
 	_update_eot_move(ref)
 
 # Enable/Disable the end-of-turn movement indicator for a unit
