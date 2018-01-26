@@ -1,9 +1,14 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://turn_component/battlefield_view/cmd_rep.gd" type="Script" id=1]
 [ext_resource path="res://turn_component/battlefield_view/circle_with_direction.png" type="Texture" id=2]
 
-[node name="CmdRep" type="Node2D"]
+[sub_resource type="CircleShape2D" id=1]
+
+custom_solver_bias = 0.0
+radius = 12.5
+
+[node name="CmdRep" type="Node2D" index="0"]
 
 show_behind_parent = true
 script = ExtResource( 1 )
@@ -65,8 +70,23 @@ show_behind_parent = true
 points = PoolVector2Array(  )
 width = 5.0
 default_color = Color( 0.4, 0.5, 1, 1 )
+texture_mode = 553311648
 sharp_limit = 2.0
 round_precision = 8
 _sections_unfolded = [ "Visibility" ]
+
+[node name="Area" type="Area2D" parent="." index="5"]
+
+input_pickable = true
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+audio_bus_override = false
+audio_bus_name = "Master"
+
+[node name="Shape" type="CollisionShape2D" parent="Area" index="0"]
+
+shape = SubResource( 1 )
 
 

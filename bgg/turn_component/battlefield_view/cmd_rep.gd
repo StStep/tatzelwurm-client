@@ -13,7 +13,13 @@ const Trig = preload('res://utilities/trig.gd')
 
 #### Signals
 
-# TODO
+# These signals are given if a mouse enters or exits the command representative
+#
+# * is_path - True if the the path is the source of the signal, otherwise false
+# <<<<
+signal mouse_entered_item(is_path)
+signal mouse_exited_item(is_path)
+# >>>>
 
 #### Variables
 
@@ -38,6 +44,16 @@ onready var _annotation = {
 # Node function, called once all children are ready
 func _ready():
 	clear_annotations()
+	get_node('Area').connect('mouse_entered', self, '_rep_mouse_action', [true, false])
+	get_node('Area').connect('mouse_exited', self, '_rep_mouse_action', [false, false])
+	# TODO Connect to Path
+
+# TODO
+func _rep_mouse_action(is_enter, is_path):
+	if is_enter:
+		emit_signal('mouse_entered_item', is_path)
+	else:
+		emit_signal('mouse_exited_item', is_path)
 
 #### Public Functions
 

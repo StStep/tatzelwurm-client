@@ -3,7 +3,7 @@
 [ext_resource path="res://turn_component/battlefield_view/test_harness.gd" type="Script" id=1]
 [ext_resource path="res://turn_component/battlefield_view/battlefield_view.gd" type="Script" id=2]
 
-[node name="TestHarness" type="Node" index="0"]
+[node name="TestHarness" type="Node"]
 
 script = ExtResource( 1 )
 

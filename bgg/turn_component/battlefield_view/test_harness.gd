@@ -25,6 +25,8 @@ func _ready():
 	if not _battlefield_view_node:
 		print('Error, no BattlefieldView found')
 		return
+	_battlefield_view_node.connect('mouse_entered_item', self, '_view_mouse_enter')
+	_battlefield_view_node.connect('mouse_exited_item', self, '_view_mouse_exit')
 	set_process(true)
 	Trig.unit_test()
 
@@ -35,6 +37,22 @@ func _process(delta):
 		if _t_wait > .5 and _cur_func.is_valid():
 			_t_wait = 0
 			_cur_func = _cur_func.resume()
+
+# This is a signal handling function for battlefield view mouse enter action
+#
+# * ref - (String) Set on connection, the string for the unit_ref assocaited with the rep
+# * ind - (Int) The index into the unit_queue for the rep
+# * is_path - (Bool) Set by the signal, true if the rep path is the source
+func _view_mouse_enter(ref, ind, is_path):
+	print('Mouse entered %s of index %d and is_path == %s' % [ref, ind, is_path])
+
+# This is a signal handling function for battlefield view mouse exit action
+#
+# * ref - (String) Set on connection, the string for the unit_ref assocaited with the rep
+# * ind - (Int) The index into the unit_queue for the rep
+# * is_path - (Bool) Set by the signal, true if the rep path is the source
+func _view_mouse_exit(ref, ind, is_path):
+	print('Mouse exited %s of index %d and is_path == %s' % [ref, ind, is_path])
 
 # Testing mutliple annoations at once
 func _test_1():

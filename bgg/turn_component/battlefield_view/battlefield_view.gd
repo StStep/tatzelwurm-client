@@ -28,7 +28,7 @@ const DEFAULT_EOT_MV_EN = false
 
 #### Signals
 
-# These signals are given if a mouse enters or exits a unit or command representative: item
+# These signals are given if a mouse enters or exits a unit or command representative item
 #
 # * ref - (String) Unit reference of item
 # * ind - Index into queue of item, index 0 is unit_rep, otherwise its a cmd_rep
@@ -65,6 +65,18 @@ func _update_eot_move(ref):
 	var last = _unit_queues[ref].back()
 	_unit_queues[ref].front().place_move_ind(last.global_position, last.global_rotation)
 
+# This is a signal handling function for unit and move representative mouse actions
+#
+# * is_path - (Bool) Set by the signal, true if the rep path is the source
+# * is_enter - (Bool) Set on connection, true if the action is a mouse entering, otherwise false
+# * ref - (String) Set on connection, the string for the unit_ref assocaited with the rep
+# * ind - (Int) The index into the unit_queue for the rep
+func _rep_mouse_action(is_path, is_enter, ref, ind):
+	if is_enter:
+		emit_signal('mouse_entered_item', ref, ind, is_path)
+	else:
+		emit_signal('mouse_exited_item', ref, ind, is_path)
+
 #### Public Functions
 
 # Remove all previously added units and commands
@@ -91,6 +103,8 @@ func new_unit(ref, gpos, gdir):
 	inst.global_rotation = gdir.angle() + PI/2
 	_unit_queues[ref] = [inst]
 	inst.display_move_ind(DEFAULT_EOT_MV_EN)
+	inst.connect('mouse_entered_item', self, '_rep_mouse_action', [true, ref, 0])
+	inst.connect('mouse_exited_item', self, '_rep_mouse_action', [false, ref, 0])
 	_update_eot_move(ref)
 
 # Add a command to a unit to be rendered
@@ -131,6 +145,9 @@ func add_cmd(ref, gpos, params = {}):
 		inst.set_path_as_arc(par.global_position, params['arc_gdir'])
 	else:
 		inst.set_path_as_line(par.global_position)
+	# Connections
+	inst.connect('mouse_entered_item', self, '_rep_mouse_action', [true, ref, _unit_queues[ref].size() - 1])
+	inst.connect('mouse_exited_item', self, '_rep_mouse_action', [false, ref, _unit_queues[ref].size() - 1])
 	_update_eot_move(ref)
 
 # Enable/Disable the end-of-turn movement indicator for a unit

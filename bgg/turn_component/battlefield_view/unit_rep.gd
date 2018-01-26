@@ -9,18 +9,33 @@ extends Node
 
 #### Signals
 
-# TODO
+# These signals are given if a mouse enters or exits the unit representative
+#
+# * is_path - True if the the EOT movement indicator is the source of the signal, otherwise false
+# <<<<
+signal mouse_entered_item(is_path)
+signal mouse_exited_item(is_path)
+# >>>>
 
 #### Variables
 
-# Cildren nodes
+# Children nodes
 onready var _move_ind_node = get_node('MoveIndicator')
 
 #### Private Functions
 
 # Node function, called once all children are ready
 func _ready():
-	pass
+	get_node('Area').connect('mouse_entered', self, '_rep_mouse_action', [true, false])
+	get_node('Area').connect('mouse_exited', self, '_rep_mouse_action', [false, false])
+	# TODO Connect to EOM Indicator
+
+# TODO
+func _rep_mouse_action(is_enter, is_path):
+	if is_enter:
+		emit_signal('mouse_entered_item', is_path)
+	else:
+		emit_signal('mouse_exited_item', is_path)
 
 #### Public Functions
 
