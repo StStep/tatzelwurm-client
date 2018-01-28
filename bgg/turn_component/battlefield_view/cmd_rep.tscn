@@ -31,7 +31,7 @@ round_precision = 8
 
 [node name="Wheel" type="Node2D" parent="." index="1"]
 
-position = Vector2( 26.4805, 28.7713 )
+position = Vector2( 26.3793, 28.7713 )
 
 [node name="Line2D" type="Line2D" parent="Wheel" index="0"]
 
@@ -75,7 +75,23 @@ sharp_limit = 2.0
 round_precision = 8
 _sections_unfolded = [ "Visibility" ]
 
-[node name="Area" type="Area2D" parent="." index="5"]
+[node name="BodyArea" type="Area2D" parent="." index="5"]
+
+input_pickable = true
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+audio_bus_override = false
+audio_bus_name = "Master"
+_sections_unfolded = [ "Transform" ]
+
+[node name="Shape" type="CollisionShape2D" parent="BodyArea" index="0"]
+
+shape = SubResource( 1 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="PathArea" type="Area2D" parent="." index="6"]
 
 input_pickable = true
 gravity_vec = Vector2( 0, 1 )
@@ -85,8 +101,10 @@ angular_damp = 1.0
 audio_bus_override = false
 audio_bus_name = "Master"
 
-[node name="Shape" type="CollisionShape2D" parent="Area" index="0"]
+[node name="Polygon" type="CollisionPolygon2D" parent="PathArea" index="0"]
 
-shape = SubResource( 1 )
+build_mode = 0
+polygon = PoolVector2Array(  )
+_sections_unfolded = [ "Transform" ]
 
 

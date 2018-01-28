@@ -5,11 +5,12 @@
 # The command representation includes the command and the path.
 # The command can have annotations, while the path can be set to bridge two points.
 
-extends Node
+extends Node2D
 
 #### Constants
 
 const Trig = preload('res://utilities/trig.gd')
+const PATH_AREA_WIDTH = 10
 
 #### Signals
 
@@ -30,6 +31,8 @@ onready var _reposition_node = get_node('Reposition')
 onready var _wheel_node = get_node('Wheel')
 onready var _rotation_node = get_node('Rotation')
 onready var _path_node = get_node('Path')
+onready var _path_area_node = get_node('PathArea')
+onready var _path_area_poly_node = get_node('PathArea/Polygon')
 # >>>>
 
 # Possible annotations that can be displayed
@@ -44,11 +47,15 @@ onready var _annotation = {
 # Node function, called once all children are ready
 func _ready():
 	clear_annotations()
-	get_node('Area').connect('mouse_entered', self, '_rep_mouse_action', [true, false])
-	get_node('Area').connect('mouse_exited', self, '_rep_mouse_action', [false, false])
-	# TODO Connect to Path
+	get_node('BodyArea').connect('mouse_entered', self, '_rep_mouse_action', [true, false])
+	get_node('BodyArea').connect('mouse_exited', self, '_rep_mouse_action', [false, false])
+	get_node('PathArea').connect('mouse_entered', self, '_rep_mouse_action', [true, true])
+	get_node('PathArea').connect('mouse_exited', self, '_rep_mouse_action', [false, true])
 
-# TODO
+# Emit a mouse action depending upon parameters
+#
+# * is_enter - (Bool) If true emit a mouse_entered_item signal, else emit mouse_exited_item
+# * is_path - (Bool) What to give as the is_path signal parameter
 func _rep_mouse_action(is_enter, is_path):
 	if is_enter:
 		emit_signal('mouse_entered_item', is_path)
@@ -87,12 +94,15 @@ func add_annotation(ref):
 # Remove the path, clearing any previous setting
 func clear_path():
 	_path_node.points = PoolVector2Array([])
+	_path_area_poly_node.polygon = PoolVector2Array([])
 
 # Set the path as a line between the start and the cmd_rep position
 #
 # * start - (Vector2) The global position that the path starts at
 func set_path_as_line(start):
-	_path_node.points = PoolVector2Array([to_local(start), Vector2(0,0)])
+	var pnts = [to_local(start), Vector2(0,0)]
+	_path_node.points = PoolVector2Array(pnts)
+	_path_area_poly_node.polygon = PoolVector2Array(Trig.get_line_as_polygon(pnts, PATH_AREA_WIDTH))
 
 # Set the path as an arc between the start and the cmd_rep position, with a start direction
 #
@@ -109,3 +119,4 @@ func set_path_as_arc(start, start_dir):
 	for i in range(seg_num):
 		pnts.append(to_local(a.get_point(seg * i)))
 	_path_node.points = PoolVector2Array(pnts)
+	_path_area_poly_node.polygon = PoolVector2Array(Trig.get_line_as_polygon(pnts, PATH_AREA_WIDTH))

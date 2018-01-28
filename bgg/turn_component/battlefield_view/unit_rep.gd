@@ -5,7 +5,7 @@
 # The End-of-Turn (EOT) Move Indictor indicates that the unit will be
 # continuing to move at the end of the turn.
 
-extends Node
+extends Node2D
 
 #### Signals
 
@@ -26,11 +26,15 @@ onready var _move_ind_node = get_node('MoveIndicator')
 
 # Node function, called once all children are ready
 func _ready():
-	get_node('Area').connect('mouse_entered', self, '_rep_mouse_action', [true, false])
-	get_node('Area').connect('mouse_exited', self, '_rep_mouse_action', [false, false])
-	# TODO Connect to EOM Indicator
+	get_node('BodyArea').connect('mouse_entered', self, '_rep_mouse_action', [true, false])
+	get_node('BodyArea').connect('mouse_exited', self, '_rep_mouse_action', [false, false])
+	get_node('MoveIndicator/PathArea').connect('mouse_entered', self, '_rep_mouse_action', [true, true])
+	get_node('MoveIndicator/PathArea').connect('mouse_exited', self, '_rep_mouse_action', [false, true])
 
-# TODO
+# Emit a mouse action depending upon parameters
+#
+# * is_enter - (Bool) If true emit a mouse_entered_item signal, else emit mouse_exited_item
+# * is_path - (Bool) What to give as the is_path signal parameter
 func _rep_mouse_action(is_enter, is_path):
 	if is_enter:
 		emit_signal('mouse_entered_item', is_path)

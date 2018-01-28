@@ -1,9 +1,20 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://turn_component/battlefield_view/block_with_direction.png" type="Texture" id=1]
 [ext_resource path="res://turn_component/battlefield_view/unit_rep.gd" type="Script" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
+
+custom_solver_bias = 0.0
+extents = Vector2( 5.03131, 59.2303 )
+
+[sub_resource type="ConvexPolygonShape2D" id=2]
+
+custom_solver_bias = 0.0
+points = PoolVector2Array( 0, -24, 27, 10, -27, 10 )
+_sections_unfolded = [ "Resource" ]
+
+[sub_resource type="RectangleShape2D" id=3]
 
 custom_solver_bias = 0.0
 extents = Vector2( 66, 32 )
@@ -31,7 +42,31 @@ sharp_limit = 2.0
 round_precision = 8
 _sections_unfolded = [ "Capping", "Fill" ]
 
-[node name="Area" type="Area2D" parent="." index="1"]
+[node name="PathArea" type="Area2D" parent="MoveIndicator" index="1"]
+
+position = Vector2( 90, 0 )
+input_pickable = true
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+audio_bus_override = false
+audio_bus_name = "Master"
+_sections_unfolded = [ "Transform" ]
+
+[node name="Line" type="CollisionShape2D" parent="MoveIndicator/PathArea" index="0"]
+
+position = Vector2( -90.4921, -58.5487 )
+shape = SubResource( 1 )
+_sections_unfolded = [ "Transform", "Z Index" ]
+
+[node name="Head" type="CollisionShape2D" parent="MoveIndicator/PathArea" index="1"]
+
+position = Vector2( -90.6006, -127.677 )
+shape = SubResource( 2 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="BodyArea" type="Area2D" parent="." index="1"]
 
 input_pickable = true
 gravity_vec = Vector2( 0, 1 )
@@ -42,8 +77,8 @@ audio_bus_override = false
 audio_bus_name = "Master"
 _sections_unfolded = [ "Transform" ]
 
-[node name="Shape" type="CollisionShape2D" parent="Area" index="0"]
+[node name="Shape" type="CollisionShape2D" parent="BodyArea" index="0"]
 
-shape = SubResource( 1 )
+shape = SubResource( 3 )
 
 

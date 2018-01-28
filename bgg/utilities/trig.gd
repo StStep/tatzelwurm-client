@@ -113,6 +113,25 @@ static func get_arc(start_ray, pnt):
 	var center = get_intersection_of_two_lines(leg_a, leg_b)
 	return Arc2D.new(start_ray, Ray2D.new(pnt, final_dir), center)
 
+# Return an array of points that creates a polygon around the given array of pnts with a given width
+#
+# * pnts - (Array of Vector2) An array of points that make up the line to surround
+# * width - (Float) The final width of the polygon surrounding the line
+static func get_line_as_polygon(pnts, width):
+	var r_area_pnts = []
+	var l_area_pnts = []
+	var offset_v = null
+	for i in range(pnts.size()):
+		# Use prev offset for final index
+		if i < pnts.size() - 1:
+			offset_v = width * (pnts[i + 1] - pnts[i]).normalized().rotated(PI/2)
+		r_area_pnts.append(pnts[i] + offset_v)
+		l_area_pnts.append(pnts[i] - offset_v)
+	# Append in reverse to create a closed polygon
+	for p in r_area_pnts:
+		l_area_pnts.push_front(p)
+	return l_area_pnts
+
 static func get_nearest_pnt_on_line(line, pnt):
 	if not line.is_valid() or typeof(pnt) != TYPE_VECTOR2:
 		print('get_nearest_pnt_on_line: invalid parameters: %s %s' % [line, pnt])
