@@ -126,11 +126,8 @@ static func get_line_as_polygon(pnts, width):
 		if i < pnts.size() - 1:
 			offset_v = width * (pnts[i + 1] - pnts[i]).normalized().rotated(PI/2)
 		r_area_pnts.append(pnts[i] + offset_v)
-		l_area_pnts.append(pnts[i] - offset_v)
-	# Append in reverse to create a closed polygon
-	for p in r_area_pnts:
-		l_area_pnts.push_front(p)
-	return l_area_pnts
+		l_area_pnts.push_front(pnts[i] - offset_v)
+	return r_area_pnts + l_area_pnts
 
 static func get_nearest_pnt_on_line(line, pnt):
 	if not line.is_valid() or typeof(pnt) != TYPE_VECTOR2:
