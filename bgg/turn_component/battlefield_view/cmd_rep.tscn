@@ -8,7 +8,7 @@
 custom_solver_bias = 0.0
 radius = 12.5
 
-[node name="CmdRep" type="Node2D"]
+[node name="CmdRep" type="Node2D" index="0"]
 
 show_behind_parent = true
 script = ExtResource( 1 )

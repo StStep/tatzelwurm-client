@@ -19,7 +19,7 @@ _sections_unfolded = [ "Resource" ]
 custom_solver_bias = 0.0
 extents = Vector2( 66, 32 )
 
-[node name="UnitRep" type="Node2D" index="0"]
+[node name="UnitRep" type="Node2D"]
 
 position = Vector2( 0.28479, 0 )
 script = ExtResource( 1 )

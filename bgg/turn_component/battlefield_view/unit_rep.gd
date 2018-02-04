@@ -29,17 +29,14 @@ signal mouse_exited_item(is_path)
 
 #### Variables
 
-# Children nodes
-onready var _move_ind_node = get_node('MoveIndicator')
-
 #### Private Functions
 
 # Node function, called once all children are ready
 func _ready():
-	get_node('BodyArea').connect('mouse_entered', self, '_rep_mouse_action', [true, false])
-	get_node('BodyArea').connect('mouse_exited', self, '_rep_mouse_action', [false, false])
-	get_node('MoveIndicator/PathArea').connect('mouse_entered', self, '_rep_mouse_action', [true, true])
-	get_node('MoveIndicator/PathArea').connect('mouse_exited', self, '_rep_mouse_action', [false, true])
+	$BodyArea.connect('mouse_entered', self, '_rep_mouse_action', [true, false])
+	$BodyArea.connect('mouse_exited', self, '_rep_mouse_action', [false, false])
+	$MoveIndicator/PathArea.connect('mouse_entered', self, '_rep_mouse_action', [true, true])
+	$MoveIndicator/PathArea.connect('mouse_exited', self, '_rep_mouse_action', [false, true])
 
 # Emit a mouse action depending upon parameters
 #
@@ -57,15 +54,15 @@ func _rep_mouse_action(is_enter, is_path):
 #
 # * en - (Bool) True if the move indicator should be displayed, otherwise false
 func display_move_ind(en):
-	_move_ind_node.visible = en
+	$MoveIndicator.visible = en
 
 # Change the position and rotation of the move indicator to the given global values
 #
 # * gpos - (Vector2) The global position to place the move indicator at
 # * grot - (Vector2) The global rotation to give the move indicator
 func place_move_ind(gpos, grot):
-	_move_ind_node.global_position = gpos
-	_move_ind_node.global_rotation = grot
+	$MoveIndicator.global_position = gpos
+	$MoveIndicator.global_rotation = grot
 
 # Highlight the body for a given type
 #
