@@ -7,6 +7,16 @@
 
 extends Node2D
 
+#### Constants
+
+# Highlight color options
+# <<<<
+const COLOR_NONE = Color('#ffffff')
+const COLOR_FOCUS= Color('#eef442')
+const COLOR_INVALID = Color('#e2342b')
+const COLOR_INACTIVE = Color('#b2b2b2')
+# >>>>
+
 #### Signals
 
 # These signals are given if a mouse enters or exits the unit representative
@@ -56,3 +66,26 @@ func display_move_ind(en):
 func place_move_ind(gpos, grot):
 	_move_ind_node.global_position = gpos
 	_move_ind_node.global_rotation = grot
+
+# Highlight the body for a given type
+#
+# * type - (String) The type of highlight being requested [None, Focus, Invalid, Inactive]
+func highlight_body(type):
+	match type:
+		'None':
+			$Sprite.modulate = COLOR_NONE
+		'Focus':
+			$Sprite.modulate = COLOR_FOCUS
+		'Invalid':
+			$Sprite.modulate = COLOR_INVALID
+		'Inactive':
+			$Sprite.modulate = COLOR_INACTIVE
+		_:
+			print('WARNING: Unknown highlight type %s' % [type])
+
+# Highlight the path for a given type and coverage
+#
+# * type - (String) The type of highlight being requested [None, Focus, Invalid, Inactive]
+# * coverage - (Vector2) The portion of the path to cover, values should be between 0 and 1 and ascending
+func highlight_path(type, coverage):
+	print('Debug: highlight_path not implemented')

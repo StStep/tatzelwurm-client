@@ -79,7 +79,7 @@ func _test_1():
 	print('Completed Test One')
 	return null
 
-# Test rotation command
+# Test rotation command annotation and invalid highlighting
 func _test_2():
 	print('Running Test Two...')
 	var unit_ref = 'unit_2'
@@ -97,6 +97,10 @@ func _test_2():
 	_battlefield_view_node.add_cmd(unit_ref, Vector2(945,410),
 			{'annotation' : 'rotation', 'end_gdir' : Vector2(-130,-130)})
 	yield()
+
+	# Color Command 1and last half of path as Invalid
+	_battlefield_view_node.highlight_cmd_path(unit_ref, 1, 'Invalid', Vector2(.5, 1))
+	_battlefield_view_node.highlight_cmd_body(unit_ref, 1, 'Invalid')
 
 	# Add Generic Command 2
 	_battlefield_view_node.add_cmd(unit_ref, Vector2(815,280))
@@ -118,6 +122,10 @@ func _test_3():
 	_battlefield_view_node.new_unit(unit_ref, Vector2(200,200), Vector2(1,1))
 	_battlefield_view_node.display_eot_move(unit_ref, true)
 	yield()
+
+	# Color Unit as focused
+	_battlefield_view_node.highlight_cmd_path(unit_ref, 0, 'Focus', Vector2(.5, 1))
+	_battlefield_view_node.highlight_cmd_body(unit_ref, 0, 'Focus')
 
 	# Add Generic Command 1
 	_battlefield_view_node.add_cmd(unit_ref, Vector2(330,330))
@@ -164,7 +172,7 @@ func _test_4():
 	print('Completed Test Four')
 	return null
 
-#### Public Functions
+#### Public Functionss
 
 # Set _cur_func to _test_1, if none is set
 func test_1():

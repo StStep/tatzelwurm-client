@@ -160,3 +160,26 @@ func display_eot_move(ref, en):
 		return
 	_unit_queues[ref].front().display_move_ind(en)
 	_update_eot_move(ref)
+
+# Highlight the body of a command, for a given type
+#
+# * ref - (String) Unit reference to modify
+# * ind - (Int) The index into the unit_queue for the rep
+# * type - (String) The type of highlight being requested [None, Focus, Invalid, Inactive]
+func highlight_cmd_body(ref, ind, type):
+	if not _unit_queues.has(ref) or _unit_queues[ref].size() <= ind:
+		print('WARNING: Unknown _unit_queues ref %s with index %d' % [ref, ind])
+		return
+	_unit_queues[ref][ind].highlight_body(type)
+
+# Highlight the path of a cmd rep, for a given type and coverage
+#
+# * ref - (String) Unit reference to modify
+# * ind - (Int) The index into the unit_queue for the rep
+# * type - (String) The type of highlight being requested [None, Focus, Invalid, Inactive]
+# * coverage - (Vector2) The portion of the path to cover, values should be between 0 and 1 and ascending
+func highlight_cmd_path(ref, ind, type, coverage = Vector2(0,1)):
+	if not _unit_queues.has(ref) or _unit_queues[ref].size() <= ind:
+		print('WARNING: Unknown _unit_queues ref %s with index %d' % [ref, ind])
+		return
+	_unit_queues[ref][ind].highlight_path(type, coverage)

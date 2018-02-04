@@ -8,7 +8,7 @@
 custom_solver_bias = 0.0
 radius = 12.5
 
-[node name="CmdRep" type="Node2D" index="0"]
+[node name="CmdRep" type="Node2D"]
 
 show_behind_parent = true
 script = ExtResource( 1 )
@@ -62,7 +62,7 @@ _sections_unfolded = [ "Capping" ]
 [node name="Sprite" type="Sprite" parent="." index="3"]
 
 texture = ExtResource( 2 )
-_sections_unfolded = [ "Transform" ]
+_sections_unfolded = [ "Transform", "Visibility" ]
 
 [node name="Path" type="Line2D" parent="." index="4"]
 

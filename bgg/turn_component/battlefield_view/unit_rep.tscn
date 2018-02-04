@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://turn_component/battlefield_view/block_with_direction.png" type="Texture" id=1]
-[ext_resource path="res://turn_component/battlefield_view/unit_rep.gd" type="Script" id=2]
+[ext_resource path="res://turn_component/battlefield_view/unit_rep.gd" type="Script" id=1]
+[ext_resource path="res://turn_component/battlefield_view/block_with_direction.png" type="Texture" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
 
@@ -19,11 +19,10 @@ _sections_unfolded = [ "Resource" ]
 custom_solver_bias = 0.0
 extents = Vector2( 66, 32 )
 
-[node name="UnitRep" type="Sprite"]
+[node name="UnitRep" type="Node2D" index="0"]
 
 position = Vector2( 0.28479, 0 )
-texture = ExtResource( 1 )
-script = ExtResource( 2 )
+script = ExtResource( 1 )
 _sections_unfolded = [ "Transform" ]
 
 [node name="MoveIndicator" type="Node2D" parent="." index="0"]
@@ -80,5 +79,9 @@ _sections_unfolded = [ "Transform" ]
 [node name="Shape" type="CollisionShape2D" parent="BodyArea" index="0"]
 
 shape = SubResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="." index="2"]
+
+texture = ExtResource( 2 )
 
 
