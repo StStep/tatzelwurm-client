@@ -136,7 +136,7 @@ func highlight_body(type):
 
 # Highlight the path for a given type and coverage
 #
-# * type - (String) The type of highlight being requested [None, Focus, Invalid, Inactive]
-# * coverage - (Vector2) The portion of the path to cover, values should be between 0 and 1 and ascending
+# * type - (String List) The type of highlight being requested for coverage n [None, Focus, Invalid, Inactive]
+# * coverage - (float list) The portion of the path to cover for type n, values should be between 0 and 1
 func highlight_path(type, coverage):
 	print('Debug: highlight_path not implemented')

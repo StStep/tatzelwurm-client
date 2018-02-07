@@ -99,7 +99,7 @@ func _test_2():
 	yield()
 
 	# Color Command 1and last half of path as Invalid
-	_battlefield_view_node.highlight_cmd_path(unit_ref, 1, 'Invalid', Vector2(.5, 1))
+	_battlefield_view_node.highlight_cmd_path(unit_ref, 1, 'Invalid', .5)
 	_battlefield_view_node.highlight_cmd_body(unit_ref, 1, 'Invalid')
 
 	# Add Generic Command 2

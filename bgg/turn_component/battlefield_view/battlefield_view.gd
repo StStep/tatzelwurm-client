@@ -176,10 +176,12 @@ func highlight_cmd_body(ref, ind, type):
 #
 # * ref - (String) Unit reference to modify
 # * ind - (Int) The index into the unit_queue for the rep
-# * type - (String) The type of highlight being requested [None, Focus, Invalid, Inactive]
-# * coverage - (Vector2) The portion of the path to cover, values should be between 0 and 1 and ascending
-func highlight_cmd_path(ref, ind, type, coverage = Vector2(0,1)):
+# * type - (String or String List) The type of highlight being requested for coverage n [None, Focus, Invalid, Inactive]
+# * coverage - (float or float list) The portion of the path to cover for type n, values should be between 0 and 1
+func highlight_cmd_path(ref, ind, type, coverage = 1):
 	if not _unit_queues.has(ref) or _unit_queues[ref].size() <= ind:
 		print('WARNING: Unknown _unit_queues ref %s with index %d' % [ref, ind])
 		return
-	_unit_queues[ref][ind].highlight_path(type, coverage)
+	var t = type if typeof(type) == TYPE_ARRAY else [type]
+	var c = coverage if typeof(coverage) == TYPE_ARRAY else [coverage]
+	_unit_queues[ref][ind].highlight_path(t, c)
