@@ -172,6 +172,13 @@ func _test_4():
 	print('Completed Test Four')
 	return null
 
+# Test TCP connection
+func _test_5():
+	print('Running Test Five...')
+
+	print('Completed Test Five')
+	return null
+
 #### Public Functionss
 
 # Set _cur_func to _test_1, if none is set
@@ -201,3 +208,10 @@ func test_4():
 		print('Wait for previous test to complete')
 		return
 	_cur_func = _test_4()
+
+	# Set _cur_func to _test_5, if none is set
+func test_5():
+	if _cur_func:
+		print('Wait for previous test to complete')
+		return
+	_cur_func = _test_5()
