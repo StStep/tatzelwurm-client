@@ -2,11 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Unit.png-e45704e5ca7fd46897709634169fd4e8.stex"
+path="res://.import/block.png-bc5dafaa8357945547da06f708657203.stex"
 
 [deps]
 
+source_file="res://Unit/block.png"
 source_md5="0bb21374ac7bd6dd87590d8e3dce8e3b"
+
+dest_files=[ "res://.import/block.png-bc5dafaa8357945547da06f708657203.stex" ]
+dest_md5="00cd6b72c34133c6c70313ad325fcbef"
 
 [params]
 
