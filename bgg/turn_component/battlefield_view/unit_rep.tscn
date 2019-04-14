@@ -4,84 +4,43 @@
 [ext_resource path="res://turn_component/battlefield_view/block_with_direction.png" type="Texture" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
-
-custom_solver_bias = 0.0
 extents = Vector2( 5.03131, 59.2303 )
 
 [sub_resource type="ConvexPolygonShape2D" id=2]
-
-custom_solver_bias = 0.0
 points = PoolVector2Array( 0, -24, 27, 10, -27, 10 )
-_sections_unfolded = [ "Resource" ]
 
 [sub_resource type="RectangleShape2D" id=3]
-
-custom_solver_bias = 0.0
 extents = Vector2( 66, 32 )
 
 [node name="UnitRep" type="Node2D"]
-
 position = Vector2( 0.28479, 0 )
 script = ExtResource( 1 )
-_sections_unfolded = [ "Transform" ]
 
-[node name="MoveIndicator" type="Node2D" parent="." index="0"]
-
+[node name="MoveIndicator" type="Node2D" parent="."]
 show_behind_parent = true
-_sections_unfolded = [ "Transform", "Visibility" ]
 
-[node name="Line2D" type="Line2D" parent="MoveIndicator" index="0"]
-
+[node name="Line2D" type="Line2D" parent="MoveIndicator"]
 points = PoolVector2Array( -0.473511, 0.457977, -0.473511, -143.818, -18.3054, -122.744, 20.0384, -123.018, -0.688759, -143.551 )
-width = 10.0
 default_color = Color( 0.826563, 0.4, 1, 1 )
 texture_mode = 553311648
 joint_mode = 2
-sharp_limit = 2.0
-round_precision = 8
-_sections_unfolded = [ "Capping", "Fill" ]
 
-[node name="PathArea" type="Area2D" parent="MoveIndicator" index="1"]
-
+[node name="PathArea" type="Area2D" parent="MoveIndicator"]
 position = Vector2( 90, 0 )
-input_pickable = true
-gravity_vec = Vector2( 0, 1 )
-gravity = 98.0
-linear_damp = 0.1
-angular_damp = 1.0
-audio_bus_override = false
-audio_bus_name = "Master"
-_sections_unfolded = [ "Transform" ]
 
-[node name="Line" type="CollisionShape2D" parent="MoveIndicator/PathArea" index="0"]
-
+[node name="Line" type="CollisionShape2D" parent="MoveIndicator/PathArea"]
 position = Vector2( -90.4921, -58.5487 )
 shape = SubResource( 1 )
-_sections_unfolded = [ "Transform", "Z Index" ]
 
-[node name="Head" type="CollisionShape2D" parent="MoveIndicator/PathArea" index="1"]
-
+[node name="Head" type="CollisionShape2D" parent="MoveIndicator/PathArea"]
 position = Vector2( -90.6006, -127.677 )
 shape = SubResource( 2 )
-_sections_unfolded = [ "Transform" ]
 
-[node name="BodyArea" type="Area2D" parent="." index="1"]
+[node name="BodyArea" type="Area2D" parent="."]
 
-input_pickable = true
-gravity_vec = Vector2( 0, 1 )
-gravity = 98.0
-linear_damp = 0.1
-angular_damp = 1.0
-audio_bus_override = false
-audio_bus_name = "Master"
-_sections_unfolded = [ "Transform" ]
-
-[node name="Shape" type="CollisionShape2D" parent="BodyArea" index="0"]
-
+[node name="Shape" type="CollisionShape2D" parent="BodyArea"]
 shape = SubResource( 3 )
 
-[node name="Sprite" type="Sprite" parent="." index="2"]
-
+[node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 2 )
-
 

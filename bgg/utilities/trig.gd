@@ -86,7 +86,7 @@ enum Orientation { FRONT, BACK, LEFT, RIGHT}
 
 static func get_arc(start_ray, pnt):
 	# Invalid of not in front half of start_ray
-	if get_dir_relative_to_orientation(start_ray, pnt) != FRONT:
+	if get_dir_relative_to_orientation(start_ray, pnt) != Orientation.FRONT:
 		return null
 
 	# LegA of isosceles triangle is perp to dir
@@ -149,30 +149,30 @@ static func get_front_back_dir_relative_to_orientation(orientation_ray, pnt):
 	var ang = orientation_ray.direction.angle_to(vec)
 	var abs_ang = abs(ang)
 	if abs_ang <= PI/2:
-		return FRONT
+		return Orientation.FRONT
 	else:
-		return BACK
+		return Orientation.BACK
 
 static func get_left_right_dir_relative_to_orientation(orientation_ray, pnt):
 	var vec = pnt - orientation_ray.offset
 	var ang = orientation_ray.direction.angle_to(vec)
 	if ang <= 0:
-		return RIGHT
+		return Orientation.RIGHT
 	else:
-		return LEFT
+		return Orientation.LEFT
 
 static func get_dir_relative_to_orientation(orientation_ray, pnt):
 	var vec = pnt - orientation_ray.offset
 	var ang = orientation_ray.direction.angle_to(vec)
 	var abs_ang = abs(ang)
 	if abs_ang <= PI/4:
-		return FRONT
+		return Orientation.FRONT
 	elif abs_ang >= 3*PI/4:
-		return BACK
+		return Orientation.BACK
 	elif ang <= 0:
-		return RIGHT
+		return Orientation.RIGHT
 	else:
-		return LEFT
+		return Orientation.LEFT
 
 static func get_intersection_of_two_lines(line_1, line_2):
 
@@ -255,10 +255,10 @@ static func unit_test():
 		[Ray2D.new(Vector2(0,0), Vector2(0,1)), Vector2(1,-.1)],
 	]
 	exp_output = [
-		FRONT,
-		FRONT,
-		BACK,
-		BACK,
+		Orientation.FRONT,
+		Orientation.FRONT,
+		Orientation.BACK,
+		Orientation.BACK,
 	]
 	for i in range(input.size()):
 		var ret = get_front_back_dir_relative_to_orientation(input[i][0], input[i][1])
@@ -273,10 +273,10 @@ static func unit_test():
 		[Ray2D.new(Vector2(0,0), Vector2(0,1)), Vector2(1,-.1)],
 	]
 	exp_output = [
-		RIGHT,
-		LEFT,
-		LEFT,
-		RIGHT,
+		Orientation.RIGHT,
+		Orientation.LEFT,
+		Orientation.LEFT,
+		Orientation.RIGHT,
 	]
 	for i in range(input.size()):
 		var ret = get_left_right_dir_relative_to_orientation(input[i][0], input[i][1])
@@ -291,10 +291,10 @@ static func unit_test():
 		[Ray2D.new(Vector2(0,0), Vector2(0,1)), Vector2(1,-.2)],
 	]
 	exp_output = [
-		FRONT,
-		BACK,
-		LEFT,
-		RIGHT,
+		Orientation.FRONT,
+		Orientation.BACK,
+		Orientation.LEFT,
+		Orientation.RIGHT,
 	]
 	for i in range(input.size()):
 		var ret = get_dir_relative_to_orientation(input[i][0], input[i][1])

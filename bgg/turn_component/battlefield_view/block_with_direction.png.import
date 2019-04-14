@@ -3,20 +3,21 @@
 importer="texture"
 type="StreamTexture"
 path="res://.import/block_with_direction.png-2bd0f30d2932a6d9f28f395beef2c6f9.stex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://turn_component/battlefield_view/block_with_direction.png"
-source_md5="e274450b5812aaf590dcd2aef012ecc6"
-
 dest_files=[ "res://.import/block_with_direction.png-2bd0f30d2932a6d9f28f395beef2c6f9.stex" ]
-dest_md5="afb2a3eff2525a7bcf9a218e1e0031e9"
 
 [params]
 
 compress/mode=0
 compress/lossy_quality=0.7
 compress/hdr_mode=0
+compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
 flags/filter=true
@@ -26,6 +27,7 @@ flags/srgb=2
 process/fix_alpha_border=true
 process/premult_alpha=false
 process/HDR_as_SRGB=false
+process/invert_color=false
 stream=false
 size_limit=0
 detect_3d=true
