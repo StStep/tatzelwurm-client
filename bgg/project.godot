@@ -22,6 +22,7 @@ config/icon="res://icon.png"
 [autoload]
 
 GameManager="*res://game_manager.gd"
+SelectManager="*res://decorators/select_manager.gd"
 
 [gdnative]
 
