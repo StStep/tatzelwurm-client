@@ -8,12 +8,12 @@ public class FreeUnit : Node
 
     private Node _dragable;
     private Node _follow;
-    private Polygon2D _primary;
-    private Polygon2D _preview1;
+    private Sprite _primary;
+    private Sprite _preview1;
     private Node _follow1;
-    private Polygon2D _preview2;
+    private Sprite _preview2;
     private Node _follow2;
-    private Polygon2D _preview3;
+    private Sprite _preview3;
 
     [Signal]
     delegate void Picked(FreeUnit u);
@@ -79,7 +79,7 @@ public class FreeUnit : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        _primary = GetNode<Polygon2D>("Primary");
+        _primary = GetNode<Sprite>("Primary");
         _dragable = _primary.GetNode("Dragable");
 	    _dragable.Connect("drag_started", this, "Pickup");
 	    _dragable.Connect("drag_ended", this, "Place");
@@ -91,27 +91,27 @@ public class FreeUnit : Node
 	    _follow.Connect("started", this, "StartMoving");
 	    _follow.Connect("ended", this, "EndMoving");
 
-        _preview1 = _primary.GetNode<Polygon2D>("Preview1");
+        _preview1 = _primary.GetNode<Sprite>("Preview1");
         _follow1 = _preview1.GetNode("FollowOnClickable");
         _follow1.Set("enabled", false);
 	    _follow1.Connect("updated", this, "MovePreview2To");
 	    _follow1.Connect("started", this, "StartMoving");
 	    _follow1.Connect("ended", this, "EndMoving");
 
-        _preview2 = _preview1.GetNode<Polygon2D>("Preview2");
+        _preview2 = _preview1.GetNode<Sprite>("Preview2");
         _follow2 = _preview2.GetNode("FollowOnClickable");
         _follow2.Set("enabled", false);
 	    _follow2.Connect("updated", this, "MovePreview3To");
 	    _follow2.Connect("started", this, "StartMoving");
 	    _follow2.Connect("ended", this, "EndMoving");
 
-        _preview3 = _preview2.GetNode<Polygon2D>("Preview3");
+        _preview3 = _preview2.GetNode<Sprite>("Preview3");
     }
 
     private void Pickup(Node dragable) => EmitSignal(nameof(Picked), this);
     private void Place(Node dragable) => EmitSignal(nameof(Placed), this);
 
-    private void PointTo(float rads) => _primary.GlobalRotation = rads;
+    private void PointTo(float rads) => _primary.GlobalRotation = rads - (float)3.14;
     private void MoveTo(Vector2 loc) => _primary.GlobalPosition = loc;
 
     private void StartMoving(Node follow)
