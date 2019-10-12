@@ -19,6 +19,7 @@ const C_PATH_NOT_SELECTED = Color('66ff68') # Pastel-Green
 const C_PATH_SELECTED = Color('16ab19') # Green
 const C_PATH_HIGHLIGHT = Color('b6ff00') # Green-Yellow
 
+var SelectManager
 var state = STATE.Not_Selected
 var marker_color = C_NOT_SELECTED
 var path_color = C_PATH_NOT_SELECTED

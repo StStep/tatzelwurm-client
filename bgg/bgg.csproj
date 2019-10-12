@@ -52,6 +52,7 @@
     <Compile Include="Battle.cs" />
     <Compile Include="battlefield\Battlefield.cs" />
     <Compile Include="battlefield\freeunit\FreeUnit.cs" />
+    <Compile Include="demos\demo_select.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
