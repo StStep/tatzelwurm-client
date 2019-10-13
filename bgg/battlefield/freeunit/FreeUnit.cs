@@ -33,6 +33,9 @@ public class FreeUnit : Node
         set => _dragable.Set("dragging", value);
     }
 
+    public Vector2 GlobalPosition => _primary.GlobalPosition;
+    public float GlobalRotation => _primary.GlobalRotation;
+
     private State __curstate;
     public State CurState
     {

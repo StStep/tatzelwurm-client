@@ -11,8 +11,8 @@ public class Battle: Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-	    GetNode("DeployGui").Set("create_unit", GD.FuncRef(GetNode("Battlefield"), "CreateUnit"));
-	    GetNode("TurnGui").Connect("finishedDeploying", this, "EndDeployment");
+	    GetNode("DeployGui").Set("create_unit", GD.FuncRef(GetNode("Battlefield"), nameof(Battlefield.DeployUnit)));
+	    GetNode("TurnGui").Connect("finishedDeploying", this, nameof(EndDeployment));
 
         EnterDeploymentState();
     }
@@ -26,19 +26,12 @@ public class Battle: Node
     {
         _state = BattleState.Deploying;
 	    GetNode("DeployGui").Call("enable");
-        foreach (var u in (GetNode("Battlefield") as Battlefield).Units)
-        {
-            u.CurState = FreeUnit.State.Placing;
-        }
     }
 
     private void EnterMoveState()
     {
         _state = BattleState.Moving;
 	    GetNode("DeployGui").Call("disable");
-        foreach (var u in (GetNode("Battlefield") as Battlefield).Units)
-        {
-            u.CurState = FreeUnit.State.Moving;
-        }
+        GetNode<Battlefield>("Battlefield").Deploy2Move();
     }
 }

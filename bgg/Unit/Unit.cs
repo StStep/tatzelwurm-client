@@ -79,7 +79,7 @@ public class Unit : Node2D
 
     public override void _Process(float delta)
     {
-        var mpos = GetViewport().GetMousePosition();
+        var mpos = _ghost.GetGlobalMousePosition();
         switch (_state)
         {
             case State.Idle:
