@@ -2,13 +2,13 @@
 using Godot;
 using System;
 
-public class FreeUnit : Sprite
+public class DragUnit : Sprite
 {
     [Signal]
-    public delegate void Picked(FreeUnit u);
+    public delegate void Picked(DragUnit u);
 
     [Signal]
-    public delegate void Placed(FreeUnit u);
+    public delegate void Placed(DragUnit u);
 
     private Node _dragable;
 
