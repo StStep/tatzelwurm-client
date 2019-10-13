@@ -16,7 +16,7 @@ func _input(ev):
 		selected_item.accept_input(ev)
 
 func is_selection_allowed():
-	if selected_item != null and selected_item.is_busy():
+	if selected_item != null and selected_item.is_busy:
 		return false
 	else:
 		return true
@@ -31,8 +31,7 @@ func req_selection(value):
 	# Check for select_item i/f
 	if not value.has_method("select") \
 			or not value.has_method("deselect") \
-			or not value.has_method("accept_input") \
-			or not value.has_method("is_busy"):
+			or not value.has_method("accept_input"):
 		print("Warning: select_item missing functions")
 		return
 
