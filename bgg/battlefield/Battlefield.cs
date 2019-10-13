@@ -9,10 +9,10 @@ public class Battlefield : Node
     // private string b = "text";
 
     private PackedScene _deployUnitScene = GD.Load<PackedScene>("res://Unit/DragUnit.tscn");
-    private PackedScene _moveUnitScene = GD.Load<PackedScene>("res://Unit/Unit.tscn");
+    private PackedScene _moveUnitScene = GD.Load<PackedScene>("res://Unit/MoveUnit.tscn");
 
     private List<DragUnit> _deployUnits = new List<DragUnit>();
-    private List<Unit> _moveUnits = new List<Unit>();
+    private List<MoveUnit> _moveUnits = new List<MoveUnit>();
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -36,7 +36,7 @@ public class Battlefield : Node
         var selMan = GetNode<SelectManager>("Units");
         foreach (var u in _deployUnits)
         {
-            var newUnit = _moveUnitScene.Instance() as Unit;
+            var newUnit = _moveUnitScene.Instance() as MoveUnit;
             newUnit.selManager = selMan;
             newUnit.GlobalPosition = u.GlobalPosition;
             newUnit.GlobalRotation = u.GlobalRotation;

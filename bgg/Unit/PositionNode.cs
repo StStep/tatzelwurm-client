@@ -3,7 +3,7 @@ using System;
 
 public class PositionNode : Node2D
 {
-    public Unit unit { get; set; }
+    public MoveUnit unit { get; set; }
     public Vector2 start => previous != null ? previous.end : unit.GlobalPosition;
 
     public Vector2 end

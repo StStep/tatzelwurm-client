@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class Unit : Node2D
+public class MoveUnit : Node2D
 {
     private enum State { Not_Selected, Idle, Add_Move_Single, Add_Move_Cont, Adjust_Move_Node }
 
