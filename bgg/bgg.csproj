@@ -54,6 +54,7 @@
     <Compile Include="battlefield\freeunit\FreeUnit.cs" />
     <Compile Include="decorators\MouseArea2d.cs" />
     <Compile Include="decorators\SelectItem.cs" />
+    <Compile Include="decorators\SelectManager.cs" />
     <Compile Include="demos\demo_select.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\PositionNode.cs" />
