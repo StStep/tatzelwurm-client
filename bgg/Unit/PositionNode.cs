@@ -39,14 +39,14 @@ public class PositionNode : Node2D
         path_area = GetNode<MouseArea2d>("PathArea");
         path_shape = GetNode<CollisionShape2D>("PathArea/Shape");
 
-	    //marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(_render_marker_highlight));
-	    //marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(_accept_marker_event));
-	    //path_area.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(_render_path_highlight));
+	    marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(_render_marker_highlight));
+	    marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(_accept_marker_event));
+	    path_area.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(_render_path_highlight));
     }
 
     private void _accept_marker_event(InputEvent ev)
     {
-        if (!(bool)unit.Get("is_busy"))
+        if (!(bool)unit.Call("is_busy"))
         {
             unit.Set("mv_adj", this);
             if ((bool)unit.Call("handle_input", ev))
@@ -58,7 +58,7 @@ public class PositionNode : Node2D
 
     private void _render_marker_highlight()
     {
-        if ((bool)unit.Get("is_selected") && !(bool)unit.Get("is_busy") && marker.is_mouse_hovering)
+        if ((bool)unit.Call("is_selected") && !(bool)unit.Call("is_busy") && marker.is_mouse_hovering)
         {
             marker.GetNode<Sprite>("Sprite").Modulate = C_HIGHLIGHT;
         }
@@ -70,7 +70,7 @@ public class PositionNode : Node2D
 
     private void  _render_path_highlight()
     {
-        if ((bool)unit.Get("is_selected") && !(bool)unit.Get("is_busy") && path_area.is_mouse_hovering)
+        if ((bool)unit.Call("is_selected") && !(bool)unit.Call("is_busy") && path_area.is_mouse_hovering)
         {
             unit.Set("high_path", this);
         }
