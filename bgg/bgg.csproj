@@ -58,6 +58,7 @@
     <Compile Include="demos\demo_select.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\PositionNode.cs" />
+    <Compile Include="Unit\Unit.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

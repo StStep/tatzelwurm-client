@@ -3,7 +3,7 @@ using System;
 
 public class PositionNode : Node2D
 {
-    public Node2D unit { get; set; }
+    public Unit unit { get; set; }
     public Vector2 start => previous != null ? previous.end : unit.GlobalPosition;
 
     public Vector2 end
@@ -46,10 +46,10 @@ public class PositionNode : Node2D
 
     private void _accept_marker_event(InputEvent ev)
     {
-        if (!(bool)unit.Call("is_busy"))
+        if (!unit.is_busy)
         {
-            unit.Set("mv_adj", this);
-            if ((bool)unit.Call("handle_input", ev))
+            unit.mv_adj = this;
+            if (unit.handle_input(ev))
             {
                 GetTree().SetInputAsHandled();
             }
@@ -58,7 +58,7 @@ public class PositionNode : Node2D
 
     private void _render_marker_highlight()
     {
-        if ((bool)unit.Call("is_selected") && !(bool)unit.Call("is_busy") && marker.is_mouse_hovering)
+        if (unit.is_selected && !unit.is_busy && marker.is_mouse_hovering)
         {
             marker.GetNode<Sprite>("Sprite").Modulate = C_HIGHLIGHT;
         }
@@ -70,9 +70,9 @@ public class PositionNode : Node2D
 
     private void  _render_path_highlight()
     {
-        if ((bool)unit.Call("is_selected") && !(bool)unit.Call("is_busy") && path_area.is_mouse_hovering)
+        if (unit.is_selected && !unit.is_busy && path_area.is_mouse_hovering)
         {
-            unit.Set("high_path", this);
+            unit.high_path = this;
         }
     }
 
