@@ -1,9 +1,8 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://demos/demo_select.cs" type="Script" id=1]
 [ext_resource path="res://decorators/select_manager.gd" type="Script" id=2]
-[ext_resource path="res://unit/unit.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Unit/Unit.gd" type="Script" id=4]
+[ext_resource path="res://Unit/Unit.tscn" type="PackedScene" id=3]
 
 [node name="World" type="Node"]
 script = ExtResource( 1 )
@@ -16,24 +15,18 @@ script = ExtResource( 2 )
 [node name="Unit" parent="Units" instance=ExtResource( 3 )]
 position = Vector2( 294.725, 86.4445 )
 rotation = 2.36662
-script = ExtResource( 4 )
 
 [node name="Unit2" parent="Units" instance=ExtResource( 3 )]
 position = Vector2( 543, 86 )
 rotation = 3.12692
-script = ExtResource( 4 )
 
 [node name="Unit3" parent="Units" instance=ExtResource( 3 )]
 position = Vector2( 756.524, 227.198 )
 rotation = -1.14182
-script = ExtResource( 4 )
 
 [node name="Unit4" parent="Units" instance=ExtResource( 3 )]
 position = Vector2( 480.524, 407.198 )
-script = ExtResource( 4 )
 
 [node name="Unit5" parent="Units" instance=ExtResource( 3 )]
 position = Vector2( 248.524, 308.198 )
 rotation = 1.17038
-script = ExtResource( 4 )
-

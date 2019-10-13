@@ -55,6 +55,7 @@
     <Compile Include="decorators\MouseArea2d.cs" />
     <Compile Include="demos\demo_select.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\PositionNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
