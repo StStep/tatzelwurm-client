@@ -8,8 +8,8 @@ public class Battlefield : Node
     // private int a = 2;
     // private string b = "text";
 
-    private PackedScene _deployUnitScene = GD.Load<PackedScene>("res://Unit/DragUnit.tscn");
-    private PackedScene _moveUnitScene = GD.Load<PackedScene>("res://Unit/MoveUnit.tscn");
+    private PackedScene _deployUnitScene = GD.Load<PackedScene>("res://units/DragUnit.tscn");
+    private PackedScene _moveUnitScene = GD.Load<PackedScene>("res://units/MoveUnit.tscn");
 
     private List<DragUnit> _deployUnits = new List<DragUnit>();
     private List<MoveUnit> _moveUnits = new List<MoveUnit>();

@@ -51,14 +51,14 @@
   <ItemGroup>
     <Compile Include="Battle.cs" />
     <Compile Include="battlefield\Battlefield.cs" />
-    <Compile Include="Unit\DragUnit.cs" />
+    <Compile Include="units\MoveUnit.cs" />
+    <Compile Include="units\DragUnit.cs" />
+    <Compile Include="units\PositionNode.cs" />
     <Compile Include="decorators\MouseArea2d.cs" />
     <Compile Include="decorators\SelectItem.cs" />
     <Compile Include="decorators\SelectManager.cs" />
     <Compile Include="demos\demo_select.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit\MoveUnit.cs" />
-    <Compile Include="Unit\PositionNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -12,7 +12,7 @@ public class MoveUnit : Node2D
     private Color colPathSelected = new  Color("16ab19"); // Green
     private Color colPathHighlight = new  Color("b6ff00"); // Green-Yellow
 
-    private PackedScene _posNodeScene = GD.Load<PackedScene>("res://unit/position_node.tscn"); // Will load when the script is instanced.
+    private PackedScene _posNodeScene = GD.Load<PackedScene>("res://units/PositionNode.tscn"); // Will load when the script is instanced.
 
     private State _state;
     private Color _prevMarkerCol;
