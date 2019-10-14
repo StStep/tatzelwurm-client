@@ -85,10 +85,10 @@ public class MoveUnit : Node2D
         switch (_state)
         {
             case State.Idle:
-                if (HighlightedPathNode != null && HighlightedPathNode.path_area.is_mouse_hovering)
+                if (HighlightedPathNode != null && HighlightedPathNode.PathArea.is_mouse_hovering)
                 {
                     _ghost.Show();
-                    _ghost.GlobalPosition = HighlightedPathNode.closest_pnt_on_path(mpos);
+                    _ghost.GlobalPosition = HighlightedPathNode.GetClosestPointOnPath(mpos);
                 }
                 else
                 {
@@ -96,7 +96,7 @@ public class MoveUnit : Node2D
                 }
                 break;
             case State.AddingNodes:
-                var end = _nodeTail != null ? _nodeTail.end : GlobalPosition;
+                var end = _nodeTail != null ? _nodeTail.EndPos : GlobalPosition;
                 _move_prev.Points = new Vector2[] { ToLocal(end), ToLocal(mpos) };
                 _ghost.GlobalPosition = mpos;
                 _ghost.GlobalRotation = mpos.AngleToPoint(end) + Mathf.Pi/2f;
@@ -104,8 +104,8 @@ public class MoveUnit : Node2D
             case State.AdjustingNode:
                 if (AdjustingNode != null)
                 {
-                    AdjustingNode.end = mpos;
-                    _end_marker.GlobalPosition = _nodeTail.end;
+                    AdjustingNode.EndPos = mpos;
+                    _end_marker.GlobalPosition = _nodeTail.EndPos;
                 }
                 break;
             case State.NotSelected:
@@ -160,8 +160,8 @@ public class MoveUnit : Node2D
         var node = _nodeHead;
         while (node != null)
         {
-            node.path.Modulate = colPathHighlight;
-            node = node.next;
+            node.Path.Modulate = colPathHighlight;
+            node = node.Next;
         }
     }
 
@@ -171,8 +171,8 @@ public class MoveUnit : Node2D
         var node = _nodeHead;
         while (node != null)
         {
-            node.path.Modulate = _prevPathCol;
-            node = node.next;
+            node.Path.Modulate = _prevPathCol;
+            node = node.Next;
         }
     }
 
@@ -227,13 +227,13 @@ public class MoveUnit : Node2D
         var node = _nodeHead;
         while (node != null)
         {
-            node.enable();
-            node.path.Modulate = colPathSelected;
-            node = node.next;
+            node.Enable();
+            node.Path.Modulate = colPathSelected;
+            node = node.Next;
         }
 
         // Always hide last node under end marker
-        _nodeTail?.disable();
+        _nodeTail?.Disable();
         GD.Print("Selected " + GetName());
     }
 
@@ -246,9 +246,9 @@ public class MoveUnit : Node2D
         var node = _nodeHead;
         while (node != null)
         {
-            node.disable();
-            node.path.Modulate = colPathNotSelected;
-            node = node.next;
+            node.Disable();
+            node.Path.Modulate = colPathNotSelected;
+            node = node.Next;
         }
 
         GD.Print("Deselected " + Name);
@@ -280,7 +280,7 @@ public class MoveUnit : Node2D
                 {
                     ChangeState(State.AddingNodes);
                 }
-                else if (AdjustingNode != null && AdjustingNode.marker.is_mouse_hovering && ev.IsActionPressed("ui_accept"))
+                else if (AdjustingNode != null && AdjustingNode.Marker.is_mouse_hovering && ev.IsActionPressed("ui_accept"))
                 {
                     ChangeState(State.AdjustingNode);
                 }
@@ -336,7 +336,7 @@ public class MoveUnit : Node2D
     {
         GD.Print("Add move");
         var inst = _posNodeScene.Instance() as PositionNode;
-        inst.unit = this;
+        inst.ParentUnit = this;
         AddChild(inst);
 
         // disable point under end marker, enable prev hidden
@@ -346,18 +346,18 @@ public class MoveUnit : Node2D
         }
         else
         {
-            _nodeTail.enable();
-            _nodeTail.next = inst;
+            _nodeTail.Enable();
+            _nodeTail.Next = inst;
         }
-        inst.disable();
-        inst.previous = _nodeTail;
+        inst.Disable();
+        inst.Previous = _nodeTail;
         _nodeTail = inst;
-        inst.end = gpos;
-        inst.path.Modulate = colPathSelected;
+        inst.EndPos = gpos;
+        inst.Path.Modulate = colPathSelected;
 
         // Move up end marker
         _end_marker.Show();
-        _end_marker.GlobalPosition = _nodeTail.end;
+        _end_marker.GlobalPosition = _nodeTail.EndPos;
         _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
     }
 
@@ -365,14 +365,14 @@ public class MoveUnit : Node2D
     {
         AdjustingNode = null;
         HighlightedPathNode = null;
-        var inst = _nodeTail.previous;
-        _nodeTail.erase();
+        var inst = _nodeTail.Previous;
+        _nodeTail.Erase();
         _nodeTail = inst;
         if (_nodeTail != null)
         {
-            _nodeTail.next = null;
-            _nodeTail.disable();
-            _end_marker.GlobalPosition = _nodeTail.end;
+            _nodeTail.Next = null;
+            _nodeTail.Disable();
+            _end_marker.GlobalPosition = _nodeTail.EndPos;
             _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
         }
         else
@@ -388,7 +388,7 @@ public class MoveUnit : Node2D
         HighlightedPathNode = null;
         if (_nodeHead != null)
         {
-            _nodeHead.erase();
+            _nodeHead.Erase();
             _nodeHead = null;
         }
         _end_marker.Hide();

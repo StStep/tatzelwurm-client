@@ -3,116 +3,119 @@ using System;
 
 public class PositionNode : Node2D
 {
-    public MoveUnit unit { get; set; }
-    public Vector2 start => previous != null ? previous.end : unit.GlobalPosition;
+    private Color colNotHighlighted = new Color("ffffff"); // White
+    private Color colHighlighted = new  Color("b6ff00"); // Green-Yellow
 
-    public Vector2 end
+    private Vector2 _moveVector = Vector2.Zero;
+
+    public MoveUnit ParentUnit { get; set; }
+    public Vector2 StartPos => Previous != null ? Previous.EndPos : ParentUnit.GlobalPosition;
+
+    public Vector2 EndPos
     {
         get => ToGlobal(Vector2.Zero);
         set
         {
-            move = value - start;
+            _moveVector = value - StartPos;
             GlobalPosition = value;
-            GlobalRotation = move.Angle() + (float)(Mathf.Pi/2.0);
-            update();
+            GlobalRotation = _moveVector.Angle() + (float)(Mathf.Pi/2.0);
+            PropogateEndPosUpdate();
         }
     }
 
-    public Color C_NOT_HIGHLIGHTED = new Color("ffffff"); // White
-    public Color C_HIGHLIGHT = new  Color("b6ff00"); // Green-Yellow
+    public MouseArea2d Marker;
+    public Line2D Path;
+    public MouseArea2d PathArea;
 
-    public MouseArea2d marker;
-    public Line2D path;
-    public MouseArea2d path_area;
-    public CollisionShape2D path_shape;
-
-    public PositionNode previous = null;
-    public PositionNode next = null;
-
-    public Vector2 move = Vector2.Zero;
+    public PositionNode Previous { get; set; }
+    public PositionNode Next { get; set; }
 
     public override void _Ready()
     {
         base._Ready();
-        marker = GetNode<MouseArea2d>("Marker");
-        path = GetNode<Line2D>("Path");
-        path_area = GetNode<MouseArea2d>("PathArea");
-        path_shape = GetNode<CollisionShape2D>("PathArea/Shape");
+        Marker = GetNode<MouseArea2d>("Marker");
+        Path = GetNode<Line2D>("Path");
+        PathArea = GetNode<MouseArea2d>("PathArea");
 
-	    marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(_render_marker_highlight));
-	    marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(_accept_marker_event));
-	    path_area.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(_render_path_highlight));
+	    Marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(OnEvent));
+	    Marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(OnMarkerHoverChange));
+	    PathArea.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(OnPathHovorChange));
     }
 
-    private void _accept_marker_event(InputEvent ev)
+    private void OnEvent(InputEvent ev)
     {
-        if (!unit.IsBusy)
+        if (!ParentUnit.IsBusy)
         {
-            unit.AdjustingNode = this;
-            if (unit.HandleInput(ev))
+            ParentUnit.AdjustingNode = this;
+            if (ParentUnit.HandleInput(ev))
             {
                 GetTree().SetInputAsHandled();
             }
         }
     }
 
-    private void _render_marker_highlight()
+    private void OnMarkerHoverChange()
     {
-        if (unit.IsSelected && !unit.IsBusy && marker.is_mouse_hovering)
+        if (ParentUnit.IsSelected && !ParentUnit.IsBusy && Marker.is_mouse_hovering)
         {
-            marker.GetNode<Sprite>("Sprite").Modulate = C_HIGHLIGHT;
+            Marker.GetNode<Sprite>("Sprite").Modulate = colHighlighted;
         }
         else
         {
-            marker.GetNode<Sprite>("Sprite").Modulate = C_NOT_HIGHLIGHTED;
+            Marker.GetNode<Sprite>("Sprite").Modulate = colNotHighlighted;
         }
     }
 
-    private void  _render_path_highlight()
+    private void  OnPathHovorChange()
     {
-        if (unit.IsSelected && !unit.IsBusy && path_area.is_mouse_hovering)
+        if (ParentUnit.IsSelected && !ParentUnit.IsBusy && PathArea.is_mouse_hovering)
         {
-            unit.HighlightedPathNode = this;
+            ParentUnit.HighlightedPathNode = this;
         }
     }
 
-    public void enable()
+    private void PropogateEndPosUpdate()
     {
-        marker.Show();
+        GlobalPosition = StartPos + _moveVector;
+        var l_vec = ToLocal(StartPos);
+        Path.Points = new Vector2[] { l_vec, Vector2.Zero };
+        var shape = new RectangleShape2D();
+        shape.Extents = new Vector2(20, l_vec.Length()/2.0f);
+        var shapeNode = GetNode<CollisionShape2D>("PathArea/Shape");
+        shapeNode.SetShape(shape);
+        shapeNode.Rotation = l_vec.Angle() + Mathf.Pi/2.0f;
+        shapeNode.Position = new Vector2(l_vec.x/2.0f, l_vec.y/2.0f);
+        if (Next != null)
+        {
+            Next.PropogateEndPosUpdate();
+        }
+    }
+
+    public void Enable()
+    {
+        Marker.Show();
         SetProcessInput(true);
     }
 
-    public void disable()
+    public void Disable()
     {
-        marker.Hide();
+        Marker.Hide();
         SetProcessInput(false);
     }
 
-    public void update()
+    public void Erase()
     {
-        GlobalPosition = start + move;
-        var l_vec = ToLocal(start);
-        path.Points = new Vector2[] { l_vec, Vector2.Zero };
-        var shape = new RectangleShape2D();
-        shape.Extents = new Vector2(20, l_vec.Length()/2.0f);
-        path_shape.SetShape(shape);
-        path_shape.Rotation = l_vec.Angle() + Mathf.Pi/2.0f;
-        path_shape.Position = new Vector2(l_vec.x/2.0f, l_vec.y/2.0f);
-        if (next != null)
-            next.update();
-    }
-
-    public void erase()
-    {
-        if (next != null)
-            next.erase();
+        if (Next != null)
+        {
+            Next.Erase();
+        }
         QueueFree();
     }
 
-    public Vector2 closest_pnt_on_path(Vector2 gpos)
+    public Vector2 GetClosestPointOnPath(Vector2 gpos)
     {
         var pnt = ToLocal(gpos);
-        var dir = ToLocal(start).Normalized();
+        var dir = ToLocal(StartPos).Normalized();
         var dot = pnt.Dot(dir);
         return ToGlobal(dir*dot);
     }
