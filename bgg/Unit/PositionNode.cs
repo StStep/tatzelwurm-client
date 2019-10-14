@@ -46,10 +46,10 @@ public class PositionNode : Node2D
 
     private void _accept_marker_event(InputEvent ev)
     {
-        if (!unit.is_busy)
+        if (!unit.IsBusy)
         {
-            unit.mv_adj = this;
-            if (unit.handle_input(ev))
+            unit.AdjustingNode = this;
+            if (unit.HandleInput(ev))
             {
                 GetTree().SetInputAsHandled();
             }
@@ -58,7 +58,7 @@ public class PositionNode : Node2D
 
     private void _render_marker_highlight()
     {
-        if (unit.is_selected && !unit.is_busy && marker.is_mouse_hovering)
+        if (unit.IsSelected && !unit.IsBusy && marker.is_mouse_hovering)
         {
             marker.GetNode<Sprite>("Sprite").Modulate = C_HIGHLIGHT;
         }
@@ -70,9 +70,9 @@ public class PositionNode : Node2D
 
     private void  _render_path_highlight()
     {
-        if (unit.is_selected && !unit.is_busy && path_area.is_mouse_hovering)
+        if (unit.IsSelected && !unit.IsBusy && path_area.is_mouse_hovering)
         {
-            unit.high_path = this;
+            unit.HighlightedPathNode = this;
         }
     }
 

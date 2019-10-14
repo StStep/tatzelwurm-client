@@ -3,8 +3,7 @@ using System;
 
 public class SelectManager : Node
 {
-
-    public SelectItem selected_item { get; private set; }
+    public SelectItem SelectedItem { get; private set; }
 
     public override void _Ready()
     {
@@ -12,28 +11,17 @@ public class SelectManager : Node
         SetProcessInput(true);
     }
 
-    public override void _Input(InputEvent @event) => selected_item?.accept_input(@event);
+    public override void _Input(InputEvent @event) => SelectedItem?.AcceptInput(@event);
 
-    public Boolean is_selection_allowed() => selected_item == null || !selected_item.is_busy;
+    public Boolean IsSelectionAllowed() => SelectedItem?.IsBusy != true;
 
-    public void req_selection(SelectItem item)
+    public void ReqSelection(SelectItem item)
     {
-        if (item == null)
+        if (item != SelectedItem && SelectedItem?.IsBusy != true)
         {
-            ClearSelection();
+            SelectedItem?.Deselect();
+            SelectedItem = item;
+            SelectedItem?.Select();
         }
-        else if (item != selected_item)
-        {
-            ClearSelection();
-            selected_item = item;
-            item.select();
-        }
-        else { }
-    }
-
-    private void ClearSelection()
-    {
-        selected_item?.deselect();
-        selected_item = null;
     }
 }

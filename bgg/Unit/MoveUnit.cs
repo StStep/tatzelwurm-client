@@ -3,21 +3,20 @@ using System;
 
 public class MoveUnit : Node2D
 {
-    private enum State { Not_Selected, Idle, Add_Move_Single, Add_Move_Cont, Adjust_Move_Node }
+    private enum State { NotSelected, Idle, AddingNodes, AdjustingNode }
 
-    private Color C_NOT_SELECTED = new Color("ffffff"); // White
-    private Color C_SELECTED = new  Color("f6ff00"); // Yellow
-    private Color C_HIGHLIGHT = new  Color("b6ff00"); // Green-Yellow
-    private Color C_PATH_NOT_SELECTED = new  Color("66ff68"); // Pastel-Green
-    private Color C_PATH_SELECTED = new  Color("16ab19"); // Green
-    private Color C_PATH_HIGHLIGHT = new  Color("b6ff00"); // Green-Yellow
+    private Color colNotSelected = new Color("ffffff"); // White
+    private Color colSelected = new  Color("f6ff00"); // Yellow
+    private Color colHighlight = new  Color("b6ff00"); // Green-Yellow
+    private Color colPathNotSelected = new  Color("66ff68"); // Pastel-Green
+    private Color colPathSelected = new  Color("16ab19"); // Green
+    private Color colPathHighlight = new  Color("b6ff00"); // Green-Yellow
 
-    private PackedScene _move_node = GD.Load<PackedScene>("res://unit/position_node.tscn"); // Will load when the script is instanced.
+    private PackedScene _posNodeScene = GD.Load<PackedScene>("res://unit/position_node.tscn"); // Will load when the script is instanced.
 
-    public SelectManager selManager;
     private State _state;
-    private Color _markerCol;
-    private Color _pathCol;
+    private Color _prevMarkerCol;
+    private Color _prevPathCol;
 
     private Sprite _ghost;
     private Sprite _start_marker_sprite;
@@ -25,31 +24,34 @@ public class MoveUnit : Node2D
     private Line2D _move_prev;
     private MouseArea2d _start_marker;
     private MouseArea2d _end_marker;
-    private SelectItem _select_item;
+    private SelectItem _selectItem;
 
     // Tail of move node list
-    private PositionNode _mv_tail = null;
+    private PositionNode _nodeTail;
 
     // First Move Node
-    private PositionNode _mv_head = null;
+    private PositionNode _nodeHead;
+
+
+    public SelectManager SelectManager { get; set; }
 
     // Move Node Adjusting
-    public PositionNode mv_adj = null;
+    public PositionNode AdjustingNode { get; set; }
 
     // Path Highlighting
-    public PositionNode high_path = null;
+    public PositionNode HighlightedPathNode { get; set; }
 
-    public Boolean is_selected => _select_item.is_selected;
-    public Boolean is_busy => _select_item.is_busy;
+    public Boolean IsSelected => _selectItem.IsSelected;
+    public Boolean IsBusy => _selectItem.IsBusy;
 
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         base._Ready();
-        _state = State.Not_Selected;
-        _markerCol = C_NOT_SELECTED;
-        _pathCol = C_PATH_NOT_SELECTED;
+        _state = State.NotSelected;
+        _prevMarkerCol = colNotSelected;
+        _prevPathCol = colPathNotSelected;
 
         _ghost = GetNode<Sprite>("Ghost");
         _start_marker_sprite = GetNode<Sprite>("StartMarker/Sprite");
@@ -57,23 +59,23 @@ public class MoveUnit : Node2D
         _move_prev = GetNode<Line2D>("MovePreview");
         _start_marker = GetNode<MouseArea2d>("StartMarker");
         _end_marker = GetNode<MouseArea2d>("EndMarker");
-        _select_item = GetNode<SelectItem>("SelectItem");
+        _selectItem = GetNode<SelectItem>("SelectItem");
 
         SetProcess(true);
-        _start_marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(_render_marker_highlight), new Godot.Collections.Array() { _start_marker });
-        _start_marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(_accept_event));
-        _end_marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(_render_marker_highlight), new Godot.Collections.Array() { _end_marker });
-        _end_marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(_accept_event));
-        _select_item.Connect(nameof(SelectItem.selection_changed), this, nameof(_on_sel_change));
-        _select_item.Connect(nameof(SelectItem.item_event_occured), this, nameof(_accept_event));
+        _start_marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(OnMarkerHoverChange), new Godot.Collections.Array() { _start_marker });
+        _start_marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(OnEvent));
+        _end_marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(OnMarkerHoverChange), new Godot.Collections.Array() { _end_marker });
+        _end_marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(OnEvent));
+        _selectItem.Connect(nameof(SelectItem.selection_changed), this, nameof(OnSelectionChange));
+        _selectItem.Connect(nameof(SelectItem.item_event_occured), this, nameof(OnEvent));
         _end_marker.Hide();
     }
 
     public override void _ExitTree()
     {
-        if (is_selected)
+        if (IsSelected)
         {
-            selManager.req_selection(null);
+            SelectManager.ReqSelection(null);
         }
     }
 
@@ -83,133 +85,98 @@ public class MoveUnit : Node2D
         switch (_state)
         {
             case State.Idle:
-                if (high_path != null && high_path.path_area.is_mouse_hovering)
+                if (HighlightedPathNode != null && HighlightedPathNode.path_area.is_mouse_hovering)
                 {
                     _ghost.Show();
-                    _ghost.GlobalPosition = high_path.closest_pnt_on_path(mpos);
+                    _ghost.GlobalPosition = HighlightedPathNode.closest_pnt_on_path(mpos);
                 }
                 else
                 {
                     _ghost.Hide();
                 }
                 break;
-            case State.Add_Move_Cont:
-                var end = _mv_tail != null ? _mv_tail.end : GlobalPosition;
+            case State.AddingNodes:
+                var end = _nodeTail != null ? _nodeTail.end : GlobalPosition;
                 _move_prev.Points = new Vector2[] { ToLocal(end), ToLocal(mpos) };
                 _ghost.GlobalPosition = mpos;
                 _ghost.GlobalRotation = mpos.AngleToPoint(end) + Mathf.Pi/2f;
                 break;
-            case State.Adjust_Move_Node:
-                if (mv_adj != null)
+            case State.AdjustingNode:
+                if (AdjustingNode != null)
                 {
-                    mv_adj.end = mpos;
-                    _end_marker.GlobalPosition = _mv_tail.end;
+                    AdjustingNode.end = mpos;
+                    _end_marker.GlobalPosition = _nodeTail.end;
                 }
                 break;
+            case State.NotSelected:
             default:
                 break;
         }
     }
 
-    private void _accept_event(InputEvent ev)
+    private void OnEvent(InputEvent ev)
     {
-        if (handle_input(ev))
+        if (HandleInput(ev))
+        {
             GetTree().SetInputAsHandled();
-    }
-
-    private void _on_sel_change(Boolean is_sel)
-    {
-        if (is_sel)
-            _change_state(State.Idle);
-        else
-            _change_state(State.Not_Selected);
-    }
-
-    private void _highlight()
-    {
-        _start_marker_sprite.Modulate = C_HIGHLIGHT;
-        _end_marker_sprite.Modulate = C_HIGHLIGHT;
-        var node = _mv_head;
-        while (node != null)
-        {
-            node.path.Modulate = C_PATH_HIGHLIGHT;
-            node = node.next;
         }
     }
 
-    private void _unhighlight()
-    {	_start_marker_sprite.Modulate = _markerCol;
-        _end_marker_sprite.Modulate = _markerCol;
-        var node = _mv_head;
-        while (node != null)
-        {
-            node.path.Modulate = _pathCol;
-            node = node.next;
-        }
-    }
+    private void OnSelectionChange(Boolean isSelected) => ChangeState(isSelected ? State.Idle : State.NotSelected);
 
-    private void _render_marker_highlight(MouseArea2d marker)
-    {	// Highlight everything if not yet selected
-        if (_state == State.Not_Selected && marker.is_mouse_hovering && selManager.is_selection_allowed())
-            _highlight();
-        // If busy or not selected, don't highlight anything
-        else if (_state == State.Not_Selected || is_busy)
-            _unhighlight();
-        // Else only highlight self
+    private void OnMarkerHoverChange(MouseArea2d marker)
+    {
+        // Do nothing if busy
+        if (IsBusy)
+        {
+            return;
+        }
+
+        // Highlight everything if not yet selected and selection allowed
+        if (_state == State.NotSelected && marker.is_mouse_hovering && SelectManager.IsSelectionAllowed())
+        {
+            HighlightEverything();
+        }
+        // If not selected, don't highlight anything or busy
+        else if (_state == State.NotSelected)
+        {
+            UnhighlightEverything();
+        }
+        // Else only highlight given marker
         else if (marker.is_mouse_hovering)
-            marker.GetNode<Sprite>("Sprite").Modulate = C_HIGHLIGHT;
+        {
+            marker.GetNode<Sprite>("Sprite").Modulate = colHighlight;
+        }
         else
-            marker.GetNode<Sprite>("Sprite").Modulate = _markerCol;
+        {
+            marker.GetNode<Sprite>("Sprite").Modulate = _prevMarkerCol;
+        }
     }
 
-    private void _on_select()
+    private void HighlightEverything()
     {
-        _start_marker_sprite.Modulate = C_SELECTED;
-        _end_marker_sprite.Modulate = C_SELECTED;
-        _markerCol = C_SELECTED;
-        _pathCol = C_PATH_SELECTED;
-        var node = _mv_head;
+        _start_marker_sprite.Modulate = colHighlight;
+        _end_marker_sprite.Modulate = colHighlight;
+        var node = _nodeHead;
         while (node != null)
         {
-            node.enable();
-            node.path.Modulate = C_PATH_SELECTED;
+            node.path.Modulate = colPathHighlight;
             node = node.next;
         }
-        // Always hide last node under end marker
-        _mv_tail?.disable();
-        GD.Print("Selected " + GetName());
     }
 
-    private void _on_deselect()
-    {
-        _start_marker_sprite.Modulate = C_NOT_SELECTED;
-        _end_marker_sprite.Modulate = C_NOT_SELECTED;
-        _markerCol = C_NOT_SELECTED;
-        _pathCol = C_PATH_NOT_SELECTED;
-        var node = _mv_head;
+    private void UnhighlightEverything()
+    {	_start_marker_sprite.Modulate = _prevMarkerCol;
+        _end_marker_sprite.Modulate = _prevMarkerCol;
+        var node = _nodeHead;
         while (node != null)
         {
-            node.disable();
-            node.path.Modulate = C_PATH_NOT_SELECTED;
+            node.path.Modulate = _prevPathCol;
             node = node.next;
         }
-        GD.Print("Deselected " + Name);
     }
 
-    private void _on_mv_reset()
-    {
-        _mv_tail = null;
-        mv_adj = null;
-        high_path = null;
-        if (_mv_head != null)
-        {
-            _mv_head.erase();
-            _mv_head = null;
-        }
-        _end_marker.Hide();
-    }
-
-    private void _change_state(State s)
+    private void ChangeState(State s)
     {
         if (s == _state)
             return;
@@ -220,7 +187,7 @@ public class MoveUnit : Node2D
             case State.Idle:
                 _ghost.Hide();
                 break;
-            case State.Add_Move_Cont:
+            case State.AddingNodes:
                 _move_prev.Points = new Vector2[0];
                 _ghost.Hide();
                 break;
@@ -229,17 +196,21 @@ public class MoveUnit : Node2D
         }
 
         // New State
+        _selectItem.IsBusy = true;
         switch (s)
         {
-            case State.Not_Selected:
-                _on_deselect();
+            case State.NotSelected:
+                HandleDeselect();
+                _selectItem.IsBusy = false;
                 break;
             case State.Idle:
-                _on_select();
+                HandleSelect();
+                _selectItem.IsBusy = false;
                 break;
-            case State.Add_Move_Cont:
+            case State.AddingNodes:
                 _ghost.Show();
                 break;
+            case State.AdjustingNode:
             default:
                 break;
         }
@@ -247,66 +218,53 @@ public class MoveUnit : Node2D
         _state = s;
     }
 
-    private void _add_move_node(Vector2 gpos)
+    private void HandleSelect()
     {
-        GD.Print("Add move");
-        var inst = _move_node.Instance() as PositionNode;
-        inst.unit = this;
-        AddChild(inst);
-
-        // disable point under end marker, enable prev hidden
-        if (_mv_head == null)
+        _start_marker_sprite.Modulate = colSelected;
+        _end_marker_sprite.Modulate = colSelected;
+        _prevMarkerCol = colSelected;
+        _prevPathCol = colPathSelected;
+        var node = _nodeHead;
+        while (node != null)
         {
-            _mv_head = inst;
+            node.enable();
+            node.path.Modulate = colPathSelected;
+            node = node.next;
         }
-        else
-        {
-            _mv_tail.enable();
-            _mv_tail.next = inst;
-        }
-        inst.disable();
-        inst.previous = _mv_tail;
-        _mv_tail = inst;
-        inst.end = gpos;
-        inst.path.Modulate = C_PATH_SELECTED;
 
-        // Move up end marker
-        _end_marker.Show();
-        _end_marker.GlobalPosition = _mv_tail.end;
-        _end_marker.GlobalRotation = _mv_tail.GlobalRotation;
+        // Always hide last node under end marker
+        _nodeTail?.disable();
+        GD.Print("Selected " + GetName());
     }
 
-    private void _rm_last_move_node()
+    private void HandleDeselect()
     {
-        mv_adj = null;
-        high_path = null;
-        var inst = _mv_tail.previous;
-        _mv_tail.erase();
-        _mv_tail = inst;
-        if (_mv_tail != null)
+        _start_marker_sprite.Modulate = colNotSelected;
+        _end_marker_sprite.Modulate = colNotSelected;
+        _prevMarkerCol = colNotSelected;
+        _prevPathCol = colPathNotSelected;
+        var node = _nodeHead;
+        while (node != null)
         {
-            _mv_tail.next = null;
-            _mv_tail.disable();
-            _end_marker.GlobalPosition = _mv_tail.end;
-            _end_marker.GlobalRotation = _mv_tail.GlobalRotation;
+            node.disable();
+            node.path.Modulate = colPathNotSelected;
+            node = node.next;
         }
-        else
-        {
-            _on_mv_reset();
-        }
+
+        GD.Print("Deselected " + Name);
     }
 
-    public Boolean handle_input(InputEvent ev)
+    public Boolean HandleInput(InputEvent ev)
     {
         var ret = false;
         switch(_state)
         {
-            // select if hightlighted
-           case State.Not_Selected:
+            // select if hightlighted and not yet selected
+           case State.NotSelected:
                 if ((_start_marker.is_mouse_hovering || _end_marker.is_mouse_hovering) &&
-                    ev.IsActionPressed("ui_accept") && selManager.is_selection_allowed())
+                    ev.IsActionPressed("ui_accept") && SelectManager.IsSelectionAllowed())
                 {
-                    selManager.req_selection(_select_item);
+                    SelectManager.ReqSelection(_selectItem);
                     ret = true;
                 }
                 break;
@@ -315,46 +273,124 @@ public class MoveUnit : Node2D
                 ret = true;
                 if (_start_marker.is_mouse_hovering && ev.IsActionPressed("ui_accept"))
                 {
-                    _on_mv_reset();
-                    _change_state(State.Add_Move_Cont);
+                    ResetMoveNodes();
+                    ChangeState(State.AddingNodes);
                 }
                 else if (_end_marker.is_mouse_hovering && ev.IsActionPressed("ui_accept"))
-                    _change_state(State.Add_Move_Cont);
-                else if (mv_adj != null && mv_adj.marker.is_mouse_hovering && ev.IsActionPressed("ui_accept"))
-                    _change_state(State.Adjust_Move_Node);
+                {
+                    ChangeState(State.AddingNodes);
+                }
+                else if (AdjustingNode != null && AdjustingNode.marker.is_mouse_hovering && ev.IsActionPressed("ui_accept"))
+                {
+                    ChangeState(State.AdjustingNode);
+                }
                 else if (ev.IsActionPressed("ui_cancel"))
                 {
-                    if (selManager.is_selection_allowed())
-                        selManager.req_selection(null);
+                    if (SelectManager.IsSelectionAllowed())
+                        SelectManager.ReqSelection(null);
                 }
                 else
                     ret = false;
                 break;
             // Add Move or Return to Idle
-            case State.Add_Move_Cont:
+            case State.AddingNodes:
                 ret = true;
                 // Move end marker if click on, undo last
                 if (ev.IsActionPressed("ui_accept") && _end_marker.is_mouse_hovering)
-                    _rm_last_move_node();
+                {
+                    RmLastMoveNode();
+                }
                 else if (ev.IsActionPressed("ui_accept"))
-                    _add_move_node(_ghost.GlobalPosition);
+                {
+                    AddMoveNode(_ghost.GlobalPosition);
+                }
                 else if (ev.IsActionPressed("ui_cancel"))
-                    _change_state(State.Idle);
+                {
+                    ChangeState(State.Idle);
+                }
                 else
+                {
                     ret = false;
+                }
                 break;
             // Return to idle once done, adj happens in _process()
-            case State.Adjust_Move_Node:
+            case State.AdjustingNode:
                 ret = true;
                 if (ev.IsActionPressed("ui_accept") || ev.IsActionPressed("ui_cancel"))
-                    _change_state(State.Idle);
+                {
+                    ChangeState(State.Idle);
+                }
                 else
+                {
                     ret = false;
+                }
                 break;
             default:
                 break;
         }
 
         return ret;
+    }
+
+    private void AddMoveNode(Vector2 gpos)
+    {
+        GD.Print("Add move");
+        var inst = _posNodeScene.Instance() as PositionNode;
+        inst.unit = this;
+        AddChild(inst);
+
+        // disable point under end marker, enable prev hidden
+        if (_nodeHead == null)
+        {
+            _nodeHead = inst;
+        }
+        else
+        {
+            _nodeTail.enable();
+            _nodeTail.next = inst;
+        }
+        inst.disable();
+        inst.previous = _nodeTail;
+        _nodeTail = inst;
+        inst.end = gpos;
+        inst.path.Modulate = colPathSelected;
+
+        // Move up end marker
+        _end_marker.Show();
+        _end_marker.GlobalPosition = _nodeTail.end;
+        _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
+    }
+
+    private void RmLastMoveNode()
+    {
+        AdjustingNode = null;
+        HighlightedPathNode = null;
+        var inst = _nodeTail.previous;
+        _nodeTail.erase();
+        _nodeTail = inst;
+        if (_nodeTail != null)
+        {
+            _nodeTail.next = null;
+            _nodeTail.disable();
+            _end_marker.GlobalPosition = _nodeTail.end;
+            _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
+        }
+        else
+        {
+            ResetMoveNodes();
+        }
+    }
+
+    private void ResetMoveNodes()
+    {
+        _nodeTail = null;
+        AdjustingNode = null;
+        HighlightedPathNode = null;
+        if (_nodeHead != null)
+        {
+            _nodeHead.erase();
+            _nodeHead = null;
+        }
+        _end_marker.Hide();
     }
 }

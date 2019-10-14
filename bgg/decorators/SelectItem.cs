@@ -9,23 +9,23 @@ public class SelectItem : Node
     [Signal]
     public delegate void item_event_occured(InputEvent ev);
 
-    public Boolean is_busy { get; set; }
+    public Boolean IsBusy { get; set; }
 
-    public Boolean is_selected { get; private set; }
+    public Boolean IsSelected { get; private set; }
 
-    public void select()
+    public void Select()
     {
-        is_selected = true;
-        EmitSignal(nameof(selection_changed), is_selected);
+        IsSelected = true;
+        EmitSignal(nameof(selection_changed), IsSelected);
     }
 
-    public void deselect()
+    public void Deselect()
     {
-        is_selected = false;
-        EmitSignal(nameof(selection_changed), is_selected);
+        IsSelected = false;
+        EmitSignal(nameof(selection_changed), IsSelected);
     }
 
-    public void accept_input(InputEvent ev)
+    public void AcceptInput(InputEvent ev)
     {
         EmitSignal(nameof(item_event_occured), ev);
     }

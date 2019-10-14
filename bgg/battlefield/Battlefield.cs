@@ -37,7 +37,7 @@ public class Battlefield : Node
         foreach (var u in _deployUnits)
         {
             var newUnit = _moveUnitScene.Instance() as MoveUnit;
-            newUnit.selManager = selMan;
+            newUnit.SelectManager = selMan;
             newUnit.GlobalPosition = u.GlobalPosition;
             newUnit.GlobalRotation = u.GlobalRotation;
             _moveUnits.Add(newUnit);

@@ -8,7 +8,7 @@ public class demo_select : Node
         var selManager = GetNode<SelectManager>("SelectManager");
         foreach (MoveUnit u in GetNode("Units").GetChildren())
         {
-            u.selManager = selManager;
+            u.SelectManager = selManager;
         }
     }
 }
