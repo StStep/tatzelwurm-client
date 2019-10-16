@@ -124,7 +124,7 @@ func _test_3():
 	yield()
 
 	# Color Unit as focused
-	_battlefield_view_node.highlight_cmd_path(unit_ref, 0, 'Focus', Vector2(.5, 1))
+	_battlefield_view_node.highlight_cmd_path(unit_ref, 1, 'Focus', Vector2(.5, 1))
 	_battlefield_view_node.highlight_cmd_body(unit_ref, 0, 'Focus')
 
 	# Add Generic Command 1

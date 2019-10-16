@@ -11,6 +11,7 @@ show_behind_parent = true
 script = ExtResource( 1 )
 
 [node name="Reposition" type="Node2D" parent="."]
+editor/display_folded = true
 position = Vector2( 5, 0 )
 
 [node name="Line2D" type="Line2D" parent="Reposition"]
@@ -21,6 +22,7 @@ default_color = Color( 0.4, 1, 0.521875, 1 )
 texture_mode = 1302996400
 
 [node name="Wheel" type="Node2D" parent="."]
+editor/display_folded = true
 position = Vector2( 26.3793, 28.7713 )
 
 [node name="Line2D" type="Line2D" parent="Wheel"]
@@ -31,6 +33,7 @@ default_color = Color( 0.0873299, 0.40625, 0.0603027, 1 )
 texture_mode = 553311648
 
 [node name="Rotation" type="Node2D" parent="."]
+editor/display_folded = true
 position = Vector2( -63.7933, 0.711975 )
 
 [node name="Line2D" type="Line2D" parent="Rotation"]
@@ -50,11 +53,13 @@ width = 5.0
 texture_mode = 553311648
 
 [node name="BodyArea" type="Area2D" parent="."]
+editor/display_folded = true
 
 [node name="Shape" type="CollisionShape2D" parent="BodyArea"]
 shape = SubResource( 1 )
 
 [node name="PathArea" type="Area2D" parent="."]
+editor/display_folded = true
 
 [node name="Polygon" type="CollisionPolygon2D" parent="PathArea"]
 

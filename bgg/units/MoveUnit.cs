@@ -393,4 +393,21 @@ public class MoveUnit : Node2D
         }
         _end_marker.Hide();
     }
+
+    public void SetMoveIndicatorVisibility(bool visible)
+    {
+        GetNode<Node2D>("MoveIndicator").Visible = visible;
+    }
+
+    public void SetMoveIndicator(Vector2 gpos, float grot)
+    {
+        var n = GetNode<Node2D>("MoveIndicator");
+        n.GlobalPosition = gpos;
+        n.GlobalRotation = grot;
+    }
+
+    public void highlight_body(Godot.Object o)
+    {
+
+    }
 }

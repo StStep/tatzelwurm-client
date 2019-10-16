@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://units/MoveUnit.cs" type="Script" id=1]
 [ext_resource path="res://decorators/SelectItem.cs" type="Script" id=2]
@@ -7,6 +7,12 @@
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 68, 32.5 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 5.03131, 59.2303 )
+
+[sub_resource type="ConvexPolygonShape2D" id=3]
+points = PoolVector2Array( 0, -24, 27, 10, -27, 10 )
 
 [node name="Unit" type="Node2D"]
 script = ExtResource( 1 )
@@ -20,6 +26,7 @@ modulate = Color( 1, 1, 1, 0.491961 )
 texture = ExtResource( 3 )
 
 [node name="StartMarker" type="Area2D" parent="."]
+editor/display_folded = true
 script = ExtResource( 4 )
 
 [node name="Shape" type="CollisionShape2D" parent="StartMarker"]
@@ -29,6 +36,7 @@ shape = SubResource( 1 )
 texture = ExtResource( 3 )
 
 [node name="EndMarker" type="Area2D" parent="."]
+editor/display_folded = true
 script = ExtResource( 4 )
 
 [node name="Shape" type="CollisionShape2D" parent="EndMarker"]
@@ -40,4 +48,26 @@ texture = ExtResource( 3 )
 [node name="MovePreview" type="Line2D" parent="."]
 points = PoolVector2Array( 737.505, 130.658 )
 width = 5.0
+texture_mode = -11776948
+
+[node name="MoveIndicator" type="Node2D" parent="."]
+show_behind_parent = true
+
+[node name="Line2D" type="Line2D" parent="MoveIndicator"]
+points = PoolVector2Array( -0.473511, 0.457977, -0.473511, -143.818, -18.3054, -122.744, 20.0384, -123.018, -0.688759, -143.551 )
+default_color = Color( 0.826563, 0.4, 1, 1 )
+texture_mode = 553311648
+joint_mode = 2
+
+[node name="PathArea" type="Area2D" parent="MoveIndicator"]
+editor/display_folded = true
+position = Vector2( 90, 0 )
+
+[node name="Line" type="CollisionShape2D" parent="MoveIndicator/PathArea"]
+position = Vector2( -90.4921, -58.5487 )
+shape = SubResource( 2 )
+
+[node name="Head" type="CollisionShape2D" parent="MoveIndicator/PathArea"]
+position = Vector2( -90.6006, -127.677 )
+shape = SubResource( 3 )
 

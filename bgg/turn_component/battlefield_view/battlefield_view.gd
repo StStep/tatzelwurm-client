@@ -63,7 +63,7 @@ func _ready():
 # Move the EOT move indicator to the position/rotation of last command in queue
 func _update_eot_move(ref):
 	var last = _unit_queues[ref].back()
-	_unit_queues[ref].front().place_move_ind(last.global_position, last.global_rotation)
+	_unit_queues[ref].front().SetMoveIndicator(last.global_position, last.global_rotation)
 
 # This is a signal handling function for unit and move representative mouse actions
 #
@@ -98,13 +98,12 @@ func new_unit(ref, gpos, gdir):
 		return
 	# Unit Block
 	var inst = _unit_rep_node.instance()
+	inst.SelectManager = $SelectManager
 	add_child(inst)
 	inst.global_position = gpos
 	inst.global_rotation = gdir.angle() + PI/2
 	_unit_queues[ref] = [inst]
-	inst.display_move_ind(DEFAULT_EOT_MV_EN)
-	inst.connect('mouse_entered_item', self, '_rep_mouse_action', [true, ref, 0])
-	inst.connect('mouse_exited_item', self, '_rep_mouse_action', [false, ref, 0])
+	inst.SetMoveIndicatorVisibility(DEFAULT_EOT_MV_EN)
 	_update_eot_move(ref)
 
 # Add a command to a unit to be rendered
@@ -158,7 +157,7 @@ func display_eot_move(ref, en):
 	if not _unit_queues.has(ref):
 		print('WARNING: Unknown _unit_queues ref %s' % [ref])
 		return
-	_unit_queues[ref].front().display_move_ind(en)
+	_unit_queues[ref].front().SetMoveIndicatorVisibility(en)
 	_update_eot_move(ref)
 
 # Highlight the body of a command, for a given type
