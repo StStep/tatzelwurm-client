@@ -227,7 +227,6 @@ public class MoveUnit : Node2D
         var node = _nodeHead;
         while (node != null)
         {
-            node.Enable();
             node.Path.Modulate = colPathSelected;
             node = node.Next;
         }
@@ -246,7 +245,6 @@ public class MoveUnit : Node2D
         var node = _nodeHead;
         while (node != null)
         {
-            node.Disable();
             node.Path.Modulate = colPathNotSelected;
             node = node.Next;
         }
@@ -280,7 +278,7 @@ public class MoveUnit : Node2D
                 {
                     ChangeState(State.AddingNodes);
                 }
-                else if (AdjustingNode != null && AdjustingNode.Marker.is_mouse_hovering && ev.IsActionPressed("ui_accept"))
+                else if (AdjustingNode != null && AdjustingNode.Body.is_mouse_hovering && ev.IsActionPressed("ui_accept"))
                 {
                     ChangeState(State.AdjustingNode);
                 }
@@ -332,7 +330,7 @@ public class MoveUnit : Node2D
         return ret;
     }
 
-    private void AddMoveNode(Vector2 gpos)
+    public PositionNode AddMoveNode(Vector2 gpos)
     {
         GD.Print("Add move");
         var inst = _posNodeScene.Instance() as PositionNode;
@@ -352,16 +350,19 @@ public class MoveUnit : Node2D
         inst.Disable();
         inst.Previous = _nodeTail;
         _nodeTail = inst;
-        inst.EndPos = gpos;
-        inst.Path.Modulate = colPathSelected;
+        _nodeTail.EndPos = gpos;
+        _nodeTail.Path.Modulate = colPathSelected;
 
         // Move up end marker
         _end_marker.Show();
         _end_marker.GlobalPosition = _nodeTail.EndPos;
         _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
+        SetMoveIndicator(_nodeTail.EndPos, _nodeTail.GlobalRotation);
+
+        return _nodeTail;
     }
 
-    private void RmLastMoveNode()
+    public void RmLastMoveNode()
     {
         AdjustingNode = null;
         HighlightedPathNode = null;
@@ -374,6 +375,7 @@ public class MoveUnit : Node2D
             _nodeTail.Disable();
             _end_marker.GlobalPosition = _nodeTail.EndPos;
             _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
+            SetMoveIndicator(_nodeTail.EndPos, _nodeTail.GlobalRotation);
         }
         else
         {
@@ -381,7 +383,7 @@ public class MoveUnit : Node2D
         }
     }
 
-    private void ResetMoveNodes()
+    public void ResetMoveNodes()
     {
         _nodeTail = null;
         AdjustingNode = null;
@@ -399,7 +401,7 @@ public class MoveUnit : Node2D
         GetNode<Node2D>("MoveIndicator").Visible = visible;
     }
 
-    public void SetMoveIndicator(Vector2 gpos, float grot)
+    private void SetMoveIndicator(Vector2 gpos, float grot)
     {
         var n = GetNode<Node2D>("MoveIndicator");
         n.GlobalPosition = gpos;

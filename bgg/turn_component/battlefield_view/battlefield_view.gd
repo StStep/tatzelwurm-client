@@ -44,10 +44,8 @@ signal mouse_exited_item(unit_ref, ind, is_path)
 ## Instance Scene file-paths and nodes
 # <<<<
 export(String, FILE, '*.tscn') var unit_rep_scene
-export(String, FILE, '*.tscn') var cmd_rep_scene
 
 onready var _unit_rep_node = load(unit_rep_scene)
-onready var _cmd_rep_node = load(cmd_rep_scene)
 # >>>>
 
 # A dictionary of lists, representing a queue for unit references
@@ -59,11 +57,6 @@ var _unit_queues = {}
 # Node function, called once all children are ready
 func _ready():
 	pass
-
-# Move the EOT move indicator to the position/rotation of last command in queue
-func _update_eot_move(ref):
-	var last = _unit_queues[ref].back()
-	_unit_queues[ref].front().SetMoveIndicator(last.global_position, last.global_rotation)
 
 # This is a signal handling function for unit and move representative mouse actions
 #
@@ -104,7 +97,6 @@ func new_unit(ref, gpos, gdir):
 	inst.global_rotation = gdir.angle() + PI/2
 	_unit_queues[ref] = [inst]
 	inst.SetMoveIndicatorVisibility(DEFAULT_EOT_MV_EN)
-	_update_eot_move(ref)
 
 # Add a command to a unit to be rendered
 #
@@ -123,12 +115,11 @@ func add_cmd(ref, gpos, params = {}):
 		print('WARNING: Unknown _unit_queues ref %s' % [ref])
 		return
 	# Command
-	var par = _unit_queues[ref].back()
-	var inst = _cmd_rep_node.instance()
-	par.add_child(inst)
+	var prev = _unit_queues[ref].back()
+	var inst = _unit_queues[ref].front().AddMoveNode(gpos);
 	_unit_queues[ref].append(inst)
 	inst.global_position = gpos
-	var gdir = params['end_gdir'] if 'end_gdir' in params else gpos - par.global_position
+	var gdir = params['end_gdir'] if 'end_gdir' in params else gpos - prev.global_position
 	inst.global_rotation = gdir.angle() + PI/2
 	if 'annotation' in params:
 		var a = params['annotation']
@@ -141,13 +132,9 @@ func add_cmd(ref, gpos, params = {}):
 		inst.display_cmd(params['visible'])
 	# Path
 	if 'arc_gdir' in params:
-		inst.set_path_as_arc(par.global_position, params['arc_gdir'])
+		inst.set_path_as_arc(prev.global_position, params['arc_gdir'])
 	else:
-		inst.set_path_as_line(par.global_position)
-	# Connections
-	inst.connect('mouse_entered_item', self, '_rep_mouse_action', [true, ref, _unit_queues[ref].size() - 1])
-	inst.connect('mouse_exited_item', self, '_rep_mouse_action', [false, ref, _unit_queues[ref].size() - 1])
-	_update_eot_move(ref)
+		inst.set_path_as_line(prev.global_position)
 
 # Enable/Disable the end-of-turn movement indicator for a unit
 #
@@ -158,7 +145,6 @@ func display_eot_move(ref, en):
 		print('WARNING: Unknown _unit_queues ref %s' % [ref])
 		return
 	_unit_queues[ref].front().SetMoveIndicatorVisibility(en)
-	_update_eot_move(ref)
 
 # Highlight the body of a command, for a given type
 #

@@ -20,7 +20,7 @@ class Ray2D:
 		if direction.is_normalized():
 			return true
 		else:
-			false
+			return false
 
 class Arc2D:
 	var start_ray = Ray2D.new() setget ,_start_ray_get
@@ -57,7 +57,7 @@ class Arc2D:
 		if start_ray.is_valid() and end_ray.is_valid():
 			return true
 		else:
-			false
+			return false
 
 	func get_point(dist):
 		if dist >= arc_length:
@@ -201,7 +201,6 @@ static func unit_test():
 	print('Running Trig unit-tests')
 	var input = []
 	var exp_output = []
-	var FLOAT_EPSILON = 0.1
 
 	# get_arc(start_ray, pnt)
 	input = [

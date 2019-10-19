@@ -36,7 +36,6 @@ shape = SubResource( 1 )
 texture = ExtResource( 3 )
 
 [node name="EndMarker" type="Area2D" parent="."]
-editor/display_folded = true
 script = ExtResource( 4 )
 
 [node name="Shape" type="CollisionShape2D" parent="EndMarker"]

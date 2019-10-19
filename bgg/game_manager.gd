@@ -5,5 +5,5 @@ extends Node
 func _ready():
 	set_process_input(true)
 
-func _input(ev):
+func _input(_ev):
 	pass
