@@ -51,6 +51,8 @@
   <ItemGroup>
     <Compile Include="Battle.cs" />
     <Compile Include="battlefield\Battlefield.cs" />
+    <Compile Include="turn_component\battlefield_view\BattlefieldView.cs" />
+    <Compile Include="turn_component\battlefield_view\TestHarness.cs" />
     <Compile Include="units\MoveUnit.cs" />
     <Compile Include="units\DragUnit.cs" />
     <Compile Include="units\PositionNode.cs" />

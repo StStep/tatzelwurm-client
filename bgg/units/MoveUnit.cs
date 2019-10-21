@@ -1,5 +1,8 @@
 using Godot;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class MoveUnit : Node2D
 {
@@ -96,7 +99,7 @@ public class MoveUnit : Node2D
                 }
                 break;
             case State.AddingNodes:
-                var end = _nodeTail != null ? _nodeTail.EndPos : GlobalPosition;
+                var end = _nodeTail != null ? _nodeTail.GlobalPosition : GlobalPosition;
                 _move_prev.Points = new Vector2[] { ToLocal(end), ToLocal(mpos) };
                 _ghost.GlobalPosition = mpos;
                 _ghost.GlobalRotation = mpos.AngleToPoint(end) + Mathf.Pi/2f;
@@ -104,8 +107,8 @@ public class MoveUnit : Node2D
             case State.AdjustingNode:
                 if (AdjustingNode != null)
                 {
-                    AdjustingNode.EndPos = mpos;
-                    _end_marker.GlobalPosition = _nodeTail.EndPos;
+                    AdjustingNode.GlobalPosition = mpos;
+                    _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
                 }
                 break;
             case State.NotSelected:
@@ -300,7 +303,7 @@ public class MoveUnit : Node2D
                 }
                 else if (ev.IsActionPressed("ui_accept"))
                 {
-                    AddMoveNode(_ghost.GlobalPosition);
+                    AddMoveNode(_ghost.GlobalPosition, false, Enumerable.Empty<String>());
                 }
                 else if (ev.IsActionPressed("ui_cancel"))
                 {
@@ -330,7 +333,7 @@ public class MoveUnit : Node2D
         return ret;
     }
 
-    public PositionNode AddMoveNode(Vector2 gpos)
+    public PositionNode AddMoveNode(Vector2 gpos, bool arc, IEnumerable<String> annotations)
     {
         GD.Print("Add move");
         var inst = _posNodeScene.Instance() as PositionNode;
@@ -347,18 +350,58 @@ public class MoveUnit : Node2D
             _nodeTail.Enable();
             _nodeTail.Next = inst;
         }
+
         inst.Disable();
         inst.Previous = _nodeTail;
         _nodeTail = inst;
-        _nodeTail.EndPos = gpos;
+
+        if (arc)
+        {
+            inst.SetAsArc(gpos);
+        }
+        else
+        {
+            inst.SetAsLine(gpos);
+        }
         _nodeTail.Path.Modulate = colPathSelected;
 
         // Move up end marker
         _end_marker.Show();
-        _end_marker.GlobalPosition = _nodeTail.EndPos;
+        _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
         _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
-        SetMoveIndicator(_nodeTail.EndPos, _nodeTail.GlobalRotation);
+        SetMoveIndicator(_nodeTail.GlobalPosition, _nodeTail.GlobalRotation);
 
+/*
+    if (params.Contains("annotation"))
+    {
+		var a = params["annotation"];
+		if (typeof(a) == TYPE_ARRAY)
+        {
+			for i in a
+            {
+				inst.add_annotation(i);
+            }
+        }
+		else
+        {
+			inst.add_annotation(a);
+        }
+    }
+
+	if (params.Contains("visible"))
+    {
+		inst.display_cmd(params["visible"])
+    }
+	// Path
+	if (params.Contains("arc_gdir"))
+    {
+
+    }
+	else
+    {
+		inst.set_path_as_line(prev.global_position);
+    }
+    */
         return _nodeTail;
     }
 
@@ -367,15 +410,14 @@ public class MoveUnit : Node2D
         AdjustingNode = null;
         HighlightedPathNode = null;
         var inst = _nodeTail.Previous;
-        _nodeTail.Erase();
         _nodeTail = inst;
         if (_nodeTail != null)
         {
             _nodeTail.Next = null;
             _nodeTail.Disable();
-            _end_marker.GlobalPosition = _nodeTail.EndPos;
+            _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
             _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
-            SetMoveIndicator(_nodeTail.EndPos, _nodeTail.GlobalRotation);
+            SetMoveIndicator(_nodeTail.GlobalPosition, _nodeTail.GlobalRotation);
         }
         else
         {
@@ -390,7 +432,6 @@ public class MoveUnit : Node2D
         HighlightedPathNode = null;
         if (_nodeHead != null)
         {
-            _nodeHead.Erase();
             _nodeHead = null;
         }
         _end_marker.Hide();

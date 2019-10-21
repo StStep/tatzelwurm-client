@@ -13,22 +13,9 @@ public class PositionNode : Node2D
 
     Dictionary<String, Node2D> _annotations;
 
-    private Vector2 _moveVector = Vector2.Zero;
-
     public MoveUnit ParentUnit { get; set; }
-    public Vector2 StartPos => Previous != null ? Previous.EndPos : ParentUnit.GlobalPosition;
-
-    public Vector2 EndPos
-    {
-        get => ToGlobal(Vector2.Zero);
-        set
-        {
-            _moveVector = value - StartPos;
-            GlobalPosition = value;
-            GlobalRotation = _moveVector.Angle() + (float)(Mathf.Pi/2.0);
-            PropogateEndPosUpdate();
-        }
-    }
+    public Vector2 StartPos => Previous != null ? Previous.GlobalPosition : ParentUnit.GlobalPosition;
+    public float StartRot => Previous != null ? Previous.GlobalRotation : ParentUnit.GlobalRotation;
 
     public MouseArea2d Body;
     public CollisionShape2D BodyShape;
@@ -94,22 +81,6 @@ public class PositionNode : Node2D
         }
     }
 
-    private void PropogateEndPosUpdate()
-    {
-        GlobalPosition = StartPos + _moveVector;
-        var l_vec = ToLocal(StartPos);
-        Path.Points = new Vector2[] { l_vec, Vector2.Zero };
-        var shape = new RectangleShape2D();
-        shape.Extents = new Vector2(20, l_vec.Length()/2.0f);
-        BodyShape.SetShape(shape);
-        BodyShape.Rotation = l_vec.Angle() + Mathf.Pi/2.0f;
-        BodyShape.Position = new Vector2(l_vec.x/2.0f, l_vec.y/2.0f);
-        if (Next != null)
-        {
-            Next.PropogateEndPosUpdate();
-        }
-    }
-
     public void display_cmd(bool en)
     {
         Sprite.Visible = en;
@@ -135,25 +106,32 @@ public class PositionNode : Node2D
         PathPoly.Polygon = new Vector2[] {};
     }
 
-    private void  set_path_as_line(Vector2 start)
+    public void SetAsLine(Vector2 end)
     {
-        Path.Points = new Vector2[] { ToLocal(start), Vector2.Zero };
+        GlobalPosition = end;
+        GlobalRotation = (end - StartPos).Angle() + (float)(Mathf.Pi/2.0);
+        Path.Points = new Vector2[] { ToLocal(StartPos), Vector2.Zero };
         PathPoly.Polygon = Trig.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
     }
 
-    private void set_path_as_arc(Vector2 start, Vector2 start_dir)
+    public void SetAsArc(Vector2 end)
     {
-        var a = new Trig.Arc2(new Trig.Ray2(start, start_dir), ToGlobal(Vector2.Zero));
+        var a = new Trig.Arc2(new Trig.Ray2(StartPos, StartRot), end);
+        GlobalPosition = end;
+        GlobalRotation = a.EndDir.Angle() - (float)(Mathf.Pi/2.0);
         var pnts = new List<Vector2>();
         var seg_num = 20;
         var seg = a.Length/seg_num;
         for (int i = 0; i < seg_num; i++)
+        {
             pnts.Add(ToLocal(a.GetPoint(seg * i)));
+        }
+
         Path.Points = pnts.ToArray();
         PathPoly.Polygon = Trig.GetLineAsPolygon(pnts.ToArray(), PATH_AREA_WIDTH);
     }
 
-    private void highlight_body(String type)
+    public void highlight_body(String type)
     {
         if (type == "None")
         {
@@ -176,7 +154,7 @@ public class PositionNode : Node2D
         }
     }
 
-    private void highlight_path(String type, float coverage)
+    public void highlight_path(String type, float coverage)
     {
 
     }
@@ -191,15 +169,6 @@ public class PositionNode : Node2D
     {
         display_cmd(false);
         SetProcessInput(false);
-    }
-
-    public void Erase()
-    {
-        if (Next != null)
-        {
-            Next.Erase();
-        }
-        QueueFree();
     }
 
     public Vector2 GetClosestPointOnPath(Vector2 gpos)

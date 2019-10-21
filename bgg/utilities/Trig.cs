@@ -109,6 +109,12 @@ public static class Trig
             Direction = dir.Normalized();
         }
 
+        public Ray2(Vector2 origin, float rot)
+        {
+            Origin = origin;
+            Direction = Vector2.Up.Rotated(rot).Normalized();
+        }
+
         public Vector2 GetPoint(float dist) => Origin + Direction * dist;
     }
 
