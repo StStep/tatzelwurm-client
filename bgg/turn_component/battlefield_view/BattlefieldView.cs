@@ -18,6 +18,7 @@ public class BattlefieldView : Node
     public void clear()
     {
         _units.ForEach(u => u.ResetMoveNodes());
+        _units.ForEach(u => u.QueueFree());
         _units.Clear();
     }
 

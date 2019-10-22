@@ -21,7 +21,7 @@ public class MoveUnit : Node2D
     private Color _prevMarkerCol;
     private Color _prevPathCol;
 
-    private Sprite _ghost;
+    private MouseArea2d _ghost;
     private Sprite _start_marker_sprite;
     private Sprite _end_marker_sprite;
     private Line2D _move_prev;
@@ -56,7 +56,7 @@ public class MoveUnit : Node2D
         _prevMarkerCol = colNotSelected;
         _prevPathCol = colPathNotSelected;
 
-        _ghost = GetNode<Sprite>("Ghost");
+        _ghost = GetNode<MouseArea2d>("Ghost");
         _start_marker_sprite = GetNode<Sprite>("StartMarker/Sprite");
         _end_marker_sprite = GetNode<Sprite>("EndMarker/Sprite");
         _move_prev = GetNode<Line2D>("MovePreview");
@@ -69,6 +69,7 @@ public class MoveUnit : Node2D
         _start_marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(OnEvent));
         _end_marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(OnMarkerHoverChange), new Godot.Collections.Array() { _end_marker });
         _end_marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(OnEvent));
+        _ghost.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(OnEvent));
         _selectItem.Connect(nameof(SelectItem.selection_changed), this, nameof(OnSelectionChange));
         _selectItem.Connect(nameof(SelectItem.item_event_occured), this, nameof(OnEvent));
         _end_marker.Hide();
@@ -203,17 +204,22 @@ public class MoveUnit : Node2D
         switch (s)
         {
             case State.NotSelected:
+                GD.Print("To State NotSelected " + Name);
                 HandleDeselect();
                 _selectItem.IsBusy = false;
                 break;
             case State.Idle:
+                GD.Print("To State Idle " + Name);
                 HandleSelect();
                 _selectItem.IsBusy = false;
                 break;
             case State.AddingNodes:
+                GD.Print("To State AddingNodes " + Name);
                 _ghost.Show();
                 break;
             case State.AdjustingNode:
+                GD.Print("To State AdjustingNode " + Name);
+                break;
             default:
                 break;
         }
@@ -236,7 +242,6 @@ public class MoveUnit : Node2D
 
         // Always hide last node under end marker
         _nodeTail?.Disable();
-        GD.Print("Selected " + GetName());
     }
 
     private void HandleDeselect()
@@ -251,8 +256,6 @@ public class MoveUnit : Node2D
             node.Path.Modulate = colPathNotSelected;
             node = node.Next;
         }
-
-        GD.Print("Deselected " + Name);
     }
 
     public Boolean HandleInput(InputEvent ev)
@@ -410,6 +413,7 @@ public class MoveUnit : Node2D
         AdjustingNode = null;
         HighlightedPathNode = null;
         var inst = _nodeTail.Previous;
+        _nodeTail.QueueFree();
         _nodeTail = inst;
         if (_nodeTail != null)
         {
@@ -422,6 +426,7 @@ public class MoveUnit : Node2D
         else
         {
             ResetMoveNodes();
+            SetMoveIndicator(GlobalPosition, GlobalRotation);
         }
     }
 
@@ -430,10 +435,16 @@ public class MoveUnit : Node2D
         _nodeTail = null;
         AdjustingNode = null;
         HighlightedPathNode = null;
-        if (_nodeHead != null)
+        SetMoveIndicator(GlobalPosition, GlobalRotation);
+        SetMoveIndicatorVisibility(false);
+
+        var inst = _nodeHead;
+        while (inst != null)
         {
-            _nodeHead = null;
+            inst.QueueFree();
+            inst = inst.Next;
         }
+        _nodeHead = null;
         _end_marker.Hide();
     }
 
