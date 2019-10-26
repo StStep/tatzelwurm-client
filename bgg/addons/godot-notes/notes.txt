@@ -1,3 +1,8 @@
+0 Merging from MultiHexGame
+	+ Remove mouse hover capture of events
+		- Fast mouse movements lead to missed events
+		- Forces temp ghosts to have colliders
+		+ Make state based
 1 Setup per hex addr info
 	+ Encap. hexgrid within battlefield.gd/.tscn
 	+ Contain concept of what exists at hex addr

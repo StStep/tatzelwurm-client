@@ -1,7 +1,6 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class TestHarness : Node
 {
@@ -111,7 +110,7 @@ func _test_3():
 */
 
     // Test drawing an arc
-    public IEnumerable<int> _test_4()
+    private IEnumerable<int> Test4()
     {
         var i = 0;
         GD.Print("Running Test Four...");
@@ -136,26 +135,7 @@ func _test_3():
         GD.Print("Completed Test Four");
     }
 
-
-    // Set _cur_func to _test_1, if none is set
-    private void test_1()
-    {
-        GD.Print("Not implemented");
-    }
-
-    // Set _cur_func to _test_2, if none is set
-    private void test_2()
-    {
-        GD.Print("Not implemented");
-    }
-    // Set _cur_func to _test_3, if none is set
-    private void test_3()
-    {
-        GD.Print("Not implemented");
-    }
-
-    // Set _cur_func to _test_4, if none is set
-    async private void test_4()
+    async private void RunTest(Func<IEnumerable<int>> test)
     {
         if (!_testStepClk.IsStopped())
         {
@@ -164,7 +144,7 @@ func _test_3():
         else
         {
             _testStepClk.Start();
-            foreach (var i in _test_4())
+            foreach (var i in test())
             {
                 GD.Print("Step " + i);
                 await ToSignal(_testStepClk, "timeout");
@@ -172,4 +152,12 @@ func _test_3():
             _testStepClk.Stop();
         }
     }
+
+    private void test_1() => GD.Print("Not implemented");
+
+    private void test_2() => GD.Print("Not implemented");
+
+    private void test_3() => GD.Print("Not implemented");
+
+    private void test_4() => RunTest(Test4);
 }
