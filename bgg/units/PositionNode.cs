@@ -100,23 +100,18 @@ public class PositionNode : Node2D
 
     public void SetAsLine(Vector2 startGpos, Vector2 end)
     {
-        GlobalPosition = end;
-        GlobalRotation = (end - startGpos).Angle() + (float)(Mathf.Pi/2.0);
         Path.Points = new Vector2[] { ToLocal(startGpos), Vector2.Zero };
         PathPoly.Polygon = Trig.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
     }
 
-    public void SetAsArc(Vector2 startGpos, float startGrot, Vector2 end)
+    public void SetAsArc(Trig.Arc2 arc)
     {
-        var a = new Trig.Arc2(new Trig.Ray2(startGpos, startGrot), end);
-        GlobalPosition = end;
-        GlobalRotation = a.EndDir.Angle() - (float)(Mathf.Pi/2.0);
         var pnts = new List<Vector2>();
         var seg_num = 20;
-        var seg = a.Length/seg_num;
+        var seg = arc.Length/seg_num;
         for (int i = 0; i < seg_num; i++)
         {
-            pnts.Add(ToLocal(a.GetPoint(seg * i)));
+            pnts.Add(ToLocal(arc.GetPoint(seg * i)));
         }
 
         Path.Points = pnts.ToArray();

@@ -48,14 +48,10 @@ public class BattlefieldView : Node
         => AddMove(ind, arc, gpos, gdir, Enumerable.Empty<String>());
 
     public void AddMove(int ind, bool arc, Vector2 gpos, IEnumerable<String> annotations)
-    {
-        _units[ind].AddMoveNode(gpos, arc, annotations);
-    }
+        => AddMove(ind, arc, gpos, Vector2.Zero, Enumerable.Empty<String>());
 
     public void AddMove(int ind, bool arc, Vector2 gpos, Vector2 gdir, IEnumerable<String> annotations)
-    {
-        throw new NotImplementedException();
-    }
+        => _units[ind].AddMoveNode(gpos, gdir, arc, annotations);
 
     // Enable/Disable the end-of-turn movement indicator for a unit
     //

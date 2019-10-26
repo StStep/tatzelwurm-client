@@ -100,15 +100,19 @@ public class MoveUnit : Node2D
                 }
                 break;
             case State.AddingNodes:
-                var end = _nodeTail != null ? _nodeTail.GlobalPosition : GlobalPosition;
-                _move_prev.Points = new Vector2[] { ToLocal(end), ToLocal(mpos) };
+                var endAdd = _nodeTail != null ? _nodeTail.GlobalPosition : GlobalPosition;
+                _move_prev.Points = new Vector2[] { ToLocal(endAdd), ToLocal(mpos) };
                 _ghost.GlobalPosition = mpos;
-                _ghost.GlobalRotation = mpos.AngleToPoint(end) + Mathf.Pi/2f;
+                _ghost.GlobalRotation = mpos.AngleToPoint(endAdd) + Mathf.Pi/2f;
                 break;
             case State.AdjustingNode:
                 if (AdjustingNode != null)
                 {
-                    AdjustingNode.SetAsLine(GetNodeStartGpos(AdjustingNode), mpos);
+                    var endAdj = mpos;
+                    var startAdj = GetNodeStartGpos(AdjustingNode);
+                    AdjustingNode.GlobalPosition = endAdj;
+                    AdjustingNode.GlobalRotation = (endAdj - startAdj).Angle() + (float)(Mathf.Pi/2.0);
+                    AdjustingNode.SetAsLine(startAdj, endAdj);
                     _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
                     _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
                     SetMoveIndicator(_nodeTail.GlobalPosition, _nodeTail.GlobalRotation);
@@ -317,7 +321,7 @@ public class MoveUnit : Node2D
                 }
                 else if (ev.IsActionPressed("ui_accept"))
                 {
-                    AddMoveNode(_ghost.GlobalPosition, false, Enumerable.Empty<String>());
+                    AddMoveNode(_ghost.GlobalPosition, Vector2.Zero, false, Enumerable.Empty<String>());
                 }
                 else if (ev.IsActionPressed("ui_cancel"))
                 {
@@ -347,7 +351,7 @@ public class MoveUnit : Node2D
         return ret;
     }
 
-    public PositionNode AddMoveNode(Vector2 gpos, bool arc, IEnumerable<String> annotations)
+    public PositionNode AddMoveNode(Vector2 gpos, Vector2 dir, bool arc, IEnumerable<String> annotations)
     {
         GD.Print("Add move");
         var inst = _posNodeScene.Instance() as PositionNode;
@@ -370,13 +374,20 @@ public class MoveUnit : Node2D
         inst.Previous = _nodeTail;
         _nodeTail = inst;
 
+        _nodeTail.GlobalPosition = gpos;
+        var start = GetNodeStartGpos(_nodeTail);
         if (arc)
         {
-            inst.SetAsArc(GetNodeStartGpos(inst), GetNodeStartGrot(inst), gpos);
+            var a = new Trig.Arc2(start, GetNodeStartGrot(_nodeTail), gpos);
+            var angle = dir != Vector2.Zero ? dir.Angle() : a.EndDir.Angle();
+            _nodeTail.GlobalRotation = angle + Mathf.Pi/2.0f;
+            _nodeTail.SetAsArc(a);
         }
         else
         {
-            inst.SetAsLine(GetNodeStartGpos(inst), gpos);
+            var angle = dir != Vector2.Zero ? dir.Angle() : (gpos - start).Angle();
+            _nodeTail.GlobalRotation = angle + Mathf.Pi/2.0f;
+            _nodeTail.SetAsLine(start, gpos);
         }
         _nodeTail.Path.Modulate = colPathSelected;
 

@@ -30,6 +30,16 @@ public static class Trig
             Center = center;
         }
 
+        public Arc2(Vector2 start, float startRot, Vector2 end)
+            : this(new Ray2(start, startRot), end)
+        {
+        }
+
+        public Arc2(Vector2 start, Vector2 startDir, Vector2 end)
+            : this(new Ray2(start, startDir), end)
+        {
+        }
+
         public Arc2(Ray2 startRay, Vector2 end)
         {
             // Invalid if pnt is in back half of dir
@@ -61,12 +71,12 @@ public static class Trig
             if (clockwise)
             {
                 newDir = triBaseIn.Rotated(-legAng);
-                EndDir = newDir.Rotated(Mathf.Pi/2f);
+                EndDir = newDir.Rotated(-Mathf.Pi/2f);
             }
             else
             {
                 newDir = triBaseIn.Rotated(legAng);
-                EndDir = newDir.Rotated(-Mathf.Pi/2f);
+                EndDir = newDir.Rotated(Mathf.Pi/2f);
             }
             Ray2 legB = new Ray2(End, newDir);
             Center = LineIntersectionPoint(legA, legB);
