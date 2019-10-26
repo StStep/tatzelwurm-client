@@ -40,75 +40,76 @@ public class TestHarness : Node
         GD.Print("Completed Test One");
     }
 
-/*
-// Test rotation command annotation and invalid highlighting
-func _test_2():
-    print("Running Test Two...")
-    var unit_ref = "unit_2"
 
-    // Clear
-    _battlefieldViewNode.clear()
-    yield()
+    // Test rotation command annotation and invalid highlighting
+    private IEnumerable<int> Test2()
+    {
+        var i = 0;
+        GD.Print("Running Test Two...");
 
-    // Add Unit
-    _battlefieldViewNode.new_unit(unit_ref, Vector2(815,541), Vector2(1,-1))
-    _battlefieldViewNode.display_eot_move(unit_ref, true)
-    yield()
+        // Clear
+        _battlefieldViewNode.clear();
+        yield return i++;
 
-    // Add Generic Command 1
-    _battlefieldViewNode.add_cmd(unit_ref, Vector2(945,410),
-            {"annotation" : "rotation", "end_gdir" : Vector2(-130,-130)})
-    yield()
+        // Add Unit
+        var uid = _battlefieldViewNode.new_unit(new Vector2(200,200), new Vector2(1,1));
+        _battlefieldViewNode.display_eot_move(uid, true);
+        yield return i++;
 
-    // Color Command 1and last half of path as Invalid
-    _battlefieldViewNode.highlight_cmd_path(unit_ref, 1, "Invalid", .5)
-    _battlefieldViewNode.highlight_cmd_body(unit_ref, 1, "Invalid")
+        // Add Generic Command 1
+        _battlefieldViewNode.AddMove(uid, false, new Vector2(945,410), new  Vector2(-130,-130), new List<String>() {"rotation"});
+        yield return i++;
 
-    // Add Generic Command 2
-    _battlefieldViewNode.add_cmd(unit_ref, Vector2(815,280))
-    yield()
+        // TODO: Color Command 1and last half of path as Invalid
+        //_battlefieldViewNode.highlight_cmd_path(unit_ref, 1, "Invalid", .5)
+        //_battlefieldViewNode.highlight_cmd_body(unit_ref, 1, "Invalid");
+        yield return i++;
 
-    print("Completed Test Two")
-    return null
+        // Add Generic Command 2
+        _battlefieldViewNode.AddMove(uid, false, new Vector2(815,280));
+        yield return i++;
 
-// Test Wheel and Reposition commands
-func _test_3():
-    print("Running Test Three...")
-    var unit_ref = "unit_3"
+        GD.Print("Completed Test Two");
+    }
 
-    // Clear
-    _battlefieldViewNode.clear()
-    yield()
+    // Test Wheel and Reposition commands
+    private IEnumerable<int> Test3()
+    {
+        var i = 0;
+        GD.Print("Running Test Three...");
 
-    // Add Unit
-    _battlefieldViewNode.new_unit(unit_ref, Vector2(200,200), Vector2(1,1))
-    _battlefieldViewNode.display_eot_move(unit_ref, true)
-    yield()
+        // Clear
+        _battlefieldViewNode.clear();
+        yield return i++;
 
-    // Color Unit as focused
-    _battlefieldViewNode.highlight_cmd_path(unit_ref, 1, "Focus", Vector2(.5, 1))
-    _battlefieldViewNode.highlight_cmd_body(unit_ref, 0, "Focus")
+        // Add Unit
+        var uid = _battlefieldViewNode.new_unit(new Vector2(200,200), new Vector2(1,1));
+        _battlefieldViewNode.display_eot_move(uid, true);
+        yield return i++;
 
-    // Add Generic Command 1
-    _battlefieldViewNode.add_cmd(unit_ref, Vector2(330,330))
-    yield()
+        // TODO: Color Unit as focused
+        //_battlefieldViewNode.highlight_cmd_path(unit_ref, 1, "Focus", Vector2(.5, 1))
+        //_battlefieldViewNode.highlight_cmd_body(unit_ref, 0, "Focus");
+        yield return i++;
 
-    // Add Generic Command 2
-    _battlefieldViewNode.add_cmd(unit_ref, Vector2(335,340), {"annotation" : "wheel"})
-    yield()
+        // Add Generic Command 1
+        _battlefieldViewNode.AddMove(uid, false, new Vector2(330,330));
+        yield return i++;
 
-    // Add Generic Command 3
-    _battlefieldViewNode.add_cmd(unit_ref, Vector2(385,240),
-            {"annotation" : "reposition", "end_gdir" : Vector2(5,10)})
-    yield()
+        // Add Generic Command 2
+        _battlefieldViewNode.AddMove(uid, false, new Vector2(335,340), new List<String>() {"wheel"});
+        yield return i++;
 
-    // Add Generic Command 4
-    _battlefieldViewNode.add_cmd(unit_ref, Vector2(395,245), {"annotation" : "wheel"})
-    yield()
+        // Add Generic Command 3
+        _battlefieldViewNode.AddMove(uid, false, new Vector2(385,240), new Vector2(5,10), new List<String>() {"reposition"});
+        yield return i++;
 
-    print("Completed Test Three")
-    return null
-*/
+        // Add Generic Command 4
+        _battlefieldViewNode.AddMove(uid, false, new Vector2(395,245), new List<String>() {"wheel"});
+        yield return i++;
+
+        GD.Print("Completed Test Three");
+    }
 
     // Test drawing an arc
     private IEnumerable<int> Test4()
@@ -156,9 +157,9 @@ func _test_3():
 
     private void test_1() => RunTest(Test1);
 
-    private void test_2() => GD.Print("Not implemented");
+    private void test_2() => RunTest(Test2);
 
-    private void test_3() => GD.Print("Not implemented");
+    private void test_3() => RunTest(Test3);
 
     private void test_4() => RunTest(Test4);
 }
