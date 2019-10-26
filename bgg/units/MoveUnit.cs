@@ -98,10 +98,11 @@ public class MoveUnit : Node2D
                 }
                 break;
             case State.AddingNodes:
-                var endAdd = _nodeTail != null ? _nodeTail.GlobalPosition : GlobalPosition;
-                _move_prev.Points = new Vector2[] { ToLocal(endAdd), ToLocal(mpos) };
-                _ghost.GlobalPosition = mpos;
-                _ghost.GlobalRotation = mpos.AngleToPoint(endAdd) + Mathf.Pi/2f;
+                var endAdd = mpos;
+                var startAdd = _nodeTail != null ? _nodeTail.GlobalPosition : GlobalPosition;
+                _move_prev.Points = new Vector2[] { ToLocal(startAdd), ToLocal(endAdd) };
+                _ghost.GlobalPosition = endAdd;
+                _ghost.GlobalRotation = endAdd.AngleToPoint(startAdd) + Mathf.Pi/2f;
                 break;
             case State.AdjustingNode:
                 if (AdjustingNode != null)
@@ -109,7 +110,7 @@ public class MoveUnit : Node2D
                     var endAdj = mpos;
                     var startAdj = GetNodeStartGpos(AdjustingNode);
                     AdjustingNode.GlobalPosition = endAdj;
-                    AdjustingNode.GlobalRotation = (endAdj - startAdj).Angle() + (float)(Mathf.Pi/2.0);
+                    AdjustingNode.GlobalRotation = endAdj.AngleToPoint(startAdj) + Mathf.Pi/2f;
                     AdjustingNode.SetAsLine(startAdj, endAdj);
                     _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
                     _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
@@ -390,13 +391,13 @@ public class MoveUnit : Node2D
         {
             var a = new Trig.Arc2(start, GetNodeStartGrot(_nodeTail), gpos);
             var angle = dir != Vector2.Zero ? dir.Angle() : a.EndDir.Angle();
-            _nodeTail.GlobalRotation = angle + Mathf.Pi/2.0f;
+            _nodeTail.GlobalRotation = angle + Mathf.Pi/2f;
             _nodeTail.SetAsArc(a);
         }
         else
         {
             var angle = dir != Vector2.Zero ? dir.Angle() : (gpos - start).Angle();
-            _nodeTail.GlobalRotation = angle + Mathf.Pi/2.0f;
+            _nodeTail.GlobalRotation = angle + Mathf.Pi/2f;
             _nodeTail.SetAsLine(start, gpos);
         }
         _nodeTail.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;

@@ -34,7 +34,7 @@ public class BattlefieldView : Node
         inst.SelectManager = _selManager;
         AddChild(inst);
         inst.GlobalPosition = gpos;
-        inst.GlobalRotation = gdir.Angle() + Mathf.Pi/2;
+        inst.GlobalRotation = gdir.Angle() + Mathf.Pi/2f;
         _units.Add(inst);
         inst.SetMoveIndicatorVisibility(false);
 
