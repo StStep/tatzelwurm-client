@@ -397,37 +397,11 @@ public class MoveUnit : Node2D
         _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
         SetMoveIndicator(_nodeTail.GlobalPosition, _nodeTail.GlobalRotation);
 
-/*
-    if (params.Contains("annotation"))
-    {
-		var a = params["annotation"];
-		if (typeof(a) == TYPE_ARRAY)
+        foreach (var anno in annotations)
         {
-			for i in a
-            {
-				inst.add_annotation(i);
-            }
+            _nodeTail.add_annotation(anno);
         }
-		else
-        {
-			inst.add_annotation(a);
-        }
-    }
 
-	if (params.Contains("visible"))
-    {
-		inst.display_cmd(params["visible"])
-    }
-	// Path
-	if (params.Contains("arc_gdir"))
-    {
-
-    }
-	else
-    {
-		inst.set_path_as_line(prev.global_position);
-    }
-    */
         return _nodeTail;
     }
 
