@@ -6,16 +6,18 @@ public class PositionNode : Node2D
 {
     const int PATH_AREA_WIDTH = 10;
 
+    [Signal]
+    public delegate void event_on_hover(PositionNode node, InputEvent @event);
+
+    [Signal]
+    public delegate void path_hover(Vector2 gpos);
+
     private Color colNotHighlighted = new Color("ffffff"); // White
     private Color colHighlighted = new  Color("b6ff00"); // Green-Yellow
     private Color colInvalid = new  Color("e2342b");
     private Color colInavtive = new  Color("b2b2b2");
 
     Dictionary<String, Node2D> _annotations;
-
-    public MoveUnit ParentUnit { get; set; }
-    public Vector2 StartPos => Previous != null ? Previous.GlobalPosition : ParentUnit.GlobalPosition;
-    public float StartRot => Previous != null ? Previous.GlobalRotation : ParentUnit.GlobalRotation;
 
     public MouseArea2d Body;
     public CollisionShape2D BodyShape;
@@ -49,21 +51,11 @@ public class PositionNode : Node2D
         clear_annotations();
     }
 
-    private void OnEvent(InputEvent ev)
-    {
-        if (!ParentUnit.IsBusy)
-        {
-            ParentUnit.AdjustingNode = this;
-            if (ParentUnit.HandleInput(ev))
-            {
-                GetTree().SetInputAsHandled();
-            }
-        }
-    }
+    private void OnEvent(InputEvent @event) => EmitSignal(nameof(event_on_hover), this, @event);
 
     private void OnMarkerHoverChange()
     {
-        if (ParentUnit.IsSelected && !ParentUnit.IsBusy && Body.is_mouse_hovering)
+        if (Body.is_mouse_hovering)
         {
             Sprite.Modulate = colHighlighted;
         }
@@ -73,11 +65,11 @@ public class PositionNode : Node2D
         }
     }
 
-    private void  OnPathHovorChange()
+    private void OnPathHovorChange()
     {
-        if (ParentUnit.IsSelected && !ParentUnit.IsBusy && PathArea.is_mouse_hovering)
+        if (PathArea.is_mouse_hovering)
         {
-            ParentUnit.HighlightedPathNode = this;
+            EmitSignal(nameof(path_hover), PathArea.GetGlobalMousePosition());
         }
     }
 
@@ -106,17 +98,17 @@ public class PositionNode : Node2D
         PathPoly.Polygon = new Vector2[] {};
     }
 
-    public void SetAsLine(Vector2 end)
+    public void SetAsLine(Vector2 startGpos, Vector2 end)
     {
         GlobalPosition = end;
-        GlobalRotation = (end - StartPos).Angle() + (float)(Mathf.Pi/2.0);
-        Path.Points = new Vector2[] { ToLocal(StartPos), Vector2.Zero };
+        GlobalRotation = (end - startGpos).Angle() + (float)(Mathf.Pi/2.0);
+        Path.Points = new Vector2[] { ToLocal(startGpos), Vector2.Zero };
         PathPoly.Polygon = Trig.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
     }
 
-    public void SetAsArc(Vector2 end)
+    public void SetAsArc(Vector2 startGpos, float startGrot, Vector2 end)
     {
-        var a = new Trig.Arc2(new Trig.Ray2(StartPos, StartRot), end);
+        var a = new Trig.Arc2(new Trig.Ray2(startGpos, startGrot), end);
         GlobalPosition = end;
         GlobalRotation = a.EndDir.Angle() - (float)(Mathf.Pi/2.0);
         var pnts = new List<Vector2>();
@@ -171,10 +163,10 @@ public class PositionNode : Node2D
         SetProcessInput(false);
     }
 
-    public Vector2 GetClosestPointOnPath(Vector2 gpos)
+    public Vector2 GetClosestPointOnPath(Vector2 startGpos, Vector2 gpos)
     {
         var pnt = ToLocal(gpos);
-        var dir = ToLocal(StartPos).Normalized();
+        var dir = ToLocal(startGpos).Normalized();
         var dot = pnt.Dot(dir);
         return ToGlobal(dir*dot);
     }

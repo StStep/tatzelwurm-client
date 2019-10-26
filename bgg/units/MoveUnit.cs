@@ -92,7 +92,7 @@ public class MoveUnit : Node2D
                 if (HighlightedPathNode != null && HighlightedPathNode.PathArea.is_mouse_hovering)
                 {
                     _ghost.Show();
-                    _ghost.GlobalPosition = HighlightedPathNode.GetClosestPointOnPath(mpos);
+                    _ghost.GlobalPosition = HighlightedPathNode.GetClosestPointOnPath(GetNodeStartGpos(HighlightedPathNode), mpos);
                 }
                 else
                 {
@@ -108,8 +108,10 @@ public class MoveUnit : Node2D
             case State.AdjustingNode:
                 if (AdjustingNode != null)
                 {
-                    AdjustingNode.GlobalPosition = mpos;
+                    AdjustingNode.SetAsLine(GetNodeStartGpos(AdjustingNode), mpos);
                     _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
+                    _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
+                    SetMoveIndicator(_nodeTail.GlobalPosition, _nodeTail.GlobalRotation);
                 }
                 break;
             case State.NotSelected:
@@ -120,6 +122,15 @@ public class MoveUnit : Node2D
 
     private void OnEvent(InputEvent ev)
     {
+        if (HandleInput(ev))
+        {
+            GetTree().SetInputAsHandled();
+        }
+    }
+
+    private void OnChildNodeEvent(PositionNode node, InputEvent ev)
+    {
+        AdjustingNode = node;
         if (HandleInput(ev))
         {
             GetTree().SetInputAsHandled();
@@ -340,18 +351,19 @@ public class MoveUnit : Node2D
     {
         GD.Print("Add move");
         var inst = _posNodeScene.Instance() as PositionNode;
-        inst.ParentUnit = this;
-        AddChild(inst);
+        inst.Connect(nameof(PositionNode.event_on_hover), this, nameof(OnChildNodeEvent));
 
         // disable point under end marker, enable prev hidden
         if (_nodeHead == null)
         {
             _nodeHead = inst;
+            AddChild(inst);
         }
         else
         {
             _nodeTail.Enable();
             _nodeTail.Next = inst;
+            _nodeTail.AddChild(inst);
         }
 
         inst.Disable();
@@ -360,11 +372,11 @@ public class MoveUnit : Node2D
 
         if (arc)
         {
-            inst.SetAsArc(gpos);
+            inst.SetAsArc(GetNodeStartGpos(inst), GetNodeStartGrot(inst), gpos);
         }
         else
         {
-            inst.SetAsLine(gpos);
+            inst.SetAsLine(GetNodeStartGpos(inst), gpos);
         }
         _nodeTail.Path.Modulate = colPathSelected;
 
@@ -464,4 +476,7 @@ public class MoveUnit : Node2D
     {
 
     }
+
+    public Vector2 GetNodeStartGpos(PositionNode n) => n.Previous != null ? n.Previous.GlobalPosition : GlobalPosition;
+    public float GetNodeStartGrot(PositionNode n) => n.Previous != null ? n.Previous.GlobalRotation : GlobalRotation;
 }
