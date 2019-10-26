@@ -200,6 +200,28 @@ public class MoveUnit : Node2D
         }
     }
 
+    private void OnChildNodeHover(PositionNode node, Boolean hovering)
+    {
+        if (SelectManager?.IsSelectionAllowed() == false)
+        { }
+        else if (hovering)
+        {
+            node.highlight_body("Focus");
+            if (!IsSelected)
+            {
+                HighlightEverything();
+            }
+        }
+        else
+        {
+            node.highlight_body("None");
+            if (!IsSelected)
+            {
+                UnhighlightEverything();
+            }
+        }
+    }
+
     private void OnSelectionChange(Boolean isSelected) => ChangeState(isSelected ? State.Idle : State.NotSelected);
 
     private void OnMarkerHoverChange(MouseArea2d marker)
@@ -235,22 +257,20 @@ public class MoveUnit : Node2D
     {
         _start_marker_sprite.Modulate = colHighlight;
         _end_marker_sprite.Modulate = colHighlight;
-        var node = _nodeHead;
-        while (node != null)
+        for(var node = _nodeHead; node != null; node = node.Next)
         {
             node.Path.Modulate = colPathHighlight;
-            node = node.Next;
+            node.highlight_body("Focus");
         }
     }
 
     private void UnhighlightEverything()
     {	_start_marker_sprite.Modulate = _prevMarkerCol;
         _end_marker_sprite.Modulate = _prevMarkerCol;
-        var node = _nodeHead;
-        while (node != null)
+        for(var node = _nodeHead; node != null; node = node.Next)
         {
             node.Path.Modulate = _prevPathCol;
-            node = node.Next;
+            node.highlight_body("None");
         }
     }
 
@@ -316,7 +336,11 @@ public class MoveUnit : Node2D
         _prevMarkerCol = colSelected;
         _prevPathCol = colPathSelected;
         for(var node = _nodeHead; node != null; node = node.Next)
+        {
             node.Path.Modulate = colPathSelected;
+            if (!node.Body.is_mouse_hovering)
+                node.highlight_body("None");
+        }
     }
 
     private void HandleDeselect()
@@ -327,15 +351,19 @@ public class MoveUnit : Node2D
         _prevMarkerCol = colNotSelected;
         _prevPathCol = colPathNotSelected;
         for(var node = _nodeHead; node != null; node = node.Next)
+        {
             node.Path.Modulate = colPathNotSelected;
+            if (!node.Body.is_mouse_hovering)
+                node.highlight_body("None");
+        }
     }
 
     public PositionNode AddMoveNode(Vector2 gpos, Vector2 dir, bool arc, IEnumerable<String> annotations)
     {
         GD.Print("Add move");
         var inst = _posNodeScene.Instance() as PositionNode;
-        inst.SelectManager = SelectManager;
         inst.Connect(nameof(PositionNode.event_on_hover), this, nameof(OnChildNodeEvent));
+        inst.Connect(nameof(PositionNode.marker_hover), this, nameof(OnChildNodeHover));
 
         // disable point under end marker, enable prev hidden
         if (_nodeHead == null)
@@ -371,7 +399,7 @@ public class MoveUnit : Node2D
             _nodeTail.GlobalRotation = angle + Mathf.Pi/2.0f;
             _nodeTail.SetAsLine(start, gpos);
         }
-        _nodeTail.Path.Modulate = colPathSelected;
+        _nodeTail.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
 
         // Move up end marker
         _end_marker.Show();

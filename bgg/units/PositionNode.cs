@@ -12,14 +12,15 @@ public class PositionNode : Node2D
     [Signal]
     public delegate void path_hover(Vector2 gpos);
 
+    [Signal]
+    public delegate void marker_hover(Position2D node, Boolean hovering);
+
     private Color colNotHighlighted = new Color("ffffff"); // White
     private Color colHighlighted = new  Color("b6ff00"); // Green-Yellow
     private Color colInvalid = new  Color("e2342b");
     private Color colInavtive = new  Color("b2b2b2");
 
     Dictionary<String, Node2D> _annotations;
-
-    public SelectManager SelectManager { get; set; }
 
     public MouseArea2d Body;
     public CollisionShape2D BodyShape;
@@ -61,16 +62,8 @@ public class PositionNode : Node2D
 
     private void OnMarkerHoverChange()
     {
-        if (!IsProcessingInput() || SelectManager?.IsSelectionAllowed() == false)
-        { }
-        else if (Body.is_mouse_hovering)
-        {
-            Sprite.Modulate = colHighlighted;
-        }
-        else
-        {
-            Sprite.Modulate = colNotHighlighted;
-        }
+        if (IsProcessingInput())
+            EmitSignal(nameof(marker_hover), this, Body.is_mouse_hovering);
     }
 
     private void OnPathHovorChange()
@@ -130,7 +123,7 @@ public class PositionNode : Node2D
         }
         else if (type == "Focus")
         {
-            Sprite.Modulate = colNotHighlighted;
+            Sprite.Modulate = colHighlighted;
         }
         else if (type == "Invalid")
         {
