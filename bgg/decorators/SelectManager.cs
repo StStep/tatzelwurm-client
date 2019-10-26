@@ -11,8 +11,6 @@ public class SelectManager : Node
         SetProcessInput(true);
     }
 
-    public override void _Input(InputEvent @event) => SelectedItem?.AcceptInput(@event);
-
     public Boolean IsSelectionAllowed() => SelectedItem?.IsBusy != true;
 
     public void ReqSelection(SelectItem item)

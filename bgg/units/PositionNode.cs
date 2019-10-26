@@ -19,6 +19,8 @@ public class PositionNode : Node2D
 
     Dictionary<String, Node2D> _annotations;
 
+    public SelectManager SelectManager { get; set; }
+
     public MouseArea2d Body;
     public CollisionShape2D BodyShape;
     public Line2D Path;
@@ -51,11 +53,17 @@ public class PositionNode : Node2D
         clear_annotations();
     }
 
-    private void OnEvent(InputEvent @event) => EmitSignal(nameof(event_on_hover), this, @event);
+    private void OnEvent(InputEvent @event)
+    {
+        if (IsProcessingInput())
+            EmitSignal(nameof(event_on_hover), this, @event);
+    }
 
     private void OnMarkerHoverChange()
     {
-        if (Body.is_mouse_hovering)
+        if (!IsProcessingInput() || SelectManager?.IsSelectionAllowed() == false)
+        { }
+        else if (Body.is_mouse_hovering)
         {
             Sprite.Modulate = colHighlighted;
         }
@@ -67,15 +75,12 @@ public class PositionNode : Node2D
 
     private void OnPathHovorChange()
     {
-        if (PathArea.is_mouse_hovering)
+        if (!IsProcessingInput())
+        { }
+        else if (PathArea.is_mouse_hovering)
         {
             EmitSignal(nameof(path_hover), PathArea.GetGlobalMousePosition());
         }
-    }
-
-    public void display_cmd(bool en)
-    {
-        Sprite.Visible = en;
     }
 
     public void clear_annotations()
@@ -84,7 +89,6 @@ public class PositionNode : Node2D
         {
             n.Value.Hide();
         }
-        display_cmd(false);
     }
 
     public void add_annotation(String uref)
@@ -148,13 +152,11 @@ public class PositionNode : Node2D
 
     public void Enable()
     {
-        display_cmd(true);
         SetProcessInput(true);
     }
 
     public void Disable()
     {
-        display_cmd(false);
         SetProcessInput(false);
     }
 
