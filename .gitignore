@@ -6,6 +6,12 @@ export_presets.cfg
 # Mono-specific ignores
 .mono/
 
+# VS-specific ignores
+.vs
+packages
+obj
+bin
+
 # System/tool-specific ignores
 .directory
 *~

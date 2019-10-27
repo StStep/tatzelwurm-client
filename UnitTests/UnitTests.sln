@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests.csproj", "{81E21CD8-9234-42B2-947B-0C6A6E61516D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bgg", "..\bgg\bgg.csproj", "{2086FCC6-1BB1-4E3B-BC30-AE7BF96074E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Tools|Any CPU = Tools|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81E21CD8-9234-42B2-947B-0C6A6E61516D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81E21CD8-9234-42B2-947B-0C6A6E61516D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81E21CD8-9234-42B2-947B-0C6A6E61516D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81E21CD8-9234-42B2-947B-0C6A6E61516D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81E21CD8-9234-42B2-947B-0C6A6E61516D}.Tools|Any CPU.ActiveCfg = Release|Any CPU
+		{81E21CD8-9234-42B2-947B-0C6A6E61516D}.Tools|Any CPU.Build.0 = Release|Any CPU
+		{2086FCC6-1BB1-4E3B-BC30-AE7BF96074E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2086FCC6-1BB1-4E3B-BC30-AE7BF96074E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2086FCC6-1BB1-4E3B-BC30-AE7BF96074E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2086FCC6-1BB1-4E3B-BC30-AE7BF96074E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2086FCC6-1BB1-4E3B-BC30-AE7BF96074E9}.Tools|Any CPU.ActiveCfg = Tools|Any CPU
+		{2086FCC6-1BB1-4E3B-BC30-AE7BF96074E9}.Tools|Any CPU.Build.0 = Tools|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A6EB3BCD-7649-4029-8FF0-A0FAB8D17DD2}
+	EndGlobalSection
+EndGlobal

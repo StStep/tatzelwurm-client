@@ -258,10 +258,17 @@ public class MoveUnit : Node2D
         var quarter = Trig.GetQuarter(gpos, dir, mpos, 68f, 32.5f);
         if (quarter == Trig.Quarter.front && Trig.DistToLine(new Trig.Ray2(gpos, dir), mpos) > 20f)
         {
-            var arc = new Trig.Arc2(gpos, grot, mpos);
-            _move_prev.Points = Trig.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
-            _ghost.GlobalPosition = arc.End;
-            _ghost.GlobalRotation = arc.EndDir.Angle() + Mathf.Pi/2f;
+            try
+            {
+                var arc = new Trig.Arc2(gpos, grot, mpos);
+                _move_prev.Points = Trig.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
+                _ghost.GlobalPosition = arc.End;
+                _ghost.GlobalRotation = arc.EndDir.Angle() + Mathf.Pi/2f;
+            }
+            catch
+            {
+                GD.Print($"Failed to make arc with {gpos} {grot} {mpos}");
+            }
         }
         else if (quarter == Trig.Quarter.left || quarter == Trig.Quarter.right)
         {

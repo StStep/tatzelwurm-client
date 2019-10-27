@@ -56,13 +56,13 @@ public static class Trig
 
             Ray2 legA = startRay;
             bool clockwise = StartDir.AngleTo(triBaseOut) > 0f;
-            if (!clockwise)
+            if (clockwise)
             {
-                legA.Direction = new Vector2(-legA.Direction.y, legA.Direction.x);
+                legA.Direction = new Vector2(legA.Direction.y, -legA.Direction.x);
             }
             else
             {
-                legA.Direction = new Vector2(legA.Direction.y, -legA.Direction.x);
+                legA.Direction = new Vector2(-legA.Direction.y, legA.Direction.x);
             }
 
             float legAng = legA.Direction.AngleTo(triBaseOut);
@@ -70,15 +70,15 @@ public static class Trig
             Vector2 newDir;
             if (clockwise)
             {
-                newDir = triBaseIn.Rotated(-legAng);
+                newDir = triBaseIn.Rotated(legAng);
                 EndDir = newDir.Rotated(Mathf.Pi/2f);
             }
             else
             {
-                newDir = triBaseIn.Rotated(legAng);
-                EndDir = newDir.Rotated(-Mathf.Pi/2f);
+                newDir = triBaseIn.Rotated(-legAng);
+                EndDir = newDir.Rotated(-Mathf.Pi / 2f);
             }
-            Ray2 legB = new Ray2(End, newDir);
+            Ray2 legB = new Ray2(End, EndDir);
             Center = LineIntersectionPoint(legA, legB);
         }
 
@@ -152,7 +152,7 @@ public static class Trig
 
         Vector2 v = pnt - dir.Origin;
         float ang = v.AngleTo(dir.Direction);
-        float absAng = Mathf.Abs(ang);
+        float absAng = Mathf.Abs(Mathf.Rad2Deg(ang));
         if (absAng <= 90f)
             ret = Half.front;
         else
@@ -217,10 +217,10 @@ public static class Trig
     public static List<Vector2> SampleArc(Arc2 arc, int samples)
     {
         var pnts = new List<Vector2>();
-        var seg = arc.Length/samples;
+        var seg = arc.Length/(float)samples;
         for (int i = 0; i < samples; i++)
         {
-            pnts.Add(arc.GetPoint(seg * i));
+            pnts.Add(arc.GetPoint(seg * (float)i));
         }
 
         return pnts;
