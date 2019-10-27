@@ -50,7 +50,7 @@ public static class Trig
         public Arc2(Ray2 startRay, Vector2 end)
         {
             // Invalid if pnt is in back half of dir
-            if(GetQuarter(startRay, end, 0, 0) != Quarter.front)
+            if(GetQuarter(startRay, end) != Quarter.front)
                 throw new ArgumentException("Outside bounds");
 
             Start =  startRay.Origin;
@@ -125,6 +125,8 @@ public static class Trig
         }
 
         public Vector2 GetPoint(float dist) => Origin + Direction * dist;
+
+        public Ray2 Tangent() => new Ray2(Origin, Direction.Tangent());
     }
 
     public static float DistToLine(Ray2 dir, Vector2 pnt)
@@ -140,38 +142,64 @@ public static class Trig
         return dir.GetPoint(d);
     }
 
-    public enum Half { front, back };
-    public static Half GetHalf(Vector2 Origin, Vector2 direction, Vector2 pnt, float frontage, float sideage)
+    // Imagine a line through origin cutting a plane in half, perpendicular to direction
+    public enum PerpHalf { front, back };
+    public static PerpHalf GetPerpHalf(Vector2 Origin, Vector2 direction, Vector2 pnt)
     {
-        return GetHalf(new Ray2(Origin, direction), pnt, frontage, sideage);
+        return GetPerpHalf(new Ray2(Origin, direction), pnt);
     }
-    public static Half GetHalf(Ray2 dir, Vector2 pnt, float frontage, float sideage)
+    public static PerpHalf GetPerpHalf(Ray2 dir, Vector2 pnt)
     {
-        Half ret;
-
         Vector2 v = pnt - dir.Origin;
-        float ang = v.AngleTo(dir.Direction);
-        float absAng = Mathf.Abs(Mathf.Rad2Deg(ang));
-        if (absAng <= 90f)
-            ret = Half.front;
+        return (Mathf.Abs(v.AngleTo(dir.Direction)) <= Mathf.Pi / 2f) ? PerpHalf.front : PerpHalf.back;
+    }
+
+    // Imagine a line through origin cutting a plane in half, parallel to direction
+    public enum ParaHalf { left, right };
+    public static ParaHalf GetParaHalf(Vector2 Origin, Vector2 direction, Vector2 pnt)
+    {
+        return GetParaHalf(new Ray2(Origin, direction), pnt);
+    }
+    public static ParaHalf GetParaHalf(Ray2 dir, Vector2 pnt)
+    {
+        Vector2 v = pnt - dir.Origin;
+        return (v.AngleTo(dir.Direction) <= 0f) ? ParaHalf.left : ParaHalf.right;
+    }
+
+    // Image a plane bisected by bath a parallel and perpendicular line thorugh origin
+    public enum Halves {frontleft, frontright, backleft, backright}
+    public static Halves GetHalves(Vector2 Origin, Vector2 direction, Vector2 pnt)
+    {
+        return GetHalves(new Ray2(Origin, direction), pnt);
+    }
+    public static Halves GetHalves(Ray2 dir, Vector2 pnt)
+    {
+        var parahalf = GetParaHalf(dir, pnt);
+        var perphalf = GetPerpHalf(dir, pnt);
+        if (parahalf == ParaHalf.left)
+        {
+            return perphalf == PerpHalf.front ? Halves.frontleft : Halves.backleft;
+        }
         else
-            ret = Half.back;
-
-        return ret;
+        {
+            return perphalf == PerpHalf.front ? Halves.frontright : Halves.backright;
+        }
     }
 
+
+    // Imagine an X centered on origin, cutting a plane into four quarters
     public enum Quarter {front, back, left, right};
-    public static Quarter GetQuarter(Vector2 origin, Vector2 direction, Vector2 pnt, float frontage, float sideage)
-    {
-        return GetQuarter(new Ray2(origin, direction), pnt, frontage, sideage);
-    }
-    public static Quarter GetQuarter(Ray2 dir, Vector2 pnt, float frontage, float sideage)
-    {
-        Quarter ret;
 
+    public static Quarter GetQuarter(Vector2 origin, Vector2 direction, Vector2 pnt)
+    {
+        return GetQuarter(new Ray2(origin, direction), pnt);
+    }
+    public static Quarter GetQuarter(Ray2 dir, Vector2 pnt)
+    {
         Vector2 v = pnt - dir.Origin;
         float ang = v.AngleTo(dir.Direction);
         float absAng = Mathf.Abs(Mathf.Rad2Deg(ang));
+        Quarter ret;
         if (absAng <= 45.5f)
             ret = Quarter.front;
         else if(absAng >= 135f)
@@ -180,6 +208,61 @@ public static class Trig
             ret = Quarter.left;
         else
             ret = Quarter.right;
+
+        return ret;
+    }
+
+    // Imagine a rectangle where lines are extended from the four corners outward at 45 degree angles
+    public enum Facing {inside, front, back, left, right};
+
+    public static Facing GetFacing(Vector2 origin, Vector2 direction, Vector2 pnt, float width, float height)
+    {
+        return GetFacing(new Ray2(origin, direction), pnt, width, height);
+    }
+    public static Facing GetFacing(Ray2 dir, Vector2 pnt, float frontage, float sideage)
+    {
+        throw new NotImplementedException();
+    }
+
+    // Imagine the lines making up a rectangle being extended ad infinitum, with the four corners being nulled out
+    public enum Side {inside, none, front, back, left, right};
+    public static Side GetSide(Vector2 origin, Vector2 direction, Vector2 pnt, float width, float height)
+    {
+        return GetSide(new Ray2(origin, direction), pnt, width, height);
+    }
+
+    public static Side GetSide(Ray2 dir, Vector2 pnt, float frontage, float sideage)
+    {
+        var fhalf = GetPerpHalf(dir, pnt);
+        var shalf = GetParaHalf(dir, pnt);
+        var withinfontage = DistToLine(dir, pnt) < frontage/2f;
+        var withinsideage = DistToLine(dir.Tangent(), pnt) < sideage/2f;
+
+        Side ret;
+        if (withinfontage && withinsideage)
+        {
+            ret = Side.inside;
+        }
+        else if (withinfontage && fhalf == PerpHalf.front)
+        {
+            ret = Side.front;
+        }
+        else if (withinfontage && fhalf == PerpHalf.back)
+        {
+            ret = Side.back;
+        }
+        else if (withinsideage && shalf == ParaHalf.left)
+        {
+            ret = Side.left;
+        }
+        else if (withinsideage && shalf == ParaHalf.right)
+        {
+            ret = Side.right;
+        }
+        else
+        {
+            ret = Side.none;
+        }
 
         return ret;
     }

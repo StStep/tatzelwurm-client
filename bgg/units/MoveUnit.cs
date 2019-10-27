@@ -11,11 +11,13 @@ public class MoveUnit : Node2D
     private enum State { NotSelected, Idle, AddingNodes, AdjustingNode }
 
     private Color colNotSelected = new Color("ffffff"); // White
-    private Color colSelected = new  Color("f6ff00"); // Yellow
-    private Color colHighlight = new  Color("b6ff00"); // Green-Yellow
-    private Color colPathNotSelected = new  Color("66ff68"); // Pastel-Green
-    private Color colPathSelected = new  Color("16ab19"); // Green
-    private Color colPathHighlight = new  Color("b6ff00"); // Green-Yellow
+    private Color colSelected = new Color("f6ff00"); // Yellow
+    private Color colHighlight = new Color("b6ff00"); // Green-Yellow
+    private Color colPathNotSelected = new Color("66ff68"); // Pastel-Green
+    private Color colPathSelected = new Color("16ab19"); // Green
+    private Color colPathHighlight = new Color("b6ff00"); // Green-Yellow
+    private Color colPathAdding = new Color("6680ff"); // Pale-Blue
+    private Color colPathError = new Color("ff1a1a"); // Pale-Red
 
     private PackedScene _posNodeScene = GD.Load<PackedScene>("res://units/PositionNode.tscn"); // Will load when the script is instanced.
 
@@ -269,9 +271,11 @@ public class MoveUnit : Node2D
         var gpos = _nodeTail != null ? _nodeTail.GlobalPosition : GlobalPosition;
         var grot = _nodeTail != null ? _nodeTail.GlobalRotation : GlobalRotation;
         var dir = Vector2.Right.Rotated(grot);
-        var quarter = Trig.GetQuarter(gpos, dir, mpos, 68f, 32.5f);
+        var quarter = Trig.GetQuarter(gpos, dir, mpos);
+        var side = Trig.GetSide(gpos, dir, mpos, 136f, 65f);
         _ghostMoveType = MoveType.None;
-        if (quarter == Trig.Quarter.front && Trig.DistToLine(new Trig.Ray2(gpos, dir), mpos) > 20f)
+        _move_prev.Modulate = colPathAdding;
+        if (quarter == Trig.Quarter.front && side != Trig.Side.inside && Trig.DistToLine(new Trig.Ray2(gpos, dir), mpos) > 20f)
         {
             try
             {
@@ -286,7 +290,7 @@ public class MoveUnit : Node2D
                 GD.Print($"Failed to make arc with {gpos} {grot} {mpos}");
             }
         }
-        else if (quarter == Trig.Quarter.front)
+        else if (quarter == Trig.Quarter.front && side != Trig.Side.inside)
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
@@ -294,7 +298,7 @@ public class MoveUnit : Node2D
             _ghost.GlobalRotation = grot;
             _ghostMoveType = MoveType.March;
         }
-        else if (quarter == Trig.Quarter.left || quarter == Trig.Quarter.right)
+        else if (side == Trig.Side.left || side == Trig.Side.right)
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir.Rotated(Mathf.Pi/2f)), mpos);
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
@@ -302,7 +306,7 @@ public class MoveUnit : Node2D
             _ghost.GlobalRotation = grot;
             _ghostMoveType = MoveType.Reposition;
         }
-        else if (quarter == Trig.Quarter.back)
+        else if (side == Trig.Side.back)
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
@@ -311,7 +315,12 @@ public class MoveUnit : Node2D
             _ghostMoveType = MoveType.Reposition;
         }
         else
-        { }
+        {
+            _ghost.GlobalPosition = GlobalPosition;
+            _ghost.GlobalRotation = GlobalRotation;
+            _move_prev.Modulate = colPathError;
+            _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(mpos) };
+        }
     }
 
     private void HighlightEverything()
