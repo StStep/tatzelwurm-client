@@ -37,6 +37,6 @@ public class DragUnit : Sprite
     private void Pickup(Node dragable) => EmitSignal(nameof(Picked), this);
     private void Place(Node dragable) => EmitSignal(nameof(Placed), this);
 
-    private void PointTo(float rads) => GlobalRotation = rads - Mathf.Pi;
+    private void PointTo(float rads) => GlobalRotation = rads;
     private void MoveTo(Vector2 loc) => GlobalPosition = loc;
 }

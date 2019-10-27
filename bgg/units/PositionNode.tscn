@@ -17,38 +17,24 @@ width = 5.0
 texture_mode = 553311648
 
 [node name="Sprite" type="Sprite" parent="."]
+rotation = 1.5708
 texture = ExtResource( 2 )
 
-[node name="Rotation" type="Node2D" parent="."]
-editor/display_folded = true
-position = Vector2( -63.7933, 0.711975 )
-
-[node name="Line2D" type="Line2D" parent="Rotation"]
-position = Vector2( 59.379, -2.42072 )
-points = PoolVector2Array( -18.6463, -2.64354, -14.9194, -15.2377, -9.77896, -17.9365, -5.28104, -18.7076, -7.59425, -21.5348, -6.27241, -15.2857, -5.53806, -18.5791 )
+[node name="Rotation" type="Line2D" parent="."]
+points = PoolVector2Array( 2.10114, -18.342, 11.073, -15.4873, 14.7434, -11.2053, 19.0254, -4.88415, 19.6371, -9.77791, 14.1316, -6.92321, 19.0254, -5.08805 )
 width = 2.0
 default_color = Color( 0.4, 0.957812, 1, 1 )
 texture_mode = 1065353216
 joint_mode = 2
 
-[node name="Reposition" type="Node2D" parent="."]
-editor/display_folded = true
-position = Vector2( 5, 0 )
-
-[node name="Line2D" type="Line2D" parent="Reposition"]
-position = Vector2( 33.4427, 0.711979 )
-points = PoolVector2Array( -13.5359, -17.183, -21.3461, -17.183, -28.828, -17.0382, -21.2726, -17.2685, -21.5503, -9.27074, -21.295, -17.183, -21.3461, -24.0233 )
+[node name="Reposition" type="Line2D" parent="."]
+points = PoolVector2Array( 25.5504, 9.79715, 19.2293, 9.79715, 12.2965, 9.59325, 19.0254, 9.38934, 19.4332, 15.7104, 19.0254, 4.29166, 19.0254, 4.29166 )
 width = 2.0
 default_color = Color( 0.4, 1, 0.521875, 1 )
 texture_mode = 1302996400
 
-[node name="Wheel" type="Node2D" parent="."]
-editor/display_folded = true
-position = Vector2( 26.3793, 28.7713 )
-
-[node name="Line2D" type="Line2D" parent="Wheel"]
-position = Vector2( -28.7639, -13.3852 )
-points = PoolVector2Array( -14.4379, -15.5218, 22.7924, -15.6378, -12.4662, -34.5429 )
+[node name="Wheel" type="Line2D" parent="."]
+points = PoolVector2Array( -1.56919, -12.6326, 0.0620651, 13.0597, 7.81052, -10.5935 )
 width = 2.0
 default_color = Color( 0.0873299, 0.40625, 0.0603027, 1 )
 texture_mode = 553311648

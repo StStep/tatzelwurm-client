@@ -40,6 +40,13 @@ public static class Trig
         {
         }
 
+        // This creates and arc by forming an isosceles triangle.
+        // Start-to-end is a chord and forms the base of the triangle.
+        // We know leg-A is perpendicular to the start-direction (which is always a tangent)
+        // and can find the angle to the base, which will be the same angle leg-B has
+        // since it's an isosceles triangle. Knowing the start and end, and then the perpendicular
+        // rays to them, we can following them back to an intercection that is guaranteed to be
+        // the center of the circle.
         public Arc2(Ray2 startRay, Vector2 end)
         {
             // Invalid if pnt is in back half of dir
@@ -50,36 +57,21 @@ public static class Trig
             StartDir = startRay.Direction;
             End = end;
 
-            // LegA of isolese triangle is perp to dir
-            var triBaseOut = (End - Start).Normalized();
-            var triBaseIn = -triBaseOut;
+            // Base direction is a chord, and froms base of iso triangle
+            var baseDir = (End - Start).Normalized();
+            bool clockwise = StartDir.AngleTo(baseDir) > 0f;
 
-            Ray2 legA = startRay;
-            bool clockwise = StartDir.AngleTo(triBaseOut) > 0f;
-            if (clockwise)
-            {
-                legA.Direction = new Vector2(legA.Direction.y, -legA.Direction.x);
-            }
-            else
-            {
-                legA.Direction = new Vector2(-legA.Direction.y, legA.Direction.x);
-            }
+            // LegA of iso triangle is perp to StartDir (which is a tangent), and it depends on direction
+            var legADir = clockwise ? new Vector2(StartDir.y, -StartDir.x) : new Vector2(-StartDir.y, StartDir.x);
 
-            float legAng = legA.Direction.AngleTo(triBaseOut);
+            // EndDir is tangent at end point, and can be found because it has same corner angle as legA
+            EndDir = (-baseDir).Rotated(-legADir.AngleTo(baseDir));
 
-            Vector2 newDir;
-            if (clockwise)
-            {
-                newDir = triBaseIn.Rotated(legAng);
-                EndDir = newDir.Rotated(Mathf.Pi/2f);
-            }
-            else
-            {
-                newDir = triBaseIn.Rotated(-legAng);
-                EndDir = newDir.Rotated(-Mathf.Pi / 2f);
-            }
-            Ray2 legB = new Ray2(End, EndDir);
-            Center = LineIntersectionPoint(legA, legB);
+            // LegB is perp to EndDir (which is a tangent), and it depends on direction
+            var legBDir = clockwise ? new Vector2(EndDir.y, -EndDir.x) : new Vector2(-EndDir.y, EndDir.x);
+
+            // Intesection of extended rays is the circle center
+            Center = LineIntersectionPoint(new Ray2(Start, legADir), new Ray2(End, legBDir));
         }
 
         public Vector2 GetPoint(float dist)
@@ -102,9 +94,16 @@ public static class Trig
                 pnt = pnt.Rotated(body_ang - Mathf.Pi);
 
             // Add center offset
-            pnt.x += Center.x;
-            pnt.y += Center.y;
-            return pnt;
+            return pnt + Center;
+        }
+
+        public void Snap(Vector2 by)
+        {
+            Start = Start.Snapped(by);
+            StartDir = StartDir.Snapped(by);
+            End = End.Snapped(by);
+            EndDir = EndDir.Snapped(by);
+            Center = Center.Snapped(by);
         }
     }
 
@@ -122,7 +121,7 @@ public static class Trig
         public Ray2(Vector2 origin, float rot)
         {
             Origin = origin;
-            Direction = Vector2.Up.Rotated(rot).Normalized();
+            Direction = Vector2.Right.Rotated(rot).Normalized();
         }
 
         public Vector2 GetPoint(float dist) => Origin + Direction * dist;

@@ -21,7 +21,7 @@ public class MoveUnit : Node2D
     private Color _prevMarkerCol;
     private Color _prevPathCol;
 
-    private Sprite _ghost;
+    private Node2D _ghost;
     private Sprite _start_marker_sprite;
     private Sprite _end_marker_sprite;
     private Line2D _move_prev;
@@ -56,7 +56,7 @@ public class MoveUnit : Node2D
         _prevMarkerCol = colNotSelected;
         _prevPathCol = colPathNotSelected;
 
-        _ghost = GetNode<Sprite>("Ghost");
+        _ghost = GetNode<Node2D>("Ghost");
         _start_marker_sprite = GetNode<Sprite>("StartMarker/Sprite");
         _end_marker_sprite = GetNode<Sprite>("EndMarker/Sprite");
         _move_prev = GetNode<Line2D>("MovePreview");
@@ -106,7 +106,7 @@ public class MoveUnit : Node2D
                     var end = mpos;
                     var start = GetNodeStartGpos(AdjustingNode);
                     AdjustingNode.GlobalPosition = end;
-                    AdjustingNode.GlobalRotation = end.AngleToPoint(start) + Mathf.Pi/2f;
+                    AdjustingNode.GlobalRotation = end.AngleToPoint(start);
                     AdjustingNode.SetAsLine(start, end);
                     _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
                     _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
@@ -151,7 +151,7 @@ public class MoveUnit : Node2D
                 }
                 else if (@event.IsActionPressed("ui_accept"))
                 {
-                    AddMoveNode(_ghost.GlobalPosition, Vector2.Right.Rotated(_ghost.GlobalRotation - Mathf.Pi/2f), false, Enumerable.Empty<String>());
+                    AddMoveNode(_ghost.GlobalPosition, Vector2.Right.Rotated(_ghost.GlobalRotation), false, Enumerable.Empty<String>());
                     GetTree().SetInputAsHandled();
                 }
                 else if (@event.IsActionPressed("ui_cancel"))
@@ -254,7 +254,7 @@ public class MoveUnit : Node2D
     {
         var gpos = _nodeTail != null ? _nodeTail.GlobalPosition : GlobalPosition;
         var grot = _nodeTail != null ? _nodeTail.GlobalRotation : GlobalRotation;
-        var dir = Vector2.Right.Rotated(grot - Mathf.Pi/2f);
+        var dir = Vector2.Right.Rotated(grot);
         var quarter = Trig.GetQuarter(gpos, dir, mpos, 68f, 32.5f);
         if (quarter == Trig.Quarter.front && Trig.DistToLine(new Trig.Ray2(gpos, dir), mpos) > 20f)
         {
@@ -263,7 +263,7 @@ public class MoveUnit : Node2D
                 var arc = new Trig.Arc2(gpos, grot, mpos);
                 _move_prev.Points = Trig.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
                 _ghost.GlobalPosition = arc.End;
-                _ghost.GlobalRotation = arc.EndDir.Angle() + Mathf.Pi/2f;
+                _ghost.GlobalRotation = arc.EndDir.Angle();
             }
             catch
             {
@@ -423,13 +423,13 @@ public class MoveUnit : Node2D
         {
             var a = new Trig.Arc2(start, GetNodeStartGrot(_nodeTail), gpos);
             var angle = dir != Vector2.Zero ? dir.Angle() : a.EndDir.Angle();
-            _nodeTail.GlobalRotation = angle + Mathf.Pi/2f;
+            _nodeTail.GlobalRotation = angle;
             _nodeTail.SetAsArc(a);
         }
         else
         {
             var angle = dir != Vector2.Zero ? dir.Angle() : (gpos - start).Angle();
-            _nodeTail.GlobalRotation = angle + Mathf.Pi/2f;
+            _nodeTail.GlobalRotation = angle;
             _nodeTail.SetAsLine(start, gpos);
         }
         _nodeTail.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;

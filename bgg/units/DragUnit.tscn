@@ -8,6 +8,7 @@
 extents = Vector2( 68, 32.5 )
 
 [node name="DragUnit" type="Sprite"]
+rotation = 1.5708
 texture = ExtResource( 1 )
 script = ExtResource( 2 )
 
