@@ -222,6 +222,13 @@ public static class Trig
             pnts.Add(arc.GetPoint(seg * (float)i));
         }
 
+        // Make sure last point is end
+        var snapby = new Vector2(0.0001f, 0.0001f);
+        if (pnts.Last().Snapped(snapby) != arc.End.Snapped(snapby))
+        {
+            pnts.Add(arc.End);
+        }
+
         return pnts;
     }
 

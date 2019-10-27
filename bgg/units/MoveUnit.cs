@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+public enum MoveType { None, March, Reposition, Wheel, Rotate };
+
 public class MoveUnit : Node2D
 {
     private enum State { NotSelected, Idle, AddingNodes, AdjustingNode }
@@ -22,6 +24,7 @@ public class MoveUnit : Node2D
     private Color _prevPathCol;
 
     private Node2D _ghost;
+    private MoveType _ghostMoveType;
     private Sprite _start_marker_sprite;
     private Sprite _end_marker_sprite;
     private Line2D _move_prev;
@@ -151,7 +154,18 @@ public class MoveUnit : Node2D
                 }
                 else if (@event.IsActionPressed("ui_accept"))
                 {
-                    AddMoveNode(_ghost.GlobalPosition, Vector2.Right.Rotated(_ghost.GlobalRotation), false, Enumerable.Empty<String>());
+                    if (_ghostMoveType == MoveType.March)
+                    {
+                        AddMoveNode(_ghost.GlobalPosition, Vector2.Right.Rotated(_ghost.GlobalRotation), false, Enumerable.Empty<String>());
+                    }
+                    else if (_ghostMoveType == MoveType.Reposition)
+                    {
+                        AddMoveNode(_ghost.GlobalPosition, Vector2.Right.Rotated(_ghost.GlobalRotation), false, new List<String> {"reposition"});
+                    }
+                    else if (_ghostMoveType == MoveType.Wheel)
+                    {
+                        AddMoveNode(_ghost.GlobalPosition, Vector2.Right.Rotated(_ghost.GlobalRotation), true, new List<String> {"wheel"});
+                    }
                     GetTree().SetInputAsHandled();
                 }
                 else if (@event.IsActionPressed("ui_cancel"))
@@ -256,6 +270,7 @@ public class MoveUnit : Node2D
         var grot = _nodeTail != null ? _nodeTail.GlobalRotation : GlobalRotation;
         var dir = Vector2.Right.Rotated(grot);
         var quarter = Trig.GetQuarter(gpos, dir, mpos, 68f, 32.5f);
+        _ghostMoveType = MoveType.None;
         if (quarter == Trig.Quarter.front && Trig.DistToLine(new Trig.Ray2(gpos, dir), mpos) > 20f)
         {
             try
@@ -264,11 +279,20 @@ public class MoveUnit : Node2D
                 _move_prev.Points = Trig.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
                 _ghost.GlobalPosition = arc.End;
                 _ghost.GlobalRotation = arc.EndDir.Angle();
+                _ghostMoveType = MoveType.Wheel;
             }
             catch
             {
                 GD.Print($"Failed to make arc with {gpos} {grot} {mpos}");
             }
+        }
+        else if (quarter == Trig.Quarter.front)
+        {
+            var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
+            _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
+            _ghost.GlobalPosition = endGpos;
+            _ghost.GlobalRotation = grot;
+            _ghostMoveType = MoveType.March;
         }
         else if (quarter == Trig.Quarter.left || quarter == Trig.Quarter.right)
         {
@@ -276,14 +300,18 @@ public class MoveUnit : Node2D
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             _ghost.GlobalPosition = endGpos;
             _ghost.GlobalRotation = grot;
+            _ghostMoveType = MoveType.Reposition;
         }
-        else
+        else if (quarter == Trig.Quarter.back)
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             _ghost.GlobalPosition = endGpos;
             _ghost.GlobalRotation = grot;
+            _ghostMoveType = MoveType.Reposition;
         }
+        else
+        { }
     }
 
     private void HighlightEverything()
@@ -316,11 +344,11 @@ public class MoveUnit : Node2D
         switch (_state)
         {
             case State.Idle:
-                _ghost.Hide();
                 break;
             case State.AddingNodes:
                 _move_prev.Points = new Vector2[0];
                 _ghost.Hide();
+                _ghostMoveType = MoveType.None;
                 break;
             case State.AdjustingNode:
                 for(var node = _nodeHead; node != null; node = node.Next)
@@ -347,6 +375,7 @@ public class MoveUnit : Node2D
             case State.AddingNodes:
                 GD.Print("To State AddingNodes " + Name);
                 _ghost.Show();
+                _ghostMoveType = MoveType.None;
                 break;
             case State.AdjustingNode:
                 GD.Print("To State AdjustingNode " + Name);
