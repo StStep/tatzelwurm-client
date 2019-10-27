@@ -12,6 +12,7 @@ namespace UnitTests
         {
             yield return new object[] { Vector2.Zero, 0f, new Vector2(1f, -1f), new Trig.Arc2(Vector2.Zero, Vector2.Right, new Vector2(1f, -1f), Vector2.Up, new Vector2(0f, -1f)), 1f, -Mathf.Pi / 2f, Mathf.Pi / 2f };
             yield return new object[] { Vector2.Zero, 0f, new Vector2(1f, 1f), new Trig.Arc2(Vector2.Zero, Vector2.Right, new Vector2(1f, 1f), Vector2.Down, new Vector2(0f, 1f)), 1f, Mathf.Pi / 2f, Mathf.Pi / 2f };
+            yield return new object[] { Vector2.Zero, 0f, new Vector2(0.7071f, -0.2929f), new Trig.Arc2(Vector2.Zero, Vector2.Right, new Vector2(0.7071f, -0.2929f), new Vector2(0.7071f, -0.7071f), new Vector2(0f, -1f)), 1f, -Mathf.Pi / 4f, Mathf.Pi / 4f };
         }
 
         [DataTestMethod]

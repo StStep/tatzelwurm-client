@@ -61,14 +61,14 @@ public static class Trig
             var baseDir = (End - Start).Normalized();
             bool clockwise = StartDir.AngleTo(baseDir) > 0f;
 
-            // LegA of iso triangle is perp to StartDir (which is a tangent), and it depends on direction
-            var legADir = clockwise ? new Vector2(StartDir.y, -StartDir.x) : new Vector2(-StartDir.y, StartDir.x);
+            // LegA of iso triangle is perp to StartDir (which is a tangent), and it depends on direction, points toward center
+            var legADir = clockwise ? new Vector2(-StartDir.y, StartDir.x) : new Vector2(StartDir.y, -StartDir.x);
 
-            // EndDir is tangent at end point, and can be found because it has same corner angle as legA
-            EndDir = (-baseDir).Rotated(-legADir.AngleTo(baseDir));
+            // LegB is perp to tangent at end point, and can be found because it has same corner angle as legA, points toward center
+            var legBDir = (-baseDir).Rotated(legADir.AngleTo(baseDir));
 
-            // LegB is perp to EndDir (which is a tangent), and it depends on direction
-            var legBDir = clockwise ? new Vector2(EndDir.y, -EndDir.x) : new Vector2(-EndDir.y, EndDir.x);
+            // EndDir is perp to legBDir, and it is a tangent, points toward rotation direction
+            EndDir = clockwise ? new Vector2(legBDir.y, -legBDir.x) : new Vector2(-legBDir.y, legBDir.x);
 
             // Intesection of extended rays is the circle center
             Center = LineIntersectionPoint(new Ray2(Start, legADir), new Ray2(End, legBDir));
