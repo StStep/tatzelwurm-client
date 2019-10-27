@@ -52,11 +52,11 @@ public static class Trig
 
             // LegA of isolese triangle is perp to dir
             var triBaseOut = (End - Start).Normalized();
-            var triBaseIn = -triBaseOut ;//new Vector2(-triBaseOut.x, -triBaseOut.y);
+            var triBaseIn = -triBaseOut;
 
             Ray2 legA = startRay;
-            bool clockwise = StartDir.AngleTo(triBaseOut) > 0;
-            if (clockwise)
+            bool clockwise = StartDir.AngleTo(triBaseOut) > 0f;
+            if (!clockwise)
             {
                 legA.Direction = new Vector2(-legA.Direction.y, legA.Direction.x);
             }
@@ -71,12 +71,12 @@ public static class Trig
             if (clockwise)
             {
                 newDir = triBaseIn.Rotated(-legAng);
-                EndDir = newDir.Rotated(-Mathf.Pi/2f);
+                EndDir = newDir.Rotated(Mathf.Pi/2f);
             }
             else
             {
                 newDir = triBaseIn.Rotated(legAng);
-                EndDir = newDir.Rotated(Mathf.Pi/2f);
+                EndDir = newDir.Rotated(-Mathf.Pi/2f);
             }
             Ray2 legB = new Ray2(End, newDir);
             Center = LineIntersectionPoint(legA, legB);
@@ -172,7 +172,7 @@ public static class Trig
 
         Vector2 v = pnt - dir.Origin;
         float ang = v.AngleTo(dir.Direction);
-        float absAng = Mathf.Abs(ang);
+        float absAng = Mathf.Abs(Mathf.Rad2Deg(ang));
         if (absAng <= 45.5f)
             ret = Quarter.front;
         else if(absAng >= 135f)
@@ -212,6 +212,18 @@ public static class Trig
             (B2 * C1 - B1 * C2) / delta,
             (A1 * C2 - A2 * C1) / delta
         );
+    }
+
+    public static List<Vector2> SampleArc(Arc2 arc, int samples)
+    {
+        var pnts = new List<Vector2>();
+        var seg = arc.Length/samples;
+        for (int i = 0; i < samples; i++)
+        {
+            pnts.Add(arc.GetPoint(seg * i));
+        }
+
+        return pnts;
     }
 
     public static Vector2[] GetLineAsPolygon(Vector2[] pnts, float width)

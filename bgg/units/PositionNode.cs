@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class PositionNode : Node2D
 {
@@ -103,16 +104,8 @@ public class PositionNode : Node2D
 
     public void SetAsArc(Trig.Arc2 arc)
     {
-        var pnts = new List<Vector2>();
-        var seg_num = 20;
-        var seg = arc.Length/seg_num;
-        for (int i = 0; i < seg_num; i++)
-        {
-            pnts.Add(ToLocal(arc.GetPoint(seg * i)));
-        }
-
-        Path.Points = pnts.ToArray();
-        PathPoly.Polygon = Trig.GetLineAsPolygon(pnts.ToArray(), PATH_AREA_WIDTH);
+        Path.Points = Trig.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
+        PathPoly.Polygon = Trig.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
     }
 
     public void highlight_body(String type)
