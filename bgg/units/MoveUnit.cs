@@ -26,7 +26,7 @@ public class MoveUnit : Node2D
     private Color _prevPathCol;
 
     private Node2D _ghost;
-    private MoveType _ghostMoveType;
+    private MoveType _moveType;
     private Sprite _start_marker_sprite;
     private Sprite _end_marker_sprite;
     private Line2D _move_prev;
@@ -103,16 +103,14 @@ public class MoveUnit : Node2D
                 }
                 break;
             case State.AddingNodes:
-                MoveGhost(mpos);
+                MoveNode(_ghost, GetTailGpos(), GetTailGrot(), mpos);
                 break;
             case State.AdjustingNode:
                 if (AdjustingNode != null)
                 {
-                    var end = mpos;
-                    var start = GetNodeStartGpos(AdjustingNode);
-                    AdjustingNode.GlobalPosition = end;
-                    AdjustingNode.GlobalRotation = end.AngleToPoint(start);
-                    AdjustingNode.SetAsLine(start, end);
+                    MoveNode(AdjustingNode, GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), mpos);
+                    _ghost.GlobalPosition = AdjustingNode.GlobalPosition;
+                    _ghost.GlobalRotation = AdjustingNode.GlobalRotation;
                     _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
                     _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
                     SetMoveIndicator(_nodeTail.GlobalPosition, _nodeTail.GlobalRotation);
@@ -156,15 +154,15 @@ public class MoveUnit : Node2D
                 }
                 else if (@event.IsActionPressed("ui_accept"))
                 {
-                    if (_ghostMoveType == MoveType.March)
+                    if (_moveType == MoveType.March)
                     {
                         AddMoveNode(_ghost.GlobalPosition, Vector2.Right.Rotated(_ghost.GlobalRotation), false, Enumerable.Empty<String>());
                     }
-                    else if (_ghostMoveType == MoveType.Reposition)
+                    else if (_moveType == MoveType.Reposition)
                     {
                         AddMoveNode(_ghost.GlobalPosition, Vector2.Right.Rotated(_ghost.GlobalRotation), false, new List<String> {"reposition"});
                     }
-                    else if (_ghostMoveType == MoveType.Wheel)
+                    else if (_moveType == MoveType.Wheel)
                     {
                         AddMoveNode(_ghost.GlobalPosition, Vector2.Right.Rotated(_ghost.GlobalRotation), true, new List<String> {"wheel"});
                     }
@@ -178,8 +176,29 @@ public class MoveUnit : Node2D
                 break;
             // Return to idle once done, adj happens in _process()
             case State.AdjustingNode:
-                if (@event.IsActionPressed("ui_accept") || @event.IsActionPressed("ui_cancel"))
+                if (AdjustingNode != null && (@event.IsActionPressed("ui_accept") || @event.IsActionPressed("ui_cancel")))
                 {
+                    if (_moveType == MoveType.March)
+                    {
+                        AdjustingNode.SetAsLine(GetNodeStartGpos(AdjustingNode));
+                    }
+                    else if (_moveType == MoveType.Reposition)
+                    {
+                        AdjustingNode.SetAsLine(GetNodeStartGpos(AdjustingNode));
+                        AdjustingNode.add_annotation("reposition");
+                    }
+                    else if (_moveType == MoveType.Wheel)
+                    {
+                        var a = new Trig.Arc2(GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), AdjustingNode.GlobalPosition);
+                        AdjustingNode.SetAsArc(a);
+                        AdjustingNode.add_annotation("wheel");
+                    }
+                    else
+                    {
+                        // Ignore if invalid move
+                        break;
+                    }
+                    AdjustingNode.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
                     ChangeState(State.Idle);
                     GetTree().SetInputAsHandled();
                 }
@@ -266,14 +285,12 @@ public class MoveUnit : Node2D
         }
     }
 
-    private void MoveGhost(Vector2 mpos)
+    private void MoveNode(Node2D node, Vector2 gpos, float grot, Vector2 mpos)
     {
-        var gpos = _nodeTail != null ? _nodeTail.GlobalPosition : GlobalPosition;
-        var grot = _nodeTail != null ? _nodeTail.GlobalRotation : GlobalRotation;
         var dir = Vector2.Right.Rotated(grot);
         var quarter = Trig.GetQuarter(gpos, dir, mpos);
         var side = Trig.GetSide(gpos, dir, mpos, 136f, 65f);
-        _ghostMoveType = MoveType.None;
+        _moveType = MoveType.None;
         _move_prev.Modulate = colPathAdding;
         if (quarter == Trig.Quarter.front && side != Trig.Side.inside && Trig.DistToLine(new Trig.Ray2(gpos, dir), mpos) > 20f)
         {
@@ -281,9 +298,9 @@ public class MoveUnit : Node2D
             {
                 var arc = new Trig.Arc2(gpos, grot, mpos);
                 _move_prev.Points = Trig.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
-                _ghost.GlobalPosition = arc.End;
-                _ghost.GlobalRotation = arc.EndDir.Angle();
-                _ghostMoveType = MoveType.Wheel;
+                node.GlobalPosition = arc.End;
+                node.GlobalRotation = arc.EndDir.Angle();
+                _moveType = MoveType.Wheel;
             }
             catch
             {
@@ -294,30 +311,30 @@ public class MoveUnit : Node2D
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
-            _ghost.GlobalPosition = endGpos;
-            _ghost.GlobalRotation = grot;
-            _ghostMoveType = MoveType.March;
+            node.GlobalPosition = endGpos;
+            node.GlobalRotation = grot;
+            _moveType = MoveType.March;
         }
         else if (side == Trig.Side.left || side == Trig.Side.right)
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir.Rotated(Mathf.Pi/2f)), mpos);
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
-            _ghost.GlobalPosition = endGpos;
-            _ghost.GlobalRotation = grot;
-            _ghostMoveType = MoveType.Reposition;
+            node.GlobalPosition = endGpos;
+            node.GlobalRotation = grot;
+            _moveType = MoveType.Reposition;
         }
         else if (side == Trig.Side.back)
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
-            _ghost.GlobalPosition = endGpos;
-            _ghost.GlobalRotation = grot;
-            _ghostMoveType = MoveType.Reposition;
+            node.GlobalPosition = endGpos;
+            node.GlobalRotation = grot;
+            _moveType = MoveType.Reposition;
         }
         else
         {
-            _ghost.GlobalPosition = GlobalPosition;
-            _ghost.GlobalRotation = GlobalRotation;
+            node.GlobalPosition = gpos;
+            node.GlobalRotation = grot;
             _move_prev.Modulate = colPathError;
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(mpos) };
         }
@@ -357,11 +374,15 @@ public class MoveUnit : Node2D
             case State.AddingNodes:
                 _move_prev.Points = new Vector2[0];
                 _ghost.Hide();
-                _ghostMoveType = MoveType.None;
+                _moveType = MoveType.None;
                 break;
             case State.AdjustingNode:
+                _move_prev.Points = new Vector2[0];
+                _ghost.Hide();
+                AdjustingNode?.Sprite.Show();
                 for(var node = _nodeHead; node != null; node = node.Next)
                     node.Enable();
+                _nodeTail?.Disable();
                 break;
             default:
                 break;
@@ -384,13 +405,17 @@ public class MoveUnit : Node2D
             case State.AddingNodes:
                 GD.Print("To State AddingNodes " + Name);
                 _ghost.Show();
-                _ghostMoveType = MoveType.None;
+                _moveType = MoveType.None;
                 break;
             case State.AdjustingNode:
                 GD.Print("To State AdjustingNode " + Name);
                 for(var node = _nodeHead; node != null; node = node.Next)
                     node.Disable();
                 AdjustingNode.Enable();
+                AdjustingNode.clear_path();
+                AdjustingNode.clear_annotations();
+                AdjustingNode.Sprite.Hide();
+                _ghost.Show();
                 break;
             default:
                 break;
@@ -468,7 +493,7 @@ public class MoveUnit : Node2D
         {
             var angle = dir != Vector2.Zero ? dir.Angle() : (gpos - start).Angle();
             _nodeTail.GlobalRotation = angle;
-            _nodeTail.SetAsLine(start, gpos);
+            _nodeTail.SetAsLine(start);
         }
         _nodeTail.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
 
@@ -546,4 +571,7 @@ public class MoveUnit : Node2D
 
     public Vector2 GetNodeStartGpos(PositionNode n) => n.Previous != null ? n.Previous.GlobalPosition : GlobalPosition;
     public float GetNodeStartGrot(PositionNode n) => n.Previous != null ? n.Previous.GlobalRotation : GlobalRotation;
+
+    public Vector2 GetTailGpos() => _nodeTail != null ? _nodeTail.GlobalPosition : GlobalPosition;
+    public float GetTailGrot() => _nodeTail != null ? _nodeTail.GlobalRotation : GlobalRotation;
 }

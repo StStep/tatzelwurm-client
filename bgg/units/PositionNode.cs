@@ -96,7 +96,7 @@ public class PositionNode : Node2D
         PathPoly.Polygon = new Vector2[] {};
     }
 
-    public void SetAsLine(Vector2 startGpos, Vector2 end)
+    public void SetAsLine(Vector2 startGpos)
     {
         Path.Points = new Vector2[] { ToLocal(startGpos), Vector2.Zero };
         PathPoly.Polygon = Trig.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
