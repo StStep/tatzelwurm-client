@@ -135,6 +135,10 @@ public static class Trig
             return new Ray2(newOrigin, Direction);
         }
 
+        public Ray2 Rotated(float phi) => new Ray2(Origin, Direction.Rotated(phi));
+
+        public float AngleToPoint(Vector2 pnt) => Direction.AngleTo(pnt - Origin);
+
         public Ray2 Snapped(Vector2 by) => new Ray2(Origin.Snapped(by), Direction.Snapped(by));
 
         public override string ToString() => $"Ray2 at {Origin} toward {Direction}";
@@ -173,8 +177,7 @@ public static class Trig
     }
     public static ParaHalf GetParaHalf(Ray2 dir, Vector2 pnt)
     {
-        Vector2 v = pnt - dir.Origin;
-        return (v.AngleTo(dir.Direction) <= 0f) ? ParaHalf.left : ParaHalf.right;
+        return (dir.Direction.AngleTo(pnt - dir.Origin) <= 0f) ? ParaHalf.left : ParaHalf.right;
     }
 
     // Image a plane bisected by bath a parallel and perpendicular line thorugh origin
@@ -232,14 +235,36 @@ public static class Trig
     }
     public static Facing GetFacing(Ray2 dir, Vector2 pnt, float frontage, float sideage)
     {
-        var withinfontage = DistToLine(dir, pnt) < frontage/2f;
-        var withinsideage = DistToLine(dir.Tangent(), pnt) < sideage/2f;
+        var halfFrontage = frontage / 2f;
+        var halfSidage = sideage / 2f;
+        var withinfontage = DistToLine(dir, pnt) < halfFrontage;
+        var withinsideage = DistToLine(dir.Tangent(), pnt) < halfSidage;
         if (withinfontage && withinsideage)
         {
             return Facing.inside;
         }
 
-        throw new NotImplementedException();
+        var half = GetHalves(dir, pnt);
+        if (half == Halves.frontleft)
+        {
+            var flCorner = dir.RelTranslate(Vector2.Right * halfSidage + Vector2.Up * halfFrontage).Rotated(-Mathf.Pi / 4);
+            return flCorner.AngleToPoint(pnt) < 0 ? Facing.left : Facing.front;
+        }
+        else if (half == Halves.frontright)
+        {
+            var frCorner = dir.RelTranslate(Vector2.Right * halfSidage + Vector2.Down * halfFrontage).Rotated(Mathf.Pi / 4);
+            return frCorner.AngleToPoint(pnt) < 0 ? Facing.front : Facing.right;
+        }
+        else if (half == Halves.backleft)
+        {
+            var blCorner = dir.RelTranslate(Vector2.Left * halfSidage + Vector2.Up * halfFrontage).Rotated(-Mathf.Pi * 3 / 4);
+            return blCorner.AngleToPoint(pnt) < 0 ? Facing.back : Facing.left;
+        }
+        else
+        {
+            var brCorner = dir.RelTranslate(Vector2.Left * halfSidage + Vector2.Down * halfFrontage).Rotated(Mathf.Pi * 3 / 4);
+            return brCorner.AngleToPoint(pnt) < 0 ? Facing.right : Facing.back;
+        }
     }
 
     // Imagine the lines making up a rectangle being extended ad infinitum, with the four corners being nulled out

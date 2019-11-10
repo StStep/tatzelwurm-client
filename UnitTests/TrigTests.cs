@@ -58,10 +58,86 @@ namespace UnitTests
 
         [DataTestMethod]
         [DynamicData(nameof(Ray2Data), DynamicDataSourceType.Method)]
-        public void Ray2Basics(Trig.Ray2 ray, Boolean tanIsClockwise, Trig.Ray2 expTanRay, Vector2 reloffset, Trig.Ray2 expOffsetRay)
+        public void Ray2(Trig.Ray2 ray, Boolean tanIsClockwise, Trig.Ray2 expTanRay, Vector2 reloffset, Trig.Ray2 expOffsetRay)
         {
             Assert.AreEqual(expTanRay, ray.Tangent(tanIsClockwise).Snapped(SnapBy));
             Assert.AreEqual(expOffsetRay, ray.RelTranslate(reloffset).Snapped(SnapBy));
+        }
+
+        public static IEnumerable<object[]> ParaHalfData()
+        {
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(1f, -1f), Trig.ParaHalf.left };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(1f, 1f), Trig.ParaHalf.right };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(-1f, -1f), Trig.ParaHalf.left };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(-1f, 1f), Trig.ParaHalf.right };
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(ParaHalfData), DynamicDataSourceType.Method)]
+        public void ParaHalf(Trig.Ray2 ray, Vector2 pnt, Trig.ParaHalf expParaHalf)
+        {
+            Assert.AreEqual(expParaHalf, Trig.GetParaHalf(ray, pnt));
+        }
+
+        public static IEnumerable<object[]> PerpHalfData()
+        {
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(1f, -1f), Trig.PerpHalf.front };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(1f, 1f), Trig.PerpHalf.front };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(-1f, -1f), Trig.PerpHalf.back };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(-1f, 1f), Trig.PerpHalf.back };
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(PerpHalfData), DynamicDataSourceType.Method)]
+        public void PerpHalf(Trig.Ray2 ray, Vector2 pnt, Trig.PerpHalf expPerpHalf)
+        {
+            Assert.AreEqual(expPerpHalf, Trig.GetPerpHalf(ray, pnt));
+        }
+
+        public static IEnumerable<object[]> HalvesData()
+        {
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(1f, -1f), Trig.Halves.frontleft };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(1f, 1f), Trig.Halves.frontright };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(-1f, -1f), Trig.Halves.backleft };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        new Vector2(-1f, 1f), Trig.Halves.backright };
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(HalvesData), DynamicDataSourceType.Method)]
+        public void Halves(Trig.Ray2 ray, Vector2 pnt, Trig.Halves expHalf)
+        {
+            Assert.AreEqual(expHalf, Trig.GetHalves(ray, pnt));
+        }
+
+        public static IEnumerable<object[]> FacingData()
+        {
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        150f, 50f, new Vector2(400f, 0f), Trig.Facing.front };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        150f, 50f, new Vector2(-400f, 0f), Trig.Facing.back };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        150f, 50f, new Vector2(0, -400f), Trig.Facing.left };
+            yield return new object[] { new Trig.Ray2(Vector2.Zero, Vector2.Right),
+                                        150f, 50f, new Vector2(0, 400f), Trig.Facing.right };
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(FacingData), DynamicDataSourceType.Method)]
+        public void Facing(Trig.Ray2 ray, float frontage, float sideage, Vector2 pnt, Trig.Facing expFacing)
+        {
+            Assert.AreEqual(expFacing, Trig.GetFacing(ray, pnt, frontage, sideage));
         }
     }
 }
