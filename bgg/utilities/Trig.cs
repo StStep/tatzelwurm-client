@@ -62,13 +62,13 @@ public static class Trig
             bool clockwise = StartDir.AngleTo(baseDir) > 0f;
 
             // LegA of iso triangle is perp to StartDir (which is a tangent), and it depends on direction, points toward center
-            var legADir = clockwise ? new Vector2(-StartDir.y, StartDir.x) : new Vector2(StartDir.y, -StartDir.x);
+            var legADir = clockwise ? -StartDir.Tangent() : StartDir.Tangent();
 
             // LegB is perp to tangent at end point, and can be found because it has same corner angle as legA, points toward center
             var legBDir = (-baseDir).Rotated(legADir.AngleTo(baseDir));
 
             // EndDir is perp to legBDir, and it is a tangent, points toward rotation direction
-            EndDir = clockwise ? new Vector2(legBDir.y, -legBDir.x) : new Vector2(-legBDir.y, legBDir.x);
+            EndDir = -(clockwise ? -legBDir.Tangent() : legBDir.Tangent());
 
             // Intesection of extended rays is the circle center
             Center = LineIntersectionPoint(new Ray2(Start, legADir), new Ray2(End, legBDir));
@@ -126,7 +126,18 @@ public static class Trig
 
         public Vector2 GetPoint(float dist) => Origin + Direction * dist;
 
-        public Ray2 Tangent() => new Ray2(Origin, Direction.Tangent());
+        public Ray2 Tangent(Boolean clockwise = false) => new Ray2(Origin, clockwise ? -Direction.Tangent() : Direction.Tangent());
+
+        // Create a new ray with an offset relative to Vector2.Right
+        public Ray2 RelTranslate(Vector2 offset)
+        {
+            var newOrigin = Origin + offset.x * Direction + offset.y * Direction.Rotated(Mathf.Pi / 2f);
+            return new Ray2(newOrigin, Direction);
+        }
+
+        public Ray2 Snapped(Vector2 by) => new Ray2(Origin.Snapped(by), Direction.Snapped(by));
+
+        public override string ToString() => $"Ray2 at {Origin} toward {Direction}";
     }
 
     public static float DistToLine(Ray2 dir, Vector2 pnt)
@@ -221,6 +232,13 @@ public static class Trig
     }
     public static Facing GetFacing(Ray2 dir, Vector2 pnt, float frontage, float sideage)
     {
+        var withinfontage = DistToLine(dir, pnt) < frontage/2f;
+        var withinsideage = DistToLine(dir.Tangent(), pnt) < sideage/2f;
+        if (withinfontage && withinsideage)
+        {
+            return Facing.inside;
+        }
+
         throw new NotImplementedException();
     }
 
