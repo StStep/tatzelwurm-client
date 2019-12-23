@@ -1,15 +1,19 @@
 0 Adding Differnt Move Types
-	+ (Wheel) In Front unit front, add either line or arc
-	+ (Reposition) In unit flank or rear
-		+ Dont change facing
-		+ Only straight line offset
+	X (Wheel) In Front unit front, add either line or arc
+	X (Reposition) In unit flank or rear
+		X Dont change facing
+		X Only straight line offset
 	+ (Rotation) Tap hover and Rotate key (R)
 		+ Point unit around
-1 Setup per hex addr info
-	+ Encap. hexgrid within battlefield.gd/.tscn
-	+ Contain concept of what exists at hex addr
-	+ Be able to detect overlapping units
-	+ Contain terrain information
-	+ Detect valid movements
-	+ Serialize battlefield layouts
-		+ Either pull info tiles or set tiles with info
+1 Movement information
+  + Only allow 4 manuvours per turn
+    + Each manuvour happens at fixed time, 1 quarter turn
+	+ Therfore distance between manuavor locations determines speed
+	+ And all manuvers 1 through 4 can be synchronized between units
+  + Detect invalid movements
+    + Time co-incident overlapping
+	+ Terrain collisoin
+2 Extra thoughts
+  + When moving a node...
+    + Allow for canceling to return node to original location
+	+ When invalid, show the node as it currently exists
