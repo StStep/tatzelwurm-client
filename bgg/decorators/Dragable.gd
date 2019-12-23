@@ -59,7 +59,7 @@ func _unhandled_input(event) -> void:
 	if event is InputEventMouseMotion:
 		if _pointing:
 			if not _mouse_in:
-				emit_signal("point_to", Vector2(0, 1).angle_to((get_global_mouse_position() - global_position)))
+				emit_signal("point_to", (get_global_mouse_position() - global_position).angle())
 		elif dragging:
 			emit_signal("drag_to", get_global_mouse_position())
 		else:

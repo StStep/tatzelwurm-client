@@ -56,7 +56,6 @@ texture = ExtResource( 3 )
 points = PoolVector2Array( 737.505, 130.658 )
 width = 5.0
 default_color = Color( 1, 1, 1, 1 )
-texture_mode = -11776948
 
 [node name="MoveIndicator" type="Node2D" parent="."]
 show_behind_parent = true

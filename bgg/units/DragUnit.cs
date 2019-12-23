@@ -2,7 +2,7 @@
 using Godot;
 using System;
 
-public class DragUnit : Sprite
+public class DragUnit : Node2D
 {
     [Signal]
     public delegate void Picked(DragUnit u);
