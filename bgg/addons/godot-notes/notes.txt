@@ -3,7 +3,7 @@
 	X (Reposition) In unit flank or rear
 		X Dont change facing
 		X Only straight line offset
-	+ (Rotation) Tap hover and Rotate key (R)
+	+ (Rotation) Click and hold when placing?
 		+ Point unit around
 1 Movement information
   + Only allow 4 manuvours per turn

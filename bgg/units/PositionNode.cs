@@ -8,7 +8,7 @@ public class PositionNode : Node2D
     const int PATH_AREA_WIDTH = 10;
 
     [Signal]
-    public delegate void event_on_hover(PositionNode node, InputEvent @event);
+    public delegate void clicked_on_hover(PositionNode node, MouseButton button);
 
     [Signal]
     public delegate void path_hover(Vector2 gpos);
@@ -49,16 +49,16 @@ public class PositionNode : Node2D
             { "rotation" , GetNode<Node2D>("Rotation") },
         };
 
-        Body.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(OnEvent));
+        Body.Connect(nameof(MouseArea2d.mouse_clicked), this, nameof(OnClick));
         Body.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(OnMarkerHoverChange));
         PathArea.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(OnPathHovorChange));
         clear_annotations();
     }
 
-    private void OnEvent(InputEvent @event)
+    private void OnClick(MouseButton button)
     {
         if (IsProcessingInput())
-            EmitSignal(nameof(event_on_hover), this, @event);
+            EmitSignal(nameof(clicked_on_hover), this, button);
     }
 
     private void OnMarkerHoverChange()

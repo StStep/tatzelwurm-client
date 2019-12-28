@@ -8,7 +8,7 @@ public enum MoveType { None, March, Reposition, Wheel, Rotate };
 
 public class MoveUnit : Node2D
 {
-    private enum State { NotSelected, Idle, AddingNodes, AdjustingNode }
+    private enum State { NotSelected, Idle, AddingNodes, RotatingNode, AdjustingNode }
 
     private Color colNotSelected = new Color("ffffff"); // White
     private Color colSelected = new Color("f6ff00"); // Yellow
@@ -39,6 +39,8 @@ public class MoveUnit : Node2D
 
     // First Move Node
     private PositionNode _nodeHead;
+
+    private int _lastDragInd = -1;
 
 
     public SelectManager SelectManager { get; set; }
@@ -71,9 +73,13 @@ public class MoveUnit : Node2D
 
         SetProcess(true);
         _start_marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(OnMarkerHoverChange), new Godot.Collections.Array() { _start_marker });
-        _start_marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(OnMarkerEvent));
+        _start_marker.Connect(nameof(MouseArea2d.mouse_drag_updated), this, nameof(OnMarkerDrag), new Godot.Collections.Array() { false, _start_marker });
+        _start_marker.Connect(nameof(MouseArea2d.mouse_drag_ended), this, nameof(OnMarkerDrag), new Godot.Collections.Array() { true, _start_marker });
+        _start_marker.Connect(nameof(MouseArea2d.mouse_clicked), this, nameof(OnClickStart));
         _end_marker.Connect(nameof(MouseArea2d.mouse_hover_changed), this, nameof(OnMarkerHoverChange), new Godot.Collections.Array() { _end_marker });
-        _end_marker.Connect(nameof(MouseArea2d.event_while_hovering_occured), this, nameof(OnMarkerEvent));
+        _end_marker.Connect(nameof(MouseArea2d.mouse_drag_updated), this, nameof(OnMarkerDrag), new Godot.Collections.Array() { false, _end_marker });
+        _end_marker.Connect(nameof(MouseArea2d.mouse_drag_ended), this, nameof(OnMarkerDrag), new Godot.Collections.Array() { true, _end_marker });
+        _end_marker.Connect(nameof(MouseArea2d.mouse_clicked), this, nameof(OnClickEnd));
         _selectItem.Connect(nameof(SelectItem.selection_changed), this, nameof(OnSelectionChange));
         _end_marker.Hide();
     }
@@ -128,16 +134,16 @@ public class MoveUnit : Node2D
         {
              // Start adding moves if hightlighted or deselect
             case State.Idle:
-                if (_start_marker.is_mouse_hovering && @event.IsActionPressed("ui_accept"))
+                if (_start_marker.is_mouse_hovering && @event.IsActionReleased("ui_accept"))
                 {
                     ResetMoveNodes();
                     ChangeState(State.AddingNodes);
                 }
-                else if (_end_marker.is_mouse_hovering && @event.IsActionPressed("ui_accept"))
+                else if (_end_marker.is_mouse_hovering && @event.IsActionReleased("ui_accept"))
                 {
                     ChangeState(State.AddingNodes);
                 }
-                else if (@event.IsActionPressed("ui_cancel"))
+                else if (@event.IsActionReleased("ui_cancel"))
                 {
                     if (SelectManager.IsSelectionAllowed())
                         SelectManager.ReqSelection(null);
@@ -147,12 +153,12 @@ public class MoveUnit : Node2D
             // Add Move or Return to Idle
             case State.AddingNodes:
                 // Move end marker if click on, undo last
-                if (@event.IsActionPressed("ui_accept") && _end_marker.is_mouse_hovering)
+                if (@event.IsActionReleased("ui_accept") && _end_marker.is_mouse_hovering)
                 {
                     RmLastMoveNode();
                     GetTree().SetInputAsHandled();
                 }
-                else if (@event.IsActionPressed("ui_accept"))
+                else if (@event.IsActionReleased("ui_accept"))
                 {
                     if (_moveType == MoveType.March)
                     {
@@ -168,7 +174,7 @@ public class MoveUnit : Node2D
                     }
                     GetTree().SetInputAsHandled();
                 }
-                else if (@event.IsActionPressed("ui_cancel"))
+                else if (@event.IsActionReleased("ui_cancel"))
                 {
                     ChangeState(State.Idle);
                     GetTree().SetInputAsHandled();
@@ -176,7 +182,7 @@ public class MoveUnit : Node2D
                 break;
             // Return to idle once done, adj happens in _process()
             case State.AdjustingNode:
-                if (AdjustingNode != null && (@event.IsActionPressed("ui_accept") || @event.IsActionPressed("ui_cancel")))
+                if (AdjustingNode != null && (@event.IsActionReleased("ui_accept") || @event.IsActionReleased("ui_cancel")))
                 {
                     if (_moveType == MoveType.March)
                     {
@@ -208,27 +214,32 @@ public class MoveUnit : Node2D
         }
     }
 
-    private void OnMarkerEvent(InputEvent @event)
+    private void OnClickStart(MouseButton button)
     {
-        if (_state == State.NotSelected && @event.IsActionPressed("ui_accept") && SelectManager.IsSelectionAllowed())
+        if (_state == State.NotSelected && button == MouseButton.Left && SelectManager.IsSelectionAllowed())
         {
             SelectManager.ReqSelection(_selectItem);
-            GetTree().SetInputAsHandled();
         }
     }
 
-    private void OnChildNodeEvent(PositionNode node, InputEvent @event)
+    private void OnClickEnd(MouseButton button)
     {
-        if (_state == State.NotSelected && @event.IsActionPressed("ui_accept") && SelectManager.IsSelectionAllowed())
+        if (_state == State.NotSelected && button == MouseButton.Left && SelectManager.IsSelectionAllowed())
         {
             SelectManager.ReqSelection(_selectItem);
-            GetTree().SetInputAsHandled();
         }
-        else if (_state == State.Idle && @event.IsActionPressed("ui_accept"))
+    }
+
+    private void OnClickChild(PositionNode node, MouseButton button)
+    {
+        if (_state == State.NotSelected && button == MouseButton.Left && SelectManager.IsSelectionAllowed())
+        {
+            SelectManager.ReqSelection(_selectItem);
+        }
+        else if (_state == State.Idle && button == MouseButton.Left)
         {
             AdjustingNode = node;
             ChangeState(State.AdjustingNode);
-            GetTree().SetInputAsHandled();
         }
     }
 
@@ -264,6 +275,15 @@ public class MoveUnit : Node2D
             return;
         }
 
+        if (marker.is_mouse_hovering)
+        {
+            GD.Print($"Mouse in {marker.Name}");
+        }
+        else
+        {
+            GD.Print($"Mouse out {marker.Name}");
+        }
+
         // Highlight everything if not yet selected and selection allowed
         if (_state == State.NotSelected && marker.is_mouse_hovering && SelectManager.IsSelectionAllowed())
         {
@@ -282,6 +302,28 @@ public class MoveUnit : Node2D
         else
         {
             marker.GetNode<Sprite>("Sprite").Modulate = _prevMarkerCol;
+        }
+    }
+
+    private void OnMarkerDrag(int index, Vector2 start, Vector2 end, MouseButton button, Boolean stopping, MouseArea2d marker)
+    {
+        // Do nothing if busy
+        if (IsBusy)
+        {
+            return;
+        }
+
+        if (!stopping)
+        {
+            if (_lastDragInd != index)
+            {
+                GD.Print($"Dragging {marker.Name} with ind {index}");
+                _lastDragInd = index;
+            }
+        }
+        else
+        {
+            GD.Print($"Stopped dragging {marker.Name} with ind {index}");
         }
     }
 
@@ -458,7 +500,7 @@ public class MoveUnit : Node2D
     {
         GD.Print("Add move");
         var inst = _posNodeScene.Instance() as PositionNode;
-        inst.Connect(nameof(PositionNode.event_on_hover), this, nameof(OnChildNodeEvent));
+        inst.Connect(nameof(PositionNode.clicked_on_hover), this, nameof(OnClickChild));
         inst.Connect(nameof(PositionNode.marker_hover), this, nameof(OnChildNodeHover));
 
         // disable point under end marker, enable prev hidden

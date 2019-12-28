@@ -23,6 +23,27 @@ func _set_polygon(value: Array) -> void:
 	else:
 		get_node("CollisionPolygon2D").polygon = PoolVector2Array(value)
 
+##		public List<Vector2> Polygon
+##		{
+##			get => GetNode<CollisionPolygon2D>("CollisionPolygon2D")?.Polygon?.ToList() ?? new List<Vector2>();
+##			set
+##			{
+##				var poly = GetNode<CollisionPolygon2D>("CollisionPolygon2D");
+##				if (poly != null)
+##				{
+##					poly.Polygon = value.ToArray();
+##				}
+##				else
+##				{
+##					var nPoly = new CollisionPolygon2D();
+##					nPoly.Name = "CollisionPolygon2D";
+##					nPoly.ZIndex = 1;
+##					AddChild(nPoly);
+##					nPoly.Polygon = value.ToArray();
+##				}
+##			}
+##		}
+
 func _get_polygon() -> Array:
 	if not has_node("CollisionPolygon2D"):
 		return []
