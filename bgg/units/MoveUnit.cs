@@ -132,18 +132,8 @@ public class MoveUnit : Node2D
     {
         switch(_state)
         {
-             // Start adding moves if hightlighted or deselect
             case State.Idle:
-                if (_start_marker.is_mouse_hovering && @event.IsActionReleased("ui_accept"))
-                {
-                    ResetMoveNodes();
-                    ChangeState(State.AddingNodes);
-                }
-                else if (_end_marker.is_mouse_hovering && @event.IsActionReleased("ui_accept"))
-                {
-                    ChangeState(State.AddingNodes);
-                }
-                else if (@event.IsActionReleased("ui_cancel"))
+                if (@event.IsActionReleased("ui_cancel"))
                 {
                     if (SelectManager.IsSelectionAllowed())
                         SelectManager.ReqSelection(null);
@@ -152,13 +142,7 @@ public class MoveUnit : Node2D
                 break;
             // Add Move or Return to Idle
             case State.AddingNodes:
-                // Move end marker if click on, undo last
-                if (@event.IsActionReleased("ui_accept") && _end_marker.is_mouse_hovering)
-                {
-                    RmLastMoveNode();
-                    GetTree().SetInputAsHandled();
-                }
-                else if (@event.IsActionReleased("ui_accept"))
+                if (@event.IsActionReleased("ui_accept"))
                 {
                     if (_moveType == MoveType.March)
                     {
@@ -216,17 +200,38 @@ public class MoveUnit : Node2D
 
     private void OnClickStart(MouseButton button)
     {
+        // Select if not selected
         if (_state == State.NotSelected && button == MouseButton.Left && SelectManager.IsSelectionAllowed())
         {
             SelectManager.ReqSelection(_selectItem);
+        }
+        // Reset all nodes if idle and clicked
+        else if (_state == State.Idle && button == MouseButton.Left)
+        {
+            ResetMoveNodes();
+            ChangeState(State.AddingNodes);
         }
     }
 
     private void OnClickEnd(MouseButton button)
     {
+        // Select if not selected
         if (_state == State.NotSelected && button == MouseButton.Left && SelectManager.IsSelectionAllowed())
         {
             SelectManager.ReqSelection(_selectItem);
+            GetTree().SetInputAsHandled();
+        }
+        // Start adding nodes if idle
+        else if (_state == State.Idle && button == MouseButton.Left)
+        {
+            ChangeState(State.AddingNodes);
+            GetTree().SetInputAsHandled();
+        }
+        // Move end marker if click on, undo last
+        else if (_state == State.AddingNodes && button == MouseButton.Left)
+        {
+            RmLastMoveNode();
+            GetTree().SetInputAsHandled();
         }
     }
 
@@ -235,11 +240,13 @@ public class MoveUnit : Node2D
         if (_state == State.NotSelected && button == MouseButton.Left && SelectManager.IsSelectionAllowed())
         {
             SelectManager.ReqSelection(_selectItem);
+            GetTree().SetInputAsHandled();
         }
         else if (_state == State.Idle && button == MouseButton.Left)
         {
             AdjustingNode = node;
             ChangeState(State.AdjustingNode);
+            GetTree().SetInputAsHandled();
         }
     }
 
