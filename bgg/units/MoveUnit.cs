@@ -193,6 +193,8 @@ public class MoveUnit : Node2D
                     GetTree().SetInputAsHandled();
                 }
                 break;
+            // Rotating is handled within OnMarkerDrag
+            case State.RotatingNode:
             default:
                 break;
         }
@@ -334,6 +336,7 @@ public class MoveUnit : Node2D
             else
             {
                 GD.Print($"Stopped dragging {marker.Name} with ind {index}");
+                AddMoveNode(marker.GlobalPosition, end - start, false, new List<String>() { "rotation" });
                 ChangeState(State.Idle);
             }
         }
