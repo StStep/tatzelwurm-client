@@ -314,23 +314,29 @@ public class MoveUnit : Node2D
 
     private void OnMarkerDrag(int index, Vector2 start, Vector2 end, MouseButton button, Boolean stopping, MouseArea2d marker)
     {
-        // Do nothing if busy
-        if (IsBusy)
+        if (_state == State.Idle || _state == State.AddingNodes)
         {
-            return;
+            ChangeState(State.RotatingNode);
         }
-
-        if (!stopping)
+        else if (_state == State.RotatingNode)
         {
-            if (_lastDragInd != index)
+            if (!stopping)
             {
-                GD.Print($"Dragging {marker.Name} with ind {index}");
-                _lastDragInd = index;
+                if (_lastDragInd != index)
+                {
+                    GD.Print($"Dragging {marker.Name} with ind {index}");
+                    _lastDragInd = index;
+                }
+            }
+            else
+            {
+                GD.Print($"Stopped dragging {marker.Name} with ind {index}");
+                ChangeState(State.Idle);
             }
         }
         else
         {
-            GD.Print($"Stopped dragging {marker.Name} with ind {index}");
+            // Do nothing
         }
     }
 
@@ -425,6 +431,9 @@ public class MoveUnit : Node2D
                 _ghost.Hide();
                 _moveType = MoveType.None;
                 break;
+            case State.RotatingNode:
+                _ghost.Hide();
+                break;
             case State.AdjustingNode:
                 _move_prev.Points = new Vector2[0];
                 _ghost.Hide();
@@ -455,6 +464,10 @@ public class MoveUnit : Node2D
                 GD.Print("To State AddingNodes " + Name);
                 _ghost.Show();
                 _moveType = MoveType.None;
+                break;
+            case State.RotatingNode:
+                GD.Print("To State RotatingNode " + Name);
+                _ghost.Show();
                 break;
             case State.AdjustingNode:
                 GD.Print("To State AdjustingNode " + Name);
