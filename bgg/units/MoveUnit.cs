@@ -327,6 +327,9 @@ public class MoveUnit : Node2D
                     GD.Print($"Dragging {marker.Name} with ind {index}");
                     _lastDragInd = index;
                 }
+
+                _ghost.GlobalPosition = marker.GlobalPosition;
+                _ghost.GlobalRotation = (end - start).Angle();
             }
             else
             {

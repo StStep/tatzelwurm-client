@@ -2,8 +2,8 @@
 
 [ext_resource path="res://units/MoveUnit.cs" type="Script" id=1]
 [ext_resource path="res://decorators/SelectItem.cs" type="Script" id=2]
-[ext_resource path="res://turn_component/battlefield_view/block_with_direction.png" type="Texture" id=3]
-[ext_resource path="res://decorators/MouseArea2d.cs" type="Script" id=4]
+[ext_resource path="res://decorators/MouseArea2d.cs" type="Script" id=3]
+[ext_resource path="res://turn_component/battlefield_view/block_with_direction.png" type="Texture" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 68, 32.5 )
@@ -20,17 +20,9 @@ script = ExtResource( 1 )
 [node name="SelectItem" type="Node" parent="."]
 script = ExtResource( 2 )
 
-[node name="Ghost" type="Node2D" parent="."]
-editor/display_folded = true
-
-[node name="Sprite" type="Sprite" parent="Ghost"]
-modulate = Color( 1, 1, 1, 0.491961 )
-rotation = 1.5708
-texture = ExtResource( 3 )
-
 [node name="StartMarker" type="Area2D" parent="."]
 editor/display_folded = true
-script = ExtResource( 4 )
+script = ExtResource( 3 )
 
 [node name="Shape" type="CollisionShape2D" parent="StartMarker"]
 rotation = 1.5708
@@ -38,11 +30,11 @@ shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="StartMarker"]
 rotation = 1.5708
-texture = ExtResource( 3 )
+texture = ExtResource( 4 )
 
 [node name="EndMarker" type="Area2D" parent="."]
 editor/display_folded = true
-script = ExtResource( 4 )
+script = ExtResource( 3 )
 
 [node name="Shape" type="CollisionShape2D" parent="EndMarker"]
 rotation = 1.5708
@@ -50,12 +42,21 @@ shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="EndMarker"]
 rotation = 1.5708
-texture = ExtResource( 3 )
+texture = ExtResource( 4 )
+
+[node name="Ghost" type="Node2D" parent="."]
+editor/display_folded = true
+
+[node name="Sprite" type="Sprite" parent="Ghost"]
+modulate = Color( 1, 1, 1, 0.491961 )
+rotation = 1.5708
+texture = ExtResource( 4 )
 
 [node name="MovePreview" type="Line2D" parent="."]
 points = PoolVector2Array( 737.505, 130.658 )
 width = 5.0
 default_color = Color( 1, 1, 1, 1 )
+texture_mode = 23
 
 [node name="MoveIndicator" type="Node2D" parent="."]
 show_behind_parent = true
