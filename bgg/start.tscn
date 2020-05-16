@@ -46,6 +46,5 @@ margin_bottom = 237.0
 custom_fonts/font = ExtResource( 2 )
 text = "Godot GUI Testing"
 align = 1
-
 [connection signal="pressed" from="HBoxContainer/Start" to="." method="_on_Start_pressed"]
 [connection signal="pressed" from="HBoxContainer/Exit" to="." method="_on_Exit_pressed"]
