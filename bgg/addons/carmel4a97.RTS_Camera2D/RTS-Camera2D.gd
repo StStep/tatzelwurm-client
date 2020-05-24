@@ -30,6 +30,7 @@ export (bool) var drag = true
 export (bool) var edge = false
 export (bool) var wheel = true
 
+export (int) var zoom_in_limit = 0
 export (int) var zoom_out_limit = 100
 
 # Camera speed in px/s.
@@ -65,7 +66,7 @@ func _ready():
 	set_enable_follow_smoothing(true)
 	set_follow_smoothing(4)
 
-func _physics_process(delta):
+func _process(delta):
 	# Move camera by keys defined in InputMap (ui_left/top/right/bottom).
 	if key:
 		if __keys[0]:
@@ -125,8 +126,8 @@ func _unhandled_input( event ):
 			# Checking if future zoom won't be under 0.
 			# In that cause engine will flip screen.
 			if event.button_index == BUTTON_WHEEL_UP and\
-			camera_zoom.x - camera_zoom_speed.x > 0 and\
-			camera_zoom.y - camera_zoom_speed.y > 0:
+			camera_zoom.x - camera_zoom_speed.x > zoom_in_limit and\
+			camera_zoom.y - camera_zoom_speed.y > zoom_in_limit:
 				camera_zoom -= camera_zoom_speed
 				set_zoom(camera_zoom)
 				# Checking if future zoom won't be above zoom_out_limit.

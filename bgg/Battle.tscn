@@ -26,6 +26,7 @@ __meta__ = {
 "_editor_icon": ExtResource( 4 )
 }
 drag = false
+zoom_in_limit = 1
 zoom_out_limit = 3
 camera_speed = 800
 
