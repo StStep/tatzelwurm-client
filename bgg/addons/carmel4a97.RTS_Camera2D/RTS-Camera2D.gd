@@ -65,7 +65,7 @@ func _ready():
 	set_enable_follow_smoothing(true)
 	set_follow_smoothing(4)
 
-func _process(delta):
+func _physics_process(delta):
 	# Move camera by keys defined in InputMap (ui_left/top/right/bottom).
 	if key:
 		if __keys[0]:

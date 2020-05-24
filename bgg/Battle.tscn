@@ -28,7 +28,6 @@ __meta__ = {
 drag = false
 zoom_out_limit = 3
 camera_speed = 800
-camera_margin = 0
 
 [node name="DeployGui" parent="." instance=ExtResource( 5 )]
 
