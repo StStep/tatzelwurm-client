@@ -19,3 +19,7 @@ tile_data = PoolIntArray( 0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 
 
 [node name="Units" type="Node" parent="."]
 script = ExtResource( 2 )
+
+[node name="DeployZone" type="Polygon2D" parent="."]
+color = Color( 0.952941, 0.894118, 0.894118, 0.317647 )
+polygon = PoolVector2Array( 0, 1500, 3000, 1500, 3000, 2000, 0, 2000 )

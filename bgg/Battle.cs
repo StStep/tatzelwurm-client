@@ -11,7 +11,7 @@ public class Battle: Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-	    GetNode("DeployGui").Set("create_unit", GD.FuncRef(GetNode("Battlefield"), nameof(Battlefield.DeployUnit)));
+	    GetNode<DeployGui>("DeployGui").CreateUnit = GetNode<Battlefield>("Battlefield").DeployUnit;
 	    GetNode("TurnGui").Connect("finishedDeploying", this, nameof(EndDeployment));
 
         EnterDeploymentState();

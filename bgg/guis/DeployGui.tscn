@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://guis/DeployGui.gd" type="Script" id=1]
+[ext_resource path="res://guis/DeployGui.cs" type="Script" id=1]
 [ext_resource path="res://resources/Gugi-Regular-Medium.tres" type="DynamicFont" id=2]
 
 [node name="DeployGui" type="CanvasLayer"]

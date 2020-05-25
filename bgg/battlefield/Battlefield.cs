@@ -4,10 +4,6 @@ using System.Collections.Generic;
 
 public class Battlefield : Node
 {
-    // Declare member variables here. Examples:
-    // private int a = 2;
-    // private string b = "text";
-
     private PackedScene _deployUnitScene = GD.Load<PackedScene>("res://units/DragUnit.tscn");
     private PackedScene _moveUnitScene = GD.Load<PackedScene>("res://units/MoveUnit.tscn");
 
