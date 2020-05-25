@@ -1,0 +1,13 @@
+{
+    "files.exclude": {
+        "**/*.png": true,
+        "**/*.png.import": true,
+        "**/*.tres": true,
+        "**/*.tscn": true,
+        "mono/**": true,
+        ".import/**": true,
+        ".mono/**": true,
+        ".vs/**": true,
+        "packages/**": true
+    }
+}
