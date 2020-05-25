@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://guis/TurnGui.gd" type="Script" id=1]
+[ext_resource path="res://guis/TurnGui.cs" type="Script" id=1]
 [ext_resource path="res://guis/TurnHeader.tscn" type="PackedScene" id=2]
 
 [node name="TurnGui" type="CanvasLayer"]
@@ -26,6 +26,9 @@ margin_bottom = -20.0
 focus_mode = 0
 enabled_focus_mode = 0
 text = "Finish Deployment"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="FinishTurn" type="Button" parent="."]
 anchor_left = 1.0

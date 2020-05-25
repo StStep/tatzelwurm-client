@@ -11,9 +11,9 @@ public class DeployGui: Node
     }
 
     public Action<String> CreateUnit { get; set; }
-    public Int32 LineCount { get; private set; } = 6;
-    public Int32 TroopCount { get; private set; } = 4;
-    public Int32 RegimentCount { get; private set; } = 2;
+    public int LineCount { get; private set; } = 6;
+    public int TroopCount { get; private set; } = 4;
+    public int RegimentCount { get; private set; } = 2;
 
     private Label _labelLineCount;
     private Label _labelTroopCount;
