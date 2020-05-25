@@ -2,9 +2,9 @@ extends Node
 
 var create_unit: FuncRef
 
-onready var _nd_linecount  = get_node("UnitPalette/LineCount")
-onready var _nd_troopcount  = get_node("UnitPalette/TroopCount")
-onready var _nd_regcount  = get_node("UnitPalette/RegimentCount")
+onready var _nd_linecount  = get_node("UnitPalette/MarginContainer/VBoxContainer/HBoxContainer/LineCount")
+onready var _nd_troopcount  = get_node("UnitPalette/MarginContainer/VBoxContainer/HBoxContainer2/TroopCount")
+onready var _nd_regcount  = get_node("UnitPalette/MarginContainer/VBoxContainer/HBoxContainer3/RegimentCount")
 
 var _enabled: bool = false
 var _linecnt: int = 6
@@ -13,9 +13,9 @@ var _regcnt: int = 2
 
 func _ready() -> void:
 	var _c
-	_c = $UnitPalette/BtMakeLine.connect("button_down", self, "_on_BtMakeLine_pressed")
-	_c = $UnitPalette/BtMakeTroop.connect("button_down", self, "_on_BtMakeTroop_pressed")
-	_c = $UnitPalette/BtMakeRegiment.connect("button_down", self, "_on_BtMakeRegiment_pressed")
+	_c = $UnitPalette/MarginContainer/VBoxContainer/HBoxContainer/BtMakeLine.connect("button_down", self, "_on_BtMakeLine_pressed")
+	_c = $UnitPalette/MarginContainer/VBoxContainer/HBoxContainer2/BtMakeTroop.connect("button_down", self, "_on_BtMakeTroop_pressed")
+	_c = $UnitPalette/MarginContainer/VBoxContainer/HBoxContainer3/BtMakeRegiment.connect("button_down", self, "_on_BtMakeRegiment_pressed")
 	_nd_linecount.text = str(_linecnt)
 	_nd_troopcount.text = str(_troopcnt)
 	_nd_regcount.text = str(_regcnt)
