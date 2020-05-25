@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/block_with_direction.png-2bd0f30d2932a6d9f28f395beef2c6f9.stex"
+path="res://.import/circle_with_direction.png-06ef93b771431381f5ae8a9de0a9a3b8.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://turn_component/battlefield_view/block_with_direction.png"
-dest_files=[ "res://.import/block_with_direction.png-2bd0f30d2932a6d9f28f395beef2c6f9.stex" ]
+source_file="res://units/circle_with_direction.png"
+dest_files=[ "res://.import/circle_with_direction.png-06ef93b771431381f5ae8a9de0a9a3b8.stex" ]
 
 [params]
 

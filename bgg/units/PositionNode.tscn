@@ -1,8 +1,9 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://units/PositionNode.cs" type="Script" id=1]
-[ext_resource path="res://turn_component/battlefield_view/circle_with_direction.png" type="Texture" id=2]
+[ext_resource path="res://units/circle_with_direction.png" type="Texture" id=2]
 [ext_resource path="res://decorators/MouseArea2d.cs" type="Script" id=3]
+
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 12.5
