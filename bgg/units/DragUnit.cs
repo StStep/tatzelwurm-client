@@ -10,6 +10,9 @@ public class DragUnit : Node2D
     [Signal]
     public delegate void Placed(DragUnit u);
 
+    [Signal]
+    public delegate void Moved(DragUnit u);
+
     private Node _dragable;
 
     public Boolean CanDrag
@@ -38,5 +41,9 @@ public class DragUnit : Node2D
     private void Place(Node dragable) => EmitSignal(nameof(Placed), this);
 
     private void PointTo(float rads) => GlobalRotation = rads;
-    private void MoveTo(Vector2 loc) => GlobalPosition = loc;
+    private void MoveTo(Vector2 loc)
+    {
+        GlobalPosition = loc;
+        EmitSignal(nameof(Moved), this);
+    }
 }

@@ -22,8 +22,9 @@ public class Battlefield : Node
         GetNode("Units").AddChild(u);
         u.CanDrag = true;
         u.Dragging = true;
-        u.Connect("Picked", this, nameof(PickedUnit));
-        u.Connect("Placed", this, nameof(PlacedUnit));
+        u.Connect(nameof(DragUnit.Picked), this, nameof(PickedUnit));
+        u.Connect(nameof(DragUnit.Placed), this, nameof(PlacedUnit));
+        u.Connect(nameof(DragUnit.Moved), this, nameof(MovedUnit));
         _deployUnits.Add(u);
     }
 
@@ -52,5 +53,18 @@ public class Battlefield : Node
     private void PlacedUnit(DragUnit unit)
     {
         _deployUnits.ForEach(u => u.CanDrag = true);
+    }
+
+    private void MovedUnit(DragUnit unit)
+    {
+        // TODO: Basic
+        if (unit.GlobalPosition.y < 1500)
+        {
+            unit.Modulate = Colors.Red;
+        }
+        else
+        {
+            unit.Modulate = Colors.White;
+        }
     }
 }
