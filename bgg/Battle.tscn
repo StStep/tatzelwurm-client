@@ -19,15 +19,15 @@ zoom = Vector2( 2.5, 2.5 )
 limit_left = -50
 limit_top = -50
 limit_right = 3050
-limit_bottom = 2350
+limit_bottom = 2050
 editor_draw_limits = true
 script = ExtResource( 3 )
 __meta__ = {
 "_editor_icon": ExtResource( 4 )
 }
 drag = false
-zoom_in_limit = 1
-zoom_out_limit = 3
+zoom_in_limit = 1.0
+zoom_out_limit = 2.5
 camera_speed = 800
 
 [node name="DeployGui" parent="." instance=ExtResource( 5 )]

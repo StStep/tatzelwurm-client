@@ -34,6 +34,11 @@ config/icon="res://icon.png"
 
 GameManager="*res://game_manager.gd"
 
+[display]
+
+window/size/borderless=true
+window/size/fullscreen=true
+
 [editor_plugins]
 
 enabled=PoolStringArray( "carmel4a97.RTS_Camera2D" )
