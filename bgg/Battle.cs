@@ -25,13 +25,13 @@ public class Battle: Node
     private void EnterDeploymentState()
     {
         _state = BattleState.Deploying;
-	    GetNode("DeployGui").Call("enable");
+        GetNode<DeployGui>("DeployGui").Enabled = true;
     }
 
     private void EnterMoveState()
     {
         _state = BattleState.Moving;
-	    GetNode("DeployGui").Call("disable");
+        GetNode<DeployGui>("DeployGui").Enabled = false;
         GetNode<Battlefield>("Battlefield").Deploy2Move();
     }
 }
