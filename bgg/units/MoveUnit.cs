@@ -54,6 +54,14 @@ public class MoveUnit : Node2D
     public Boolean IsSelected => _selectItem.IsSelected;
     public Boolean IsBusy => _selectItem.IsBusy;
 
+    public int MoveNodeCount { get; private set; } = 0;
+
+    public int MoveNodeLimit { get; set; } = 4;
+
+    public float MaxFwdDistance { get; set; } = 500f;
+    public float MaxSideDistance { get; set; } = 250f;
+    public float MaxRvrDistance { get; set; } = 125f;
+
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -316,7 +324,7 @@ public class MoveUnit : Node2D
 
     private void OnMarkerDrag(int index, Vector2 start, Vector2 end, MouseButton button, Boolean stopping, MouseArea2d marker)
     {
-        if (_state == State.Idle || _state == State.AddingNodes)
+        if (MoveNodeCount < MoveNodeLimit && (_state == State.Idle || _state == State.AddingNodes))
         {
             ChangeState(State.RotatingNode);
         }
@@ -353,11 +361,13 @@ public class MoveUnit : Node2D
         var side = Trig.GetSide(gpos, dir, mpos, 136f, 65f);
         _moveType = MoveType.None;
         _move_prev.Modulate = colPathAdding;
-        if (quarter == Trig.Quarter.front && side != Trig.Side.inside && Trig.DistToLine(new Trig.Ray2(gpos, dir), mpos) > 20f)
+        Boolean canMove  = MoveNodeCount < MoveNodeLimit || _state == State.AdjustingNode;
+        if (canMove && quarter == Trig.Quarter.front && side != Trig.Side.inside && Trig.DistToLine(new Trig.Ray2(gpos, dir), mpos) > 20f)
         {
             try
             {
                 var arc = new Trig.Arc2(gpos, grot, mpos);
+                arc = (arc.Length <= MaxFwdDistance) ? arc : new Trig.Arc2(arc, MaxFwdDistance);
                 _move_prev.Points = Trig.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
                 node.GlobalPosition = arc.End;
                 node.GlobalRotation = arc.EndDir.Angle();
@@ -368,25 +378,29 @@ public class MoveUnit : Node2D
                 GD.Print($"Failed to make arc with {gpos} {grot} {mpos}");
             }
         }
-        else if (quarter == Trig.Quarter.front && side != Trig.Side.inside)
+        else if (canMove && quarter == Trig.Quarter.front && side != Trig.Side.inside)
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
+            endGpos = (endGpos.DistanceTo(gpos) <= MaxFwdDistance) ? endGpos : dir * MaxFwdDistance + gpos;
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             node.GlobalPosition = endGpos;
             node.GlobalRotation = grot;
             _moveType = MoveType.March;
         }
-        else if (side == Trig.Side.left || side == Trig.Side.right)
+        else if (canMove && (side == Trig.Side.left || side == Trig.Side.right))
         {
-            var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir.Rotated(Mathf.Pi/2f)), mpos);
+            var rdir = (side == Trig.Side.left) ? dir.Rotated(-Mathf.Pi/2f) : dir.Rotated(Mathf.Pi/2f);
+            var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, rdir), mpos);
+            endGpos = (endGpos.DistanceTo(gpos) <= MaxSideDistance) ? endGpos :  rdir * MaxSideDistance + gpos;
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             node.GlobalPosition = endGpos;
             node.GlobalRotation = grot;
             _moveType = MoveType.Reposition;
         }
-        else if (side == Trig.Side.back)
+        else if (canMove && side == Trig.Side.back)
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
+            endGpos = (endGpos.DistanceTo(gpos) <= MaxRvrDistance) ? endGpos : dir.Rotated(Mathf.Pi) * MaxRvrDistance + gpos;
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             node.GlobalPosition = endGpos;
             node.GlobalRotation = grot;
@@ -524,6 +538,11 @@ public class MoveUnit : Node2D
 
     public PositionNode AddMoveNode(Vector2 gpos, Vector2 dir, bool arc, IEnumerable<String> annotations)
     {
+        if (MoveNodeCount >= MoveNodeLimit)
+        {
+            return null;
+        }
+
         GD.Print("Add move");
         var inst = _posNodeScene.Instance() as PositionNode;
         inst.Connect(nameof(PositionNode.clicked_on_hover), this, nameof(OnClickChild));
@@ -576,6 +595,8 @@ public class MoveUnit : Node2D
             _nodeTail.add_annotation(anno);
         }
 
+        MoveNodeCount++;
+        GD.Print(MoveNodeCount);
         return _nodeTail;
     }
 
@@ -593,6 +614,7 @@ public class MoveUnit : Node2D
             _nodeTail.Sprite.Hide();
             _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
             _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
+            MoveNodeCount--;
             SetMoveIndicator(_nodeTail.GlobalPosition, _nodeTail.GlobalRotation);
         }
         else
@@ -609,6 +631,7 @@ public class MoveUnit : Node2D
         HighlightedPathNode = null;
         SetMoveIndicator(GlobalPosition, GlobalRotation);
         SetMoveIndicatorVisibility(false);
+        MoveNodeCount = 0;
 
         var inst = _nodeHead;
         while (inst != null)

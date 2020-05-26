@@ -40,12 +40,17 @@ public static class Trig
         {
         }
 
+        public Arc2(Arc2 arc, float length)
+            : this(arc.Start, arc.StartDir, arc.GetPoint(length))
+        {
+        }
+
         // This creates and arc by forming an isosceles triangle.
         // Start-to-end is a chord and forms the base of the triangle.
         // We know leg-A is perpendicular to the start-direction (which is always a tangent)
         // and can find the angle to the base, which will be the same angle leg-B has
         // since it's an isosceles triangle. Knowing the start and end, and then the perpendicular
-        // rays to them, we can following them back to an intercection that is guaranteed to be
+        // rays to them, we can following them back to an intersection that is guaranteed to be
         // the center of the circle.
         public Arc2(Ray2 startRay, Vector2 end)
         {
@@ -57,7 +62,7 @@ public static class Trig
             StartDir = startRay.Direction;
             End = end;
 
-            // Base direction is a chord, and froms base of iso triangle
+            // Base direction is a chord, and forms base of iso triangle
             var baseDir = (End - Start).Normalized();
             bool clockwise = StartDir.AngleTo(baseDir) > 0f;
 
@@ -70,7 +75,7 @@ public static class Trig
             // EndDir is perp to legBDir, and it is a tangent, points toward rotation direction
             EndDir = -(clockwise ? -legBDir.Tangent() : legBDir.Tangent());
 
-            // Intesection of extended rays is the circle center
+            // Intersection of extended rays is the circle center
             Center = LineIntersectionPoint(new Ray2(Start, legADir), new Ray2(End, legBDir));
         }
 
