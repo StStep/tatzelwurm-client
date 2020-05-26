@@ -54,9 +54,13 @@ public class MoveUnit : Node2D
     public Boolean IsSelected => _selectItem.IsSelected;
     public Boolean IsBusy => _selectItem.IsBusy;
 
-    public int MoveCount { get; private set; } = 0;
+    public int MoveNodeCount { get; private set; } = 0;
 
-    public int MoveLimit { get; set; } = 4;
+    public int MoveNodeLimit { get; set; } = 4;
+
+    public float MaxFwdDistance { get; set; } = 500f;
+    public float MaxSideDistance { get; set; } = 250f;
+    public float MaxRvrDistance { get; set; } = 125f;
 
 
     // Called when the node enters the scene tree for the first time.
@@ -320,7 +324,7 @@ public class MoveUnit : Node2D
 
     private void OnMarkerDrag(int index, Vector2 start, Vector2 end, MouseButton button, Boolean stopping, MouseArea2d marker)
     {
-        if (MoveCount < MoveLimit && (_state == State.Idle || _state == State.AddingNodes))
+        if (MoveNodeCount < MoveNodeLimit && (_state == State.Idle || _state == State.AddingNodes))
         {
             ChangeState(State.RotatingNode);
         }
@@ -357,12 +361,13 @@ public class MoveUnit : Node2D
         var side = Trig.GetSide(gpos, dir, mpos, 136f, 65f);
         _moveType = MoveType.None;
         _move_prev.Modulate = colPathAdding;
-        Boolean canMove  = MoveCount < MoveLimit || _state == State.AdjustingNode;
+        Boolean canMove  = MoveNodeCount < MoveNodeLimit || _state == State.AdjustingNode;
         if (canMove && quarter == Trig.Quarter.front && side != Trig.Side.inside && Trig.DistToLine(new Trig.Ray2(gpos, dir), mpos) > 20f)
         {
             try
             {
                 var arc = new Trig.Arc2(gpos, grot, mpos);
+                arc = (arc.Length <= MaxFwdDistance) ? arc : new Trig.Arc2(arc, MaxFwdDistance);
                 _move_prev.Points = Trig.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
                 node.GlobalPosition = arc.End;
                 node.GlobalRotation = arc.EndDir.Angle();
@@ -376,6 +381,7 @@ public class MoveUnit : Node2D
         else if (canMove && quarter == Trig.Quarter.front && side != Trig.Side.inside)
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
+            endGpos = (endGpos.DistanceTo(gpos) <= MaxFwdDistance) ? endGpos : dir * MaxFwdDistance + gpos;
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             node.GlobalPosition = endGpos;
             node.GlobalRotation = grot;
@@ -383,7 +389,9 @@ public class MoveUnit : Node2D
         }
         else if (canMove && (side == Trig.Side.left || side == Trig.Side.right))
         {
-            var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir.Rotated(Mathf.Pi/2f)), mpos);
+            var rdir = (side == Trig.Side.left) ? dir.Rotated(-Mathf.Pi/2f) : dir.Rotated(Mathf.Pi/2f);
+            var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, rdir), mpos);
+            endGpos = (endGpos.DistanceTo(gpos) <= MaxSideDistance) ? endGpos :  rdir * MaxSideDistance + gpos;
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             node.GlobalPosition = endGpos;
             node.GlobalRotation = grot;
@@ -392,6 +400,7 @@ public class MoveUnit : Node2D
         else if (canMove && side == Trig.Side.back)
         {
             var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
+            endGpos = (endGpos.DistanceTo(gpos) <= MaxRvrDistance) ? endGpos : dir.Rotated(Mathf.Pi) * MaxRvrDistance + gpos;
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             node.GlobalPosition = endGpos;
             node.GlobalRotation = grot;
@@ -529,7 +538,7 @@ public class MoveUnit : Node2D
 
     public PositionNode AddMoveNode(Vector2 gpos, Vector2 dir, bool arc, IEnumerable<String> annotations)
     {
-        if (MoveCount >= MoveLimit)
+        if (MoveNodeCount >= MoveNodeLimit)
         {
             return null;
         }
@@ -586,8 +595,8 @@ public class MoveUnit : Node2D
             _nodeTail.add_annotation(anno);
         }
 
-        MoveCount++;
-        GD.Print(MoveCount);
+        MoveNodeCount++;
+        GD.Print(MoveNodeCount);
         return _nodeTail;
     }
 
@@ -605,7 +614,7 @@ public class MoveUnit : Node2D
             _nodeTail.Sprite.Hide();
             _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
             _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
-            MoveCount--;
+            MoveNodeCount--;
             SetMoveIndicator(_nodeTail.GlobalPosition, _nodeTail.GlobalRotation);
         }
         else
@@ -622,7 +631,7 @@ public class MoveUnit : Node2D
         HighlightedPathNode = null;
         SetMoveIndicator(GlobalPosition, GlobalRotation);
         SetMoveIndicatorVisibility(false);
-        MoveCount = 0;
+        MoveNodeCount = 0;
 
         var inst = _nodeHead;
         while (inst != null)
