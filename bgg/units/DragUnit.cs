@@ -13,7 +13,7 @@ public class DragUnit : Node2D
     [Signal]
     public delegate void Moved(DragUnit u);
 
-    private Node _dragable;
+    private Area2D _dragable;
 
     public Boolean CanDrag
     {
@@ -30,17 +30,24 @@ public class DragUnit : Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        _dragable = GetNode("Dragable");
+        _dragable = GetNode<Area2D>("Dragable");
 	    _dragable.Connect("drag_started", this, nameof(Pickup));
 	    _dragable.Connect("drag_ended", this, nameof(Place));
 	    _dragable.Connect("point_to", this, nameof(PointTo));
 	    _dragable.Connect("drag_to", this, nameof(MoveTo));
     }
 
+    public bool OverlapsArea(Node area) => _dragable.OverlapsArea(area);
+
     private void Pickup(Node dragable) => EmitSignal(nameof(Picked), this);
     private void Place(Node dragable) => EmitSignal(nameof(Placed), this);
 
-    private void PointTo(float rads) => GlobalRotation = rads;
+    private void PointTo(float rads)
+    {
+        GlobalRotation = rads;
+        EmitSignal(nameof(Moved), this);
+    }
+
     private void MoveTo(Vector2 loc)
     {
         GlobalPosition = loc;

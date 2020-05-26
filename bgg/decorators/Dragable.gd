@@ -64,8 +64,6 @@ func _ready() -> void:
 	var _c
 	_c = connect("mouse_entered",self, "_on_mouse_entered")
 	_c = connect("mouse_exited",self, "_on_mouse_exited")
-	monitoring = false
-	monitorable = false
 
 func _on_mouse_entered() -> void:
 	_mouse_in = true

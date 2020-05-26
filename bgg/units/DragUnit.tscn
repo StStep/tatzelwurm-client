@@ -4,7 +4,6 @@
 [ext_resource path="res://units/block_with_direction.png" type="Texture" id=2]
 [ext_resource path="res://decorators/Dragable.gd" type="Script" id=3]
 
-
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 68, 32.5 )
 
@@ -17,10 +16,7 @@ texture = ExtResource( 2 )
 
 [node name="Dragable" type="Area2D" parent="."]
 rotation = 1.5708
-monitoring = false
-monitorable = false
 script = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Dragable"]
 shape = SubResource( 1 )
-
