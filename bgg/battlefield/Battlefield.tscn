@@ -33,32 +33,27 @@ tile_data = PoolIntArray( 0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 
 script = ExtResource( 2 )
 
 [node name="BattleZone" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BattleZone"]
 position = Vector2( 1500, 1000 )
 shape = SubResource( 1 )
 
-[node name="DeployZone1" type="Area2D" parent="."]
+[node name="DeployZone" type="Area2D" parent="."]
+visible = false
 
-[node name="Polygon2D" type="Polygon2D" parent="DeployZone1"]
-color = Color( 0.952941, 0.894118, 0.894118, 0.317647 )
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DeployZone"]
 polygon = PoolVector2Array( 0, 1500, 3000, 1500, 3000, 2000, 0, 2000 )
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DeployZone1"]
-polygon = PoolVector2Array( 0, 1500, 3000, 1500, 3000, 2000, 0, 2000 )
+[node name="EnemyDeployZone" type="Area2D" parent="."]
+visible = false
 
-[node name="DeployZone2" type="Area2D" parent="."]
-
-[node name="Polygon2D" type="Polygon2D" parent="DeployZone2"]
-position = Vector2( 0, -1500 )
-color = Color( 0.952941, 0.894118, 0.894118, 0.317647 )
-polygon = PoolVector2Array( 0, 1500, 3000, 1500, 3000, 2000, 0, 2000 )
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DeployZone2"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="EnemyDeployZone"]
 position = Vector2( 0, -1500 )
 polygon = PoolVector2Array( 0, 1500, 3000, 1500, 3000, 2000, 0, 2000 )
 
 [node name="OutBoundsZone" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="OutBoundsZone"]
 position = Vector2( -500, 1000 )
@@ -77,7 +72,19 @@ position = Vector2( 1500, 2500 )
 shape = SubResource( 3 )
 
 [node name="NeutralZone" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NeutralZone"]
 position = Vector2( 1500, 1000 )
 shape = SubResource( 4 )
+
+[node name="DeployMarker" type="Polygon2D" parent="."]
+visible = false
+color = Color( 0.952941, 0.894118, 0.894118, 0.317647 )
+polygon = PoolVector2Array( 0, 1500, 3000, 1500, 3000, 2000, 0, 2000 )
+
+[node name="EnemyDeployMarker" type="Polygon2D" parent="."]
+visible = false
+position = Vector2( 0, -1500 )
+color = Color( 0.952941, 0.894118, 0.894118, 0.317647 )
+polygon = PoolVector2Array( 0, 1500, 3000, 1500, 3000, 2000, 0, 2000 )

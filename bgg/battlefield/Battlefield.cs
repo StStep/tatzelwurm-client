@@ -11,11 +11,13 @@ public class Battlefield : Node
     private Boolean _deploying = true;
     private List<DragUnit> _deployUnits = new List<DragUnit>();
     private List<MoveUnit> _moveUnits = new List<MoveUnit>();
-    private Area2D _deployZone1;
-    private Area2D _deployZone2;
+    private Area2D _deployZone;
+    private Area2D _enemyDeployZone;
     private Area2D _battleZone;
     private Area2D _outBoundsZone;
     private Area2D _neutralZone;
+    private Node2D _deployMarker;
+    private Node2D _enemyDeployMarker;
 
     public Action<Boolean> ValidityChanged;
     public Boolean IsValid => (_deploying) ? !_deployUnits.Any(u => !u.Valid) : !_moveUnits.Any(u => !u.Valid);
@@ -39,11 +41,15 @@ public class Battlefield : Node
     public override void _Ready()
     {
         base._Ready();
-        _deployZone1 = GetNode<Area2D>("DeployZone1");
-        _deployZone2 = GetNode<Area2D>("DeployZone2");
+        _deployZone = GetNode<Area2D>("DeployZone");
+        _enemyDeployZone = GetNode<Area2D>("EnemyDeployZone");
         _battleZone = GetNode<Area2D>("BattleZone");
         _outBoundsZone = GetNode<Area2D>("OutBoundsZone");
         _neutralZone = GetNode<Area2D>("NeutralZone");
+        _deployMarker = GetNode<Node2D>("DeployMarker");
+        _enemyDeployMarker = GetNode<Node2D>("EnemyDeployMarker");
+        _deployMarker.Visible = true;
+        _enemyDeployMarker.Visible = true;
     }
 
     public void DeployUnit(String type)
@@ -62,8 +68,8 @@ public class Battlefield : Node
     public void Deploy2Move()
     {
         var selMan = GetNode<SelectManager>("Units");
-        _deployZone1.Visible = false;
-        _deployZone2.Visible = false;
+        _deployMarker.Visible = false;
+        _enemyDeployMarker.Visible = false;
         foreach (var u in _deployUnits)
         {
             var newUnit = _moveUnitScene.Instance() as MoveUnit;
@@ -94,7 +100,7 @@ public class Battlefield : Node
     private void ValidateUnit(IUnit unit)
     {
         var bvalid = unit.Valid;
-        if (unit.OverlapsArea(_deployZone1) &&
+        if (unit.OverlapsArea(_deployZone) &&
             !unit.OverlapsArea(_outBoundsZone) &&
             !unit.OverlapsArea(_neutralZone))
         {
