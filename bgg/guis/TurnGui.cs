@@ -1,4 +1,5 @@
 using Godot;
+using System;
 
 public class TurnGui: CanvasLayer
 {
@@ -19,6 +20,11 @@ public class TurnGui: CanvasLayer
         _buttonFinishDeploy.Connect("button_down", this, nameof(OnFinishDeploy));
         _buttonFinishTurn.Connect("button_down", this, nameof(OnFinishTurn));
         _buttonFinishTurn.Visible = false;
+    }
+
+    public void EnableDeploy(Boolean en)
+    {
+        _buttonFinishDeploy.Disabled = !en;
     }
 
     private void OnFinishDeploy()

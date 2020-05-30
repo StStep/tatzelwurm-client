@@ -6,7 +6,7 @@ using System.Linq;
 
 public enum MoveType { None, March, Reposition, Wheel, Rotate };
 
-public class MoveUnit : Node2D
+public class MoveUnit : Node2D, IUnit
 {
     private enum State { NotSelected, Idle, AddingNodes, RotatingNode, AdjustingNode }
 
@@ -53,6 +53,7 @@ public class MoveUnit : Node2D
 
     public Boolean IsSelected => _selectItem.IsSelected;
     public Boolean IsBusy => _selectItem.IsBusy;
+    public Boolean Valid { get; set; }
 
     public int MoveNodeCount { get; private set; } = 0;
 
@@ -207,6 +208,9 @@ public class MoveUnit : Node2D
                 break;
         }
     }
+
+    // TODO
+    public Boolean OverlapsArea(Area2D area) => _end_marker.OverlapsArea(area);
 
     private void OnClickStart(MouseButton button)
     {

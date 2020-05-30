@@ -2,16 +2,11 @@
 using Godot;
 using System;
 
-public class DragUnit : Node2D
+public class DragUnit : Node2D, IUnit
 {
-    [Signal]
-    public delegate void Picked(DragUnit u);
-
-    [Signal]
-    public delegate void Placed(DragUnit u);
-
-    [Signal]
-    public delegate void Moved(DragUnit u);
+    public Action<DragUnit> Picked;
+    public Action<DragUnit> Placed;
+    public Action<DragUnit> Moved;
 
     private Area2D _dragable;
 
@@ -27,6 +22,8 @@ public class DragUnit : Node2D
         set => _dragable.Set("dragging", value);
     }
 
+    public Boolean Valid { get; set; }
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -37,20 +34,20 @@ public class DragUnit : Node2D
 	    _dragable.Connect("drag_to", this, nameof(MoveTo));
     }
 
-    public bool OverlapsArea(Node area) => _dragable.OverlapsArea(area);
+    public Boolean OverlapsArea(Area2D area) => _dragable.OverlapsArea(area);
 
-    private void Pickup(Node dragable) => EmitSignal(nameof(Picked), this);
-    private void Place(Node dragable) => EmitSignal(nameof(Placed), this);
+    private void Pickup(Node dragable) => Picked?.Invoke(this);
+    private void Place(Node dragable) => Placed?.Invoke(this);
 
     private void PointTo(float rads)
     {
         GlobalRotation = rads;
-        EmitSignal(nameof(Moved), this);
+        Moved?.Invoke(this);
     }
 
     private void MoveTo(Vector2 loc)
     {
         GlobalPosition = loc;
-        EmitSignal(nameof(Moved), this);
+        Moved?.Invoke(this);
     }
 }

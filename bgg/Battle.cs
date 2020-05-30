@@ -7,12 +7,20 @@ public class Battle: Node
     public enum BattleState { None, Deploying, Moving };
 
     private BattleState _state;
+    private TurnGui _tg;
+    private Battlefield _bf;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-	    GetNode<DeployGui>("DeployGui").CreateUnit = GetNode<Battlefield>("Battlefield").DeployUnit;
-	    GetNode("TurnGui").Connect("finishedDeploying", this, nameof(EndDeployment));
+        var dg = GetNode<DeployGui>("DeployGui");
+        _tg = GetNode<TurnGui>("TurnGui");
+        _bf = GetNode<Battlefield>("Battlefield");
+
+        dg.CreateUnit = GetNode<Battlefield>("Battlefield").DeployUnit;
+        _tg.Connect("finishedDeploying", this, nameof(EndDeployment));
+        _bf.ValidityChanged += _ => OnBattleFieldChange();
+        _bf.BusyChanged += _ => OnBattleFieldChange();
 
         EnterDeploymentState();
     }
@@ -34,4 +42,6 @@ public class Battle: Node
         GetNode<DeployGui>("DeployGui").Enabled = false;
         GetNode<Battlefield>("Battlefield").Deploy2Move();
     }
+
+    private void OnBattleFieldChange() => _tg.EnableDeploy(!_bf.Busy && _bf.IsValid);
 }
