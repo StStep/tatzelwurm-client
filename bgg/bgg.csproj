@@ -60,7 +60,9 @@
     <Compile Include="units\MoveUnit.cs" />
     <Compile Include="units\DragUnit.cs" />
     <Compile Include="units\PositionNode.cs" />
-    <Compile Include="utilities\Trig.cs" />
+    <Compile Include="Trig\Utility.cs" />
+    <Compile Include="Trig\Arc.cs" />
+    <Compile Include="Trig\Ray.cs" />
     <Compile Include="decorators\MouseArea2d.cs" />
     <Compile Include="decorators\SelectItem.cs" />
     <Compile Include="decorators\SelectManager.cs" />

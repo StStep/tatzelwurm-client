@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+using Trig;
+
 public enum MoveType { None, March, Reposition, Wheel, Rotate };
 
 public class MoveUnit : Node2D, IUnit
@@ -219,7 +221,7 @@ public class MoveUnit : Node2D, IUnit
                     }
                     else if (_moveType == MoveType.Wheel)
                     {
-                        var a = new Trig.Arc2(GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), AdjustingNode.GlobalPosition);
+                        var a = new Trig.Arc(GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), AdjustingNode.GlobalPosition);
                         AdjustingNode.SetAsArc(a);
                         AdjustingNode.add_annotation("wheel");
                     }
@@ -392,18 +394,18 @@ public class MoveUnit : Node2D, IUnit
     private bool MoveNode(Node2D node, Vector2 gpos, float grot, Vector2 mpos)
     {
         var dir = Vector2.Right.Rotated(grot);
-        var quarter = Trig.GetQuarter(gpos, dir, mpos);
-        var side = Trig.GetSide(gpos, dir, mpos, 136f, 65f);
+        var quarter = Utility.GetQuarter(gpos, dir, mpos);
+        var side = Utility.GetSide(gpos, dir, mpos, 136f, 65f);
         _moveType = MoveType.None;
         _move_prev.Modulate = colPathAdding;
         Boolean canMove  = MoveNodeCount < MoveNodeLimit || _state == State.AdjustingNode;
-        if (canMove && quarter == Trig.Quarter.front && side != Trig.Side.inside && Trig.DistToLine(new Trig.Ray2(gpos, dir), mpos) > 20f)
+        if (canMove && quarter == Utility.Quarter.front && side != Utility.Side.inside && Utility.DistToLine(new Trig.Ray(gpos, dir), mpos) > 20f)
         {
             try
             {
-                var arc = new Trig.Arc2(gpos, grot, mpos);
-                arc = (arc.Length <= MaxFwdDistance) ? arc : new Trig.Arc2(arc, MaxFwdDistance);
-                _move_prev.Points = Trig.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
+                var arc = new Trig.Arc(gpos, grot, mpos);
+                arc = (arc.Length <= MaxFwdDistance) ? arc : new Trig.Arc(arc, MaxFwdDistance);
+                _move_prev.Points = Utility.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
                 node.GlobalPosition = arc.End;
                 node.GlobalRotation = arc.EndDir.Angle();
                 _moveType = MoveType.Wheel;
@@ -413,28 +415,28 @@ public class MoveUnit : Node2D, IUnit
                 GD.Print($"Failed to make arc with {gpos} {grot} {mpos}");
             }
         }
-        else if (canMove && quarter == Trig.Quarter.front && side != Trig.Side.inside)
+        else if (canMove && quarter == Utility.Quarter.front && side != Utility.Side.inside)
         {
-            var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
+            var endGpos = Utility.NearestPointOnLine(new Trig.Ray(gpos, dir), mpos);
             endGpos = (endGpos.DistanceTo(gpos) <= MaxFwdDistance) ? endGpos : dir * MaxFwdDistance + gpos;
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             node.GlobalPosition = endGpos;
             node.GlobalRotation = grot;
             _moveType = MoveType.March;
         }
-        else if (canMove && (side == Trig.Side.left || side == Trig.Side.right))
+        else if (canMove && (side == Utility.Side.left || side == Utility.Side.right))
         {
-            var rdir = (side == Trig.Side.left) ? dir.Rotated(-Mathf.Pi/2f) : dir.Rotated(Mathf.Pi/2f);
-            var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, rdir), mpos);
+            var rdir = (side == Utility.Side.left) ? dir.Rotated(-Mathf.Pi/2f) : dir.Rotated(Mathf.Pi/2f);
+            var endGpos = Utility.NearestPointOnLine(new Trig.Ray(gpos, rdir), mpos);
             endGpos = (endGpos.DistanceTo(gpos) <= MaxSideDistance) ? endGpos :  rdir * MaxSideDistance + gpos;
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             node.GlobalPosition = endGpos;
             node.GlobalRotation = grot;
             _moveType = MoveType.Reposition;
         }
-        else if (canMove && side == Trig.Side.back)
+        else if (canMove && side == Utility.Side.back)
         {
-            var endGpos = Trig.NearestPointOnLine(new Trig.Ray2(gpos, dir), mpos);
+            var endGpos = Utility.NearestPointOnLine(new Trig.Ray(gpos, dir), mpos);
             endGpos = (endGpos.DistanceTo(gpos) <= MaxRvrDistance) ? endGpos : dir.Rotated(Mathf.Pi) * MaxRvrDistance + gpos;
             _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(endGpos) };
             node.GlobalPosition = endGpos;
@@ -605,7 +607,7 @@ public class MoveUnit : Node2D, IUnit
         var start = GetNodeStartGpos(_nodeTail);
         if (arc)
         {
-            var a = new Trig.Arc2(start, GetNodeStartGrot(_nodeTail), gpos);
+            var a = new Trig.Arc(start, GetNodeStartGrot(_nodeTail), gpos);
             var angle = dir != Vector2.Zero ? dir.Angle() : a.EndDir.Angle();
             _nodeTail.GlobalRotation = angle;
             _nodeTail.SetAsArc(a);

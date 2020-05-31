@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Trig;
+
 public class PositionNode : Node2D
 {
     const int PATH_AREA_WIDTH = 10;
@@ -99,13 +101,13 @@ public class PositionNode : Node2D
     public void SetAsLine(Vector2 startGpos)
     {
         Path.Points = new Vector2[] { ToLocal(startGpos), Vector2.Zero };
-        PathPoly.Polygon = Trig.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
+        PathPoly.Polygon = Utility.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
     }
 
-    public void SetAsArc(Trig.Arc2 arc)
+    public void SetAsArc(Arc arc)
     {
-        Path.Points = Trig.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
-        PathPoly.Polygon = Trig.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
+        Path.Points = Utility.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
+        PathPoly.Polygon = Utility.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
     }
 
     public void highlight_body(String type)
