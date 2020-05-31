@@ -46,7 +46,19 @@ public class MoveUnit : Node2D, IUnit
     public SelectManager SelectManager { get; set; }
 
     // Move Node Adjusting
-    public PositionNode AdjustingNode { get; set; }
+    private PositionNode __adjNode;
+    private Vector2 _adjNodeOrigGpos;
+    private float _adjNodeOrigGrot;
+    public PositionNode AdjustingNode
+    {
+        get => __adjNode;
+        set
+        {
+            _adjNodeOrigGpos = value?.GlobalPosition ?? Vector2.Zero;
+            _adjNodeOrigGrot = value?.GlobalRotation ?? 0f;
+            __adjNode = value;
+        }
+    }
 
     // Path Highlighting
     public PositionNode HighlightedPathNode { get; set; }
@@ -118,14 +130,33 @@ public class MoveUnit : Node2D, IUnit
                 }
                 break;
             case State.AddingNodes:
-                MoveNode(_ghost, GetTailGpos(), GetTailGrot(), mpos);
+                if (!MoveNode(_ghost, GetTailGpos(), GetTailGrot(), mpos))
+                {
+                    _ghost.GlobalPosition = GetTailGpos();
+                    _ghost.GlobalRotation = GetTailGrot();
+                    _move_prev.Modulate = colPathError;
+                    _move_prev.Points = new Vector2[] { ToLocal(_ghost.GlobalPosition), ToLocal(mpos) };
+                }
                 break;
             case State.AdjustingNode:
                 if (AdjustingNode != null)
                 {
-                    MoveNode(AdjustingNode, GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), mpos);
-                    _ghost.GlobalPosition = AdjustingNode.GlobalPosition;
-                    _ghost.GlobalRotation = AdjustingNode.GlobalRotation;
+                    if (!MoveNode(AdjustingNode, GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), mpos))
+                    {
+                        AdjustingNode.GlobalPosition = _adjNodeOrigGpos;
+                        AdjustingNode.GlobalRotation = _adjNodeOrigGrot;
+                        _move_prev.Modulate = colPathError;
+                        _move_prev.Points = new Vector2[] { ToLocal(GetNodeStartGpos(AdjustingNode)), ToLocal(mpos) };
+                        AdjustingNode.Sprite.Show();
+                        _ghost.Hide();
+                    }
+                    else
+                    {
+                        _ghost.GlobalPosition = AdjustingNode.GlobalPosition;
+                        _ghost.GlobalRotation = AdjustingNode.GlobalRotation;
+                        __adjNode.Sprite.Hide();
+                        _ghost.Show();
+                    }
                     _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
                     _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
                     SetMoveIndicator(_nodeTail.GlobalPosition, _nodeTail.GlobalRotation);
@@ -358,7 +389,7 @@ public class MoveUnit : Node2D, IUnit
         }
     }
 
-    private void MoveNode(Node2D node, Vector2 gpos, float grot, Vector2 mpos)
+    private bool MoveNode(Node2D node, Vector2 gpos, float grot, Vector2 mpos)
     {
         var dir = Vector2.Right.Rotated(grot);
         var quarter = Trig.GetQuarter(gpos, dir, mpos);
@@ -412,11 +443,10 @@ public class MoveUnit : Node2D, IUnit
         }
         else
         {
-            node.GlobalPosition = gpos;
-            node.GlobalRotation = grot;
-            _move_prev.Modulate = colPathError;
-            _move_prev.Points = new Vector2[] { ToLocal(gpos), ToLocal(mpos) };
+            return false;
         }
+
+        return true;
     }
 
     private void HighlightEverything()
