@@ -18,6 +18,7 @@ public class Battlefield : Node
     private Area2D _neutralZone;
     private Node2D _deployMarker;
     private Node2D _enemyDeployMarker;
+    private List<Area2D> _terrain;
 
     public Action<Boolean> ValidityChanged;
     public Boolean IsValid => (_deploying) ? !_deployUnits.Any(u => !u.Valid) : !_moveUnits.Any(u => !u.Valid);
@@ -48,6 +49,7 @@ public class Battlefield : Node
         _neutralZone = GetNode<Area2D>("NeutralZone");
         _deployMarker = GetNode<Node2D>("DeployMarker");
         _enemyDeployMarker = GetNode<Node2D>("EnemyDeployMarker");
+        _terrain = GetNode("Terrain").GetChildren().Cast<Area2D>().ToList();
         _deployMarker.Visible = true;
         _enemyDeployMarker.Visible = true;
     }
@@ -100,17 +102,18 @@ public class Battlefield : Node
     private void ValidateUnit(IUnit unit)
     {
         var bvalid = unit.Valid;
-        if (unit.OverlapsArea(_deployZone) &&
-            !unit.OverlapsArea(_outBoundsZone) &&
-            !unit.OverlapsArea(_neutralZone))
-        {
-            unit.Modulate = Colors.White;
-            unit.Valid = true;
-        }
-        else
+        if (!unit.OverlapsArea(_deployZone) ||
+            unit.OverlapsArea(_outBoundsZone) ||
+            unit.OverlapsArea(_neutralZone) ||
+            _terrain.Any(t => unit.OverlapsArea(t)))
         {
             unit.Modulate = Colors.Red;
             unit.Valid = false;
+        }
+        else
+        {
+            unit.Modulate = Colors.White;
+            unit.Valid = true;
         }
 
         if (bvalid != unit.Valid)
