@@ -57,6 +57,7 @@
     <Compile Include="guis\DeployGui.cs" />
     <Compile Include="guis\TurnGui.cs" />
     <Compile Include="units\IUnit.cs" />
+    <Compile Include="units\MoveCommand.cs" />
     <Compile Include="units\MoveUnit.cs" />
     <Compile Include="units\DragUnit.cs" />
     <Compile Include="units\PositionNode.cs" />

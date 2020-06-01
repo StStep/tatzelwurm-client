@@ -98,15 +98,13 @@ public class PositionNode : Node2D
         PathPoly.Polygon = new Vector2[] {};
     }
 
-    public void SetAsLine(Vector2 startGpos)
+    public void Set(MoveCommand mc)
     {
-        Path.Points = new Vector2[] { ToLocal(startGpos), Vector2.Zero };
-        PathPoly.Polygon = Utility.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
-    }
-
-    public void SetAsArc(Arc arc)
-    {
-        Path.Points = Utility.SampleArc(arc, 20).Select(s => ToLocal(s)).ToArray();
+        var p = mc.Preview(20);
+        GlobalRotation = mc.HeadingFunc.Invoke(mc.Period);
+        GlobalPosition = p.Last();
+        // Do local conversoins after changing position
+        Path.Points = p.Select(s => ToLocal(s)).ToArray();
         PathPoly.Polygon = Utility.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
     }
 
