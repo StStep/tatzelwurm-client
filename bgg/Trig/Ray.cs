@@ -3,10 +3,10 @@ using System;
 
 namespace Trig
 {
-    public struct Ray
+    public class Ray
     {
-        public Vector2 Origin;
-        public Vector2 Direction;
+        public Vector2 Origin { get; private set; }
+        public Vector2 Direction { get; private set; }
 
         public Ray(Vector2 origin, Vector2 dir)
         {
@@ -35,7 +35,7 @@ namespace Trig
 
         public float AngleToPoint(Vector2 pnt) => Direction.AngleTo(pnt - Origin);
 
-        public Ray Snapped(Vector2 by) => new Ray(Origin.Snapped(by), Direction.Snapped(by));
+        public Ray Snapped(Vector2 by) => new Ray(Origin.Snapped(by), Direction);
 
         public override string ToString() => $"Ray2 at {Origin} toward {Direction}";
     }

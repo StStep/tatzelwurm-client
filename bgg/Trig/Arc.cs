@@ -4,7 +4,7 @@ using System;
 
 namespace Trig
 {
-    public struct Arc
+    public class Arc
     {
         public Vector2 Start { get; private set; }
         public Vector2 StartDir { get; private set; }
@@ -101,9 +101,7 @@ namespace Trig
         public void Snap(Vector2 by)
         {
             Start = Start.Snapped(by);
-            StartDir = StartDir.Snapped(by);
             End = End.Snapped(by);
-            EndDir = EndDir.Snapped(by);
             Center = Center.Snapped(by);
         }
     }
