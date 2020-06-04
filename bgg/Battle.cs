@@ -43,5 +43,5 @@ public class Battle: Node
         GetNode<Battlefield>("Battlefield").Deploy2Move();
     }
 
-    private void OnBattleFieldChange() => _tg.EnableDeploy(!_bf.Busy && _bf.IsValid);
+    private void OnBattleFieldChange() => _tg.EnableEndTurn(!_bf.Busy && _bf.IsValid);
 }

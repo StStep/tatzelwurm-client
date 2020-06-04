@@ -78,7 +78,8 @@ public class Battlefield : Node
             newUnit.SelectManager = selMan;
             newUnit.GlobalPosition = u.GlobalPosition;
             newUnit.GlobalRotation = u.GlobalRotation;
-            newUnit.Changed += ValidateMove;
+            newUnit.Moved += ValidateMove;
+            newUnit.BusyChanged += _ => CheckBusyUnits();
             _moveUnits.Add(newUnit);
             GetNode("Units").AddChild(newUnit);
             u.QueueFree();
@@ -138,5 +139,10 @@ public class Battlefield : Node
 
         if (bvalid != unit.Valid)
             ValidityChanged?.Invoke(this.IsValid);
+    }
+
+    private void CheckBusyUnits()
+    {
+        Busy = _moveUnits.Any(u => u.IsBusy);
     }
 }

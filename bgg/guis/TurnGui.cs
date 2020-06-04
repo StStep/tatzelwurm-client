@@ -22,9 +22,10 @@ public class TurnGui: CanvasLayer
         _buttonFinishTurn.Visible = false;
     }
 
-    public void EnableDeploy(Boolean en)
+    public void EnableEndTurn(Boolean en)
     {
         _buttonFinishDeploy.Disabled = !en;
+        _buttonFinishTurn.Disabled = !en;
     }
 
     private void OnFinishDeploy()

@@ -77,7 +77,8 @@ public class MoveUnit : Node2D, IUnit
     public float MaxSideDistance { get; set; } = 250f;
     public float MaxRvrDistance { get; set; } = 125f;
 
-    public Action<MoveUnit> Changed;
+    public Action<MoveUnit> Moved;
+    public Action<Boolean> BusyChanged;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -112,12 +113,12 @@ public class MoveUnit : Node2D, IUnit
 
     void OnAreaEntered(Area2D area)
     {
-        Changed?.Invoke(this);
+        Moved?.Invoke(this);
     }
 
     void OnAreaExited(Area2D area)
     {
-        Changed?.Invoke(this);
+        Moved?.Invoke(this);
     }
 
     public override void _ExitTree()
@@ -569,6 +570,7 @@ public class MoveUnit : Node2D, IUnit
                 break;
         }
 
+        BusyChanged?.Invoke(IsBusy);
         _state = s;
     }
 
