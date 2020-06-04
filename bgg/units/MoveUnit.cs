@@ -77,6 +77,7 @@ public class MoveUnit : Node2D, IUnit
     public float MaxSideDistance { get; set; } = 250f;
     public float MaxRvrDistance { get; set; } = 125f;
 
+    public Action<MoveUnit> Changed;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -103,8 +104,20 @@ public class MoveUnit : Node2D, IUnit
         _end_marker.Connect(nameof(MouseArea2d.mouse_drag_updated), this, nameof(OnMarkerDrag), new Godot.Collections.Array() { false, _end_marker });
         _end_marker.Connect(nameof(MouseArea2d.mouse_drag_ended), this, nameof(OnMarkerDrag), new Godot.Collections.Array() { true, _end_marker });
         _end_marker.Connect(nameof(MouseArea2d.mouse_clicked), this, nameof(OnClickEnd));
+        _end_marker.Connect("area_entered", this, nameof(OnAreaEntered));
+        _end_marker.Connect("area_exited", this, nameof(OnAreaExited));
         _selectItem.Connect(nameof(SelectItem.selection_changed), this, nameof(OnSelectionChange));
         _end_marker.Hide();
+    }
+
+    void OnAreaEntered(Area2D area)
+    {
+        Changed?.Invoke(this);
+    }
+
+    void OnAreaExited(Area2D area)
+    {
+        Changed?.Invoke(this);
     }
 
     public override void _ExitTree()
@@ -248,8 +261,18 @@ public class MoveUnit : Node2D, IUnit
         }
     }
 
-    // TODO
-    public Boolean OverlapsArea(Area2D area) => _end_marker.OverlapsArea(area);
+    public Boolean OverlapsArea(Area2D area)
+    {
+        var ret = _end_marker?.OverlapsArea(area) == true;
+        var n = _nodeHead;
+        while (!ret && n != null)
+        {
+            ret |= n.PathArea.OverlapsArea(area) || n.Body.OverlapsArea(area);
+            n = n.Next;
+        }
+
+        return ret;
+    }
 
     private void OnClickStart(MouseButton button)
     {
@@ -604,6 +627,11 @@ public class MoveUnit : Node2D, IUnit
             _nodeTail.Next = inst;
             _nodeTail.AddChild(inst);
         }
+
+        inst.Body.Connect("area_entered", this, nameof(OnAreaEntered));
+        inst.Body.Connect("area_exited", this, nameof(OnAreaExited));
+        inst.PathArea.Connect("area_entered", this, nameof(OnAreaEntered));
+        inst.PathArea.Connect("area_exited", this, nameof(OnAreaExited));
 
         inst.Disable();
         inst.Sprite.Hide();

@@ -63,7 +63,7 @@ public class Battlefield : Node
         u.Dragging = true;
         u.Picked += PickedUnit;
         u.Placed += PlacedUnit;
-        u.Moved += ValidateUnit;
+        u.Moved += ValidateDeploy;
         _deployUnits.Add(u);
     }
 
@@ -78,6 +78,7 @@ public class Battlefield : Node
             newUnit.SelectManager = selMan;
             newUnit.GlobalPosition = u.GlobalPosition;
             newUnit.GlobalRotation = u.GlobalRotation;
+            newUnit.Changed += ValidateMove;
             _moveUnits.Add(newUnit);
             GetNode("Units").AddChild(newUnit);
             u.QueueFree();
@@ -99,12 +100,31 @@ public class Battlefield : Node
         Busy = false;
     }
 
-    private void ValidateUnit(IUnit unit)
+    private void ValidateDeploy(IUnit unit)
     {
         var bvalid = unit.Valid;
         if (!unit.OverlapsArea(_deployZone) ||
             unit.OverlapsArea(_outBoundsZone) ||
             unit.OverlapsArea(_neutralZone) ||
+            _terrain.Any(t => unit.OverlapsArea(t)))
+        {
+            unit.Modulate = Colors.Red;
+            unit.Valid = false;
+        }
+        else
+        {
+            unit.Modulate = Colors.White;
+            unit.Valid = true;
+        }
+
+        if (bvalid != unit.Valid)
+            ValidityChanged?.Invoke(this.IsValid);
+    }
+
+    private void ValidateMove(IUnit unit)
+    {
+        var bvalid = unit.Valid;
+        if (unit.OverlapsArea(_outBoundsZone) ||
             _terrain.Any(t => unit.OverlapsArea(t)))
         {
             unit.Modulate = Colors.Red;

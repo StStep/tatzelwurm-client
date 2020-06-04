@@ -11,16 +11,26 @@ public class MoveCommand
     public Func<float, Vector2> VelocityFunc { get; private set; }
     public Func<float, float> HeadingFunc { get; private set; }
 
-    public Vector2[] Preview(int samples)
+    public Ray[] Preview(int samples)
+    {
+        var step = Period/(samples - 1);
+        var ray = new Ray[samples];
+        ray[0] = new Ray(Start, HeadingFunc.Invoke(0));
+        for(int i = 1; i < samples; i++)
+        {
+            ray[i] = new Ray(ray[i - 1].Origin + step * VelocityFunc.Invoke(step * (i - 1)), HeadingFunc.Invoke(step * (i -1)));
+        }
+
+        return ray;
+    }
+
+    public Vector2[] PreviewPath(int samples)
     {
         var step = Period/(samples - 1);
         var pos = new Vector2[samples];
         pos[0] = Start;
         for(int i = 1; i < samples; i++)
         {
-            // var b = step * i;
-            // var a = step * (i - 1);
-            // var integral = (b - a) * (VelocityFunc.Invoke(a) + VelocityFunc.Invoke(b)) / 2;
             pos[i] = pos[i - 1] + step * VelocityFunc.Invoke(step * (i - 1));
         }
 

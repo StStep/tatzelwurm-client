@@ -16,6 +16,8 @@ texture = ExtResource( 2 )
 
 [node name="Dragable" type="Area2D" parent="."]
 rotation = 1.5708
+collision_layer = 3
+collision_mask = 3
 script = ExtResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Dragable"]

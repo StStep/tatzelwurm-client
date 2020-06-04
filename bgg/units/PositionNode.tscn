@@ -4,7 +4,6 @@
 [ext_resource path="res://units/circle_with_direction.png" type="Texture" id=2]
 [ext_resource path="res://decorators/MouseArea2d.cs" type="Script" id=3]
 
-
 [sub_resource type="CircleShape2D" id=1]
 radius = 12.5
 
@@ -41,13 +40,16 @@ default_color = Color( 0.0873299, 0.40625, 0.0603027, 1 )
 texture_mode = 553311648
 
 [node name="PathArea" type="Area2D" parent="."]
+collision_layer = 3
+collision_mask = 3
 script = ExtResource( 3 )
 
 [node name="Polygon" type="CollisionPolygon2D" parent="PathArea"]
 
 [node name="BodyArea" type="Area2D" parent="."]
+collision_layer = 3
+collision_mask = 3
 script = ExtResource( 3 )
 
 [node name="Shape" type="CollisionShape2D" parent="BodyArea"]
 shape = SubResource( 1 )
-

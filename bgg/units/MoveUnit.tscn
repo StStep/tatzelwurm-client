@@ -5,7 +5,6 @@
 [ext_resource path="res://decorators/MouseArea2d.cs" type="Script" id=3]
 [ext_resource path="res://units/block_with_direction.png" type="Texture" id=4]
 
-
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 68, 32.5 )
 
@@ -22,7 +21,8 @@ script = ExtResource( 1 )
 script = ExtResource( 2 )
 
 [node name="StartMarker" type="Area2D" parent="."]
-editor/display_folded = true
+collision_layer = 3
+collision_mask = 3
 script = ExtResource( 3 )
 
 [node name="Shape" type="CollisionShape2D" parent="StartMarker"]
@@ -34,7 +34,8 @@ rotation = 1.5708
 texture = ExtResource( 4 )
 
 [node name="EndMarker" type="Area2D" parent="."]
-editor/display_folded = true
+collision_layer = 3
+collision_mask = 3
 script = ExtResource( 3 )
 
 [node name="Shape" type="CollisionShape2D" parent="EndMarker"]
@@ -46,7 +47,6 @@ rotation = 1.5708
 texture = ExtResource( 4 )
 
 [node name="Ghost" type="Node2D" parent="."]
-editor/display_folded = true
 
 [node name="Sprite" type="Sprite" parent="Ghost"]
 modulate = Color( 1, 1, 1, 0.491961 )
@@ -70,7 +70,6 @@ texture_mode = 553311648
 joint_mode = 2
 
 [node name="PathArea" type="Area2D" parent="MoveIndicator"]
-editor/display_folded = true
 position = Vector2( 0, 90 )
 rotation = 1.5708
 
@@ -81,4 +80,3 @@ shape = SubResource( 2 )
 [node name="Head" type="CollisionShape2D" parent="MoveIndicator/PathArea"]
 position = Vector2( -90.6006, -127.677 )
 shape = SubResource( 3 )
-

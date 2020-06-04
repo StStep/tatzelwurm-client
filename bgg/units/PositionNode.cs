@@ -100,7 +100,7 @@ public class PositionNode : Node2D
 
     public void Set(MoveCommand mc)
     {
-        var p = mc.Preview(20);
+        var p = mc.PreviewPath(20);
         GlobalRotation = mc.HeadingFunc.Invoke(mc.Period);
         GlobalPosition = p.Last();
         // Do local conversoins after changing position

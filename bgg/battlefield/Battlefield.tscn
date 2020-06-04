@@ -4,19 +4,19 @@
 [ext_resource path="res://decorators/SelectManager.cs" type="Script" id=2]
 [ext_resource path="res://battlefield/battlefield.tres" type="TileSet" id=3]
 
-[sub_resource type="RectangleShape2D" id=5]
+[sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 20, 600 )
 
-[sub_resource type="RectangleShape2D" id=1]
+[sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 1500, 1000 )
 
-[sub_resource type="RectangleShape2D" id=2]
+[sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 500, 2000 )
 
-[sub_resource type="RectangleShape2D" id=3]
+[sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 2500, 500 )
 
-[sub_resource type="RectangleShape2D" id=4]
+[sub_resource type="RectangleShape2D" id=5]
 extents = Vector2( 1500, 500 )
 
 [node name="Battlefield" type="Node"]
@@ -34,9 +34,11 @@ tile_data = PoolIntArray( 0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 
 
 [node name="Wall1" type="Area2D" parent="Terrain"]
 position = Vector2( 1500.57, 1001.29 )
+collision_layer = 2
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/Wall1"]
-shape = SubResource( 5 )
+shape = SubResource( 1 )
 
 [node name="Polygon2D" type="Polygon2D" parent="Terrain/Wall1"]
 color = Color( 0.309804, 0.309804, 0.309804, 1 )
@@ -44,6 +46,8 @@ polygon = PoolVector2Array( -20, -600, 20, -600, 20, 600, -20, 600.951 )
 
 [node name="Rock1" type="Area2D" parent="Terrain"]
 position = Vector2( 578.281, 1328.14 )
+collision_layer = 2
+collision_mask = 2
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/Rock1"]
 polygon = PoolVector2Array( -35.5893, -42.4178, 52.9241, -104.256, 95.3621, -3.61743, 77.1744, 77.621, -82.2711, 99.4462, -146.534, -29.6865 )
@@ -55,6 +59,8 @@ polygon = PoolVector2Array( 52.9241, -104.256, 94.1495, -5.43616, 77.7806, 77.01
 [node name="Rock2" type="Area2D" parent="Terrain"]
 position = Vector2( 2271.61, 1601.58 )
 rotation = 2.0212
+collision_layer = 2
+collision_mask = 2
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/Rock2"]
 polygon = PoolVector2Array( -35.5893, -42.4178, 52.9241, -104.256, 95.3621, -3.61743, 77.1744, 77.621, -82.2711, 99.4462, -146.534, -29.6865 )
@@ -66,6 +72,8 @@ polygon = PoolVector2Array( 52.9241, -104.256, 94.1495, -5.43616, 77.7806, 77.01
 [node name="Rock3" type="Area2D" parent="Terrain"]
 position = Vector2( 2357.26, 537.484 )
 rotation = 3.05369
+collision_layer = 2
+collision_mask = 2
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/Rock3"]
 polygon = PoolVector2Array( -35.5893, -42.4178, 52.9241, -104.256, 95.3621, -3.61743, 77.1744, 77.621, -82.2711, 99.4462, -146.534, -29.6865 )
@@ -77,6 +85,8 @@ polygon = PoolVector2Array( 52.9241, -104.256, 94.1495, -5.43616, 77.7806, 77.01
 [node name="Rock4" type="Area2D" parent="Terrain"]
 position = Vector2( 950.549, 626.433 )
 rotation = 4.20045
+collision_layer = 2
+collision_mask = 2
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Terrain/Rock4"]
 polygon = PoolVector2Array( -35.5893, -42.4178, 52.9241, -104.256, 95.3621, -3.61743, 77.1744, 77.621, -82.2711, 99.4462, -146.534, -29.6865 )
@@ -95,7 +105,7 @@ visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BattleZone"]
 position = Vector2( 1500, 1000 )
-shape = SubResource( 1 )
+shape = SubResource( 2 )
 
 [node name="DeployZone" type="Area2D" parent="."]
 visible = false
@@ -115,26 +125,26 @@ visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="OutBoundsZone"]
 position = Vector2( -500, 1000 )
-shape = SubResource( 2 )
+shape = SubResource( 3 )
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="OutBoundsZone"]
 position = Vector2( 3500, 1000 )
-shape = SubResource( 2 )
+shape = SubResource( 3 )
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="OutBoundsZone"]
 position = Vector2( 1500, -500 )
-shape = SubResource( 3 )
+shape = SubResource( 4 )
 
 [node name="CollisionShape2D4" type="CollisionShape2D" parent="OutBoundsZone"]
 position = Vector2( 1500, 2500 )
-shape = SubResource( 3 )
+shape = SubResource( 4 )
 
 [node name="NeutralZone" type="Area2D" parent="."]
 visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NeutralZone"]
 position = Vector2( 1500, 1000 )
-shape = SubResource( 4 )
+shape = SubResource( 5 )
 
 [node name="DeployMarker" type="Polygon2D" parent="."]
 visible = false
