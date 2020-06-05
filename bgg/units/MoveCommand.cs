@@ -5,7 +5,7 @@ using Trig;
 
 public class MoveCommand
 {
-    public float Period { get; private set; } = 25f;
+    public float Period { get; private set; } = 2.5f;
 
     public Vector2 Start { get; private set; }
     public Func<float, Vector2> VelocityFunc { get; private set; }
@@ -61,6 +61,15 @@ public class MoveCommand
         ret.Start = arc.Start;
         ret.VelocityFunc = t => Vector2.Right.Rotated(ret.HeadingFunc.Invoke(t)) * (arc.Length/ret.Period);
         ret.HeadingFunc = t =>  Mathf.LerpAngle(arc.StartDir.Angle(), arc.EndDir.Angle(), t/ret.Period);
+        return ret;
+    }
+
+    public static MoveCommand MakeWait(Vector2 start, float rot)
+    {
+        var ret = new MoveCommand();
+        ret.Start = start;
+        ret.VelocityFunc = t => Vector2.Zero;
+        ret.HeadingFunc = t => rot;
         return ret;
     }
 }

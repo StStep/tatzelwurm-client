@@ -18,16 +18,14 @@ public class Battle: Node
         _bf = GetNode<Battlefield>("Battlefield");
 
         dg.CreateUnit = GetNode<Battlefield>("Battlefield").DeployUnit;
-        _tg.Connect("finishedDeploying", this, nameof(EndDeployment));
+        _tg.Connect(nameof(TurnGui.finishedDeploying), this, nameof(EnterMoveState));
+        _tg.Connect(nameof(TurnGui.finishedTurn), this, nameof(OnFinishTurn));
+        _tg.Connect(nameof(TurnGui.nextTurn), this, nameof(OnNextTurn));
         _bf.ValidityChanged += _ => OnBattleFieldChange();
         _bf.BusyChanged += _ => OnBattleFieldChange();
+        _bf.ActingDone += OnActingDone;
 
         EnterDeploymentState();
-    }
-
-    private void EndDeployment()
-    {
-        EnterMoveState();
     }
 
     private void EnterDeploymentState()
@@ -43,5 +41,26 @@ public class Battle: Node
         GetNode<Battlefield>("Battlefield").Deploy2Move();
     }
 
-    private void OnBattleFieldChange() => _tg.EnableEndTurn(!_bf.Busy && _bf.IsValid);
+    private void OnFinishTurn()
+    {
+        _bf.ActTurn();
+        _tg.EnableButton(false);
+    }
+
+    private void OnNextTurn()
+    {
+        if (_tg.Turn >= 6)
+        {
+            GetTree().ChangeScene("res://Start.tscn");
+        }
+        else
+        {
+            _tg.Turn++;
+            _bf.NewTurn();
+        }
+    }
+
+    private void OnBattleFieldChange() => _tg.EnableButton(!_bf.Busy && _bf.IsValid);
+
+    private void OnActingDone() => _tg.EnableButton(true);
 }

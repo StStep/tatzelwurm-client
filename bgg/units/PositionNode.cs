@@ -35,6 +35,22 @@ public class PositionNode : Node2D
     public PositionNode Previous { get; set; }
     public PositionNode Next { get; set; }
 
+    private MoveCommand __Command;
+    public MoveCommand Command
+    {
+        get => __Command;
+        set
+        {
+            var p = value.PreviewPath(20);
+            GlobalRotation = value.HeadingFunc.Invoke(value.Period);
+            GlobalPosition = p.Last();
+            // Do local conversoins after changing position
+            Path.Points = p.Select(s => ToLocal(s)).ToArray();
+            PathPoly.Polygon = Utility.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
+            __Command = value;
+        }
+    }
+
     public override void _Ready()
     {
         base._Ready();
@@ -98,15 +114,6 @@ public class PositionNode : Node2D
         PathPoly.Polygon = new Vector2[] {};
     }
 
-    public void Set(MoveCommand mc)
-    {
-        var p = mc.PreviewPath(20);
-        GlobalRotation = mc.HeadingFunc.Invoke(mc.Period);
-        GlobalPosition = p.Last();
-        // Do local conversoins after changing position
-        Path.Points = p.Select(s => ToLocal(s)).ToArray();
-        PathPoly.Polygon = Utility.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
-    }
 
     public void highlight_body(String type)
     {

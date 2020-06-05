@@ -7,10 +7,13 @@ public class Battlefield : Node
 {
     private PackedScene _deployUnitScene = GD.Load<PackedScene>("res://units/DragUnit.tscn");
     private PackedScene _moveUnitScene = GD.Load<PackedScene>("res://units/MoveUnit.tscn");
+    private PackedScene _actionUnitScene = GD.Load<PackedScene>("res://units/ActionUnit.tscn");
 
     private Boolean _deploying = true;
+    private Boolean _acting = false;
     private List<DragUnit> _deployUnits = new List<DragUnit>();
     private List<MoveUnit> _moveUnits = new List<MoveUnit>();
+    private List<ActionUnit> _actionUnits = new List<ActionUnit>();
     private Area2D _deployZone;
     private Area2D _enemyDeployZone;
     private Area2D _battleZone;
@@ -38,6 +41,10 @@ public class Battlefield : Node
         }
     }
 
+    public Action ActingDone;
+    public float TurnPeriod { get; set; } = 10f;
+    public float CurrentTime { get; private set; } = 0f;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -52,6 +59,24 @@ public class Battlefield : Node
         _terrain = GetNode("Terrain").GetChildren().Cast<Area2D>().ToList();
         _deployMarker.Visible = true;
         _enemyDeployMarker.Visible = true;
+    }
+
+    public override void _PhysicsProcess(float delta)
+    {
+        if (!_acting)
+            return;
+
+        foreach(var u in _actionUnits)
+        {
+            u.Act(delta);
+        }
+
+        CurrentTime += delta;
+        if (CurrentTime >= TurnPeriod)
+        {
+            _acting = false;
+            ActingDone?.Invoke();
+        }
     }
 
     public void DeployUnit(String type)
@@ -74,18 +99,52 @@ public class Battlefield : Node
         _enemyDeployMarker.Visible = false;
         foreach (var u in _deployUnits)
         {
-            var newUnit = _moveUnitScene.Instance() as MoveUnit;
-            newUnit.SelectManager = selMan;
-            newUnit.GlobalPosition = u.GlobalPosition;
-            newUnit.GlobalRotation = u.GlobalRotation;
-            newUnit.Moved += ValidateMove;
-            newUnit.BusyChanged += _ => CheckBusyUnits();
+            var newUnit = ConstructMoveUnit(selMan, u);
             _moveUnits.Add(newUnit);
             GetNode("Units").AddChild(newUnit);
             u.QueueFree();
         }
         _deployUnits.Clear();
         _deploying = false;
+    }
+
+    public void ActTurn()
+    {
+        foreach (var u in _moveUnits)
+        {
+            var newUnit = _actionUnitScene.Instance() as ActionUnit;
+            newUnit.Restart(u.Commands);
+            _actionUnits.Add(newUnit);
+            GetNode("Units").AddChild(newUnit);
+            u.QueueFree();
+        }
+        _moveUnits.Clear();
+        _acting = true;
+        CurrentTime = 0;
+    }
+
+    public void NewTurn()
+    {
+        var selMan = GetNode<SelectManager>("Units");
+        foreach (var u in _actionUnits)
+        {
+            var newUnit = ConstructMoveUnit(selMan, u);
+            _moveUnits.Add(newUnit);
+            GetNode("Units").AddChild(newUnit);
+            u.QueueFree();
+        }
+        _actionUnits.Clear();
+    }
+
+    private MoveUnit ConstructMoveUnit(SelectManager selMan, Node2D at)
+    {
+        var newUnit = _moveUnitScene.Instance() as MoveUnit;
+        newUnit.SelectManager = selMan;
+        newUnit.GlobalPosition = at.GlobalPosition;
+        newUnit.GlobalRotation = at.GlobalRotation;
+        newUnit.Moved += ValidateMove;
+        newUnit.BusyChanged += _ => CheckBusyUnits();
+        return newUnit;
     }
 
     private void PickedUnit(DragUnit unit)

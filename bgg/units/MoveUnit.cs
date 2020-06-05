@@ -70,6 +70,24 @@ public class MoveUnit : Node2D, IUnit
     public Boolean Valid { get; set; }
 
     public int MoveNodeCount { get; private set; } = 0;
+    public IEnumerable<MoveCommand> Commands
+    {
+        get
+        {
+            var ret = new List<MoveCommand>();
+            for (var p = _nodeHead; p != null; p = p?.Next)
+            {
+                ret.Add(p.Command);
+            }
+
+            if (ret.Count() == 0)
+            {
+                ret.Add(MoveCommand.MakeWait(GlobalPosition, GlobalRotation));
+            }
+
+            return ret;
+        }
+    }
 
     public int MoveNodeLimit { get; set; } = 4;
 
@@ -230,19 +248,16 @@ public class MoveUnit : Node2D, IUnit
                 {
                     if (_moveType == MoveType.March)
                     {
-                        var mc = MoveCommand.MakeStraight(GetNodeStartGpos(AdjustingNode), AdjustingNode.GlobalPosition, GetNodeStartGrot(AdjustingNode));
-                        AdjustingNode.Set(mc);
+                        AdjustingNode.Command = MoveCommand.MakeStraight(GetNodeStartGpos(AdjustingNode), AdjustingNode.GlobalPosition, GetNodeStartGrot(AdjustingNode));
                     }
                     else if (_moveType == MoveType.Reposition)
                     {
-                        var mc = MoveCommand.MakeStraight(GetNodeStartGpos(AdjustingNode), AdjustingNode.GlobalPosition, GetNodeStartGrot(AdjustingNode));
-                        AdjustingNode.Set(mc);
+                        AdjustingNode.Command = MoveCommand.MakeStraight(GetNodeStartGpos(AdjustingNode), AdjustingNode.GlobalPosition, GetNodeStartGrot(AdjustingNode));
                         AdjustingNode.add_annotation("reposition");
                     }
                     else if (_moveType == MoveType.Wheel)
                     {
-                        var mc = MoveCommand.MakeWheel(new Trig.Arc(GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), AdjustingNode.GlobalPosition));
-                        AdjustingNode.Set(mc);
+                        AdjustingNode.Command = MoveCommand.MakeWheel(new Trig.Arc(GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), AdjustingNode.GlobalPosition));
                         AdjustingNode.add_annotation("wheel");
                     }
                     else
@@ -411,7 +426,7 @@ public class MoveUnit : Node2D, IUnit
             else
             {
                 GD.Print($"Stopped dragging {marker.Name} with ind {index}");
-                var mc = MoveCommand.MakeRotation(marker.GlobalPosition, GetTailGrot(), marker.GlobalRotation);
+                var mc = MoveCommand.MakeRotation(marker.GlobalPosition, GetTailGrot(), _ghost.GlobalRotation);
                 AddMoveNode(mc, new List<String>() { "rotation" });
                 ChangeState(State.Idle);
             }
@@ -639,7 +654,7 @@ public class MoveUnit : Node2D, IUnit
         inst.Sprite.Hide();
         inst.Previous = _nodeTail;
         _nodeTail = inst;
-        _nodeTail.Set(mc);
+        _nodeTail.Command = mc;
         _nodeTail.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
 
         // Move up end marker
