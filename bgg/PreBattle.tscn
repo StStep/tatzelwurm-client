@@ -1,0 +1,134 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://PreBattle.cs" type="Script" id=1]
+
+[node name="PreBattle" type="CanvasLayer"]
+script = ExtResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.0470588, 0.286275, 0.537255, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FactionSelect" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control" type="Control" parent="FactionSelect"]
+margin_left = 512.0
+margin_top = 300.0
+margin_right = 512.0
+margin_bottom = 300.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="FactionSelect/Control"]
+margin_left = -44.7827
+margin_top = -68.1055
+margin_right = 44.2173
+margin_bottom = -54.1055
+text = "Select Faction"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FactionList" type="ItemList" parent="FactionSelect/Control"]
+margin_left = -97.0
+margin_top = -46.0
+margin_right = 103.0
+margin_bottom = 154.0
+items = [ "Humans", null, false, "Ogres", null, false ]
+__meta__ = {
+"_edit_use_anchors_": false,
+"_editor_description_": ""
+}
+
+[node name="Next" type="Button" parent="FactionSelect/Control"]
+margin_left = -30.1633
+margin_top = 168.959
+margin_right = 48.8367
+margin_bottom = 188.959
+text = "Next"
+
+[node name="UnitSelect" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control" type="Control" parent="UnitSelect"]
+margin_left = 512.0
+margin_top = 300.0
+margin_right = 512.0
+margin_bottom = 300.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Title" type="Label" parent="UnitSelect/Control"]
+margin_left = -54.2138
+margin_top = -68.1055
+margin_right = 22.7862
+margin_bottom = -54.1055
+text = "Select Units"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Faction" type="Label" parent="UnitSelect/Control"]
+margin_left = -39.5945
+margin_top = -42.0
+margin_right = 37.4055
+margin_bottom = -28.0
+text = "Humans"
+
+[node name="FactionRoster" type="ItemList" parent="UnitSelect/Control"]
+margin_left = -167.955
+margin_top = -46.0
+margin_right = -51.9548
+margin_bottom = 160.0
+items = [ "Swords", null, false, "Archers", null, false, "Knights", null, false ]
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ActionRoster" type="ItemList" parent="UnitSelect/Control"]
+margin_left = 55.2395
+margin_top = -48.1055
+margin_right = 171.24
+margin_bottom = 157.895
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AvailablePoints" type="Label" parent="UnitSelect/Control"]
+margin_left = -144.865
+margin_top = -62.1055
+margin_right = -88.8653
+margin_bottom = -48.1055
+text = "1000 pts"
+
+[node name="EnemyFaction" type="Label" parent="UnitSelect/Control"]
+margin_left = -63.9548
+margin_top = 200.237
+margin_right = 80.0452
+margin_bottom = 214.237
+text = "Enemy selected Ogres"
+
+[node name="Next" type="Button" parent="UnitSelect/Control"]
+margin_left = -30.1633
+margin_top = 168.959
+margin_right = 48.8367
+margin_bottom = 188.959
+text = "Next"
+__meta__ = {
+"_edit_use_anchors_": false
+}

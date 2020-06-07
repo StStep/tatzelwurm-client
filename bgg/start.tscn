@@ -10,6 +10,9 @@ script = ExtResource( 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color( 0.6, 0.729412, 0.129412, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 anchor_left = 0.5
@@ -46,5 +49,8 @@ margin_bottom = 237.0
 custom_fonts/font = ExtResource( 2 )
 text = "Godot GUI Testing"
 align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 [connection signal="pressed" from="HBoxContainer/Start" to="." method="_on_Start_pressed"]
 [connection signal="pressed" from="HBoxContainer/Exit" to="." method="_on_Exit_pressed"]

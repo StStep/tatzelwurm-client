@@ -51,7 +51,7 @@ public class Battle: Node
     {
         if (_tg.Turn >= 6)
         {
-            GetTree().ChangeScene("res://Start.tscn");
+            GetTree().ChangeScene("res://PostBattle.tscn");
         }
         else
         {
