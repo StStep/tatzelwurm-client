@@ -244,7 +244,16 @@ public class MoveUnit : Node2D, IUnit
                 break;
             // Return to idle once done, adj happens in _process()
             case State.AdjustingNode:
-                if (AdjustingNode != null && (@event.IsActionReleased("ui_accept") || @event.IsActionReleased("ui_cancel")))
+                if (AdjustingNode != null && @event.IsActionReleased("ui_cancel"))
+                {
+                    AdjustingNode.Command = AdjustingNode.Command;
+                    AdjustingNode.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
+                    _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
+                    _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
+                    ChangeState(State.Idle);
+                    GetTree().SetInputAsHandled();
+                }
+                else if (AdjustingNode != null && @event.IsActionReleased("ui_accept"))
                 {
                     if (_moveType == MoveType.March)
                     {
