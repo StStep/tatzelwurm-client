@@ -11,6 +11,11 @@ public class MoveCommand
     public Func<float, Vector2> VelocityFunc { get; private set; }
     public Func<float, float> HeadingFunc { get; private set; }
 
+    public float StartHeading => HeadingFunc?.Invoke(0) ?? 0f;
+    public float EndHeading => HeadingFunc?.Invoke(Period) ?? 0f;
+    public Vector2 StartVelocity => VelocityFunc?.Invoke(0) ?? Vector2.Zero;
+    public Vector2 EndVelocity => VelocityFunc?.Invoke(Period) ?? Vector2.Zero;
+
     public Ray[] Preview(int samples)
     {
         var step = Period/(samples - 1);
