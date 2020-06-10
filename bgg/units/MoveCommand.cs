@@ -29,6 +29,23 @@ public class MoveCommand
         return ray;
     }
 
+    public Vector2[] PreviewSpeed(int samples)
+    {
+        var step = Period/(samples - 1);
+        var speed = new Vector2[samples];
+        var pos = Start;
+        speed[0] = new Vector2(0, StartVelocity.Length());
+        for(int i = 1; i < samples; i++)
+        {
+            var npos = pos + step * VelocityFunc.Invoke(step * (i - 1));
+            var dist = npos.DistanceTo(pos);
+            speed[i] = new Vector2(dist + speed[i - 1][0], VelocityFunc.Invoke(step * (i - 1)).Length());
+            pos = npos;
+        }
+
+        return speed;
+    }
+
     public Vector2[] PreviewPath(int samples)
     {
         var step = Period/(samples - 1);

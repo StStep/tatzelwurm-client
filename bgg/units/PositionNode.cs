@@ -9,6 +9,9 @@ public class PositionNode : Node2D
 {
     const int PATH_AREA_WIDTH = 10;
 
+    // TODO Get from unit?
+    const float MAX_SPEED = 200f;
+
     [Signal]
     public delegate void clicked_on_hover(PositionNode node, MouseButton button);
 
@@ -46,6 +49,16 @@ public class PositionNode : Node2D
             GlobalPosition = p.Last();
             // Do local conversoins after changing position
             Path.Points = p.Select(s => ToLocal(s)).ToArray();
+            Path.Gradient = new Gradient();
+            var baseColor = Colors.Red;
+            var highColor = Colors.Green;
+            foreach (var sp in value.PreviewSpeed(20))
+            {
+                GD.Print($"Len {sp[0]} Speed {sp[1]}");
+                Path.Gradient.AddPoint(sp[0], baseColor.LinearInterpolate(highColor, sp[1]/MAX_SPEED));
+            }
+            Path.Gradient.RemovePoint(1);
+            Path.Gradient.RemovePoint(0);
             PathPoly.Polygon = Utility.GetLineAsPolygon(Path.Points, PATH_AREA_WIDTH);
             __Command = value;
         }

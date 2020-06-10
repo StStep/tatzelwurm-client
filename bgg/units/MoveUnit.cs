@@ -247,7 +247,7 @@ public class MoveUnit : Node2D, IUnit
                 if (AdjustingNode != null && @event.IsActionReleased("ui_cancel"))
                 {
                     AdjustingNode.Command = AdjustingNode.Command;
-                    AdjustingNode.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
+                    //AdjustingNode.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
                     _end_marker.GlobalPosition = _nodeTail.GlobalPosition;
                     _end_marker.GlobalRotation = _nodeTail.GlobalRotation;
                     ChangeState(State.Idle);
@@ -274,7 +274,7 @@ public class MoveUnit : Node2D, IUnit
                         // Ignore if invalid move
                         break;
                     }
-                    AdjustingNode.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
+                    //AdjustingNode.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
                     ChangeState(State.Idle);
                     GetTree().SetInputAsHandled();
                 }
@@ -512,7 +512,7 @@ public class MoveUnit : Node2D, IUnit
         _end_marker_sprite.Modulate = colHighlight;
         for(var node = _nodeHead; node != null; node = node.Next)
         {
-            node.Path.Modulate = colPathHighlight;
+            //node.Path.Modulate = colPathHighlight;
             node.highlight_body("Focus");
         }
     }
@@ -522,7 +522,7 @@ public class MoveUnit : Node2D, IUnit
         _end_marker_sprite.Modulate = _prevMarkerCol;
         for(var node = _nodeHead; node != null; node = node.Next)
         {
-            node.Path.Modulate = _prevPathCol;
+            //node.Path.Modulate = _prevPathCol;
             node.highlight_body("None");
         }
     }
@@ -607,7 +607,7 @@ public class MoveUnit : Node2D, IUnit
         _prevPathCol = colPathSelected;
         for(var node = _nodeHead; node != null; node = node.Next)
         {
-            node.Path.Modulate = colPathSelected;
+            //node.Path.Modulate = colPathSelected;
             if (!node.Body.is_mouse_hovering)
                 node.highlight_body("None");
         }
@@ -622,7 +622,7 @@ public class MoveUnit : Node2D, IUnit
         _prevPathCol = colPathNotSelected;
         for(var node = _nodeHead; node != null; node = node.Next)
         {
-            node.Path.Modulate = colPathNotSelected;
+            //node.Path.Modulate = colPathNotSelected;
             if (!node.Body.is_mouse_hovering)
                 node.highlight_body("None");
         }
@@ -664,7 +664,7 @@ public class MoveUnit : Node2D, IUnit
         inst.Previous = _nodeTail;
         _nodeTail = inst;
         _nodeTail.Command = mc;
-        _nodeTail.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
+        //_nodeTail.Path.Modulate = IsSelected ? colPathSelected : colPathNotSelected;
 
         // Move up end marker
         _end_marker.Show();
