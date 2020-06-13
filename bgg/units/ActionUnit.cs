@@ -8,6 +8,7 @@ public class ActionUnit : Area2D
     private List<MoveCommand> _cmdList;
     private int _cmdInd = 0;
 
+    public MovementState CurrentState { get; private set; }
     public MoveCommand CurrentCommand => (_cmdInd < _cmdList.Count && _cmdInd >= 0) ?  _cmdList?.ElementAt(_cmdInd) : null;
     public Boolean Active { get; private set; }
     public float Time { get; private set; }
@@ -35,8 +36,8 @@ public class ActionUnit : Area2D
             return;
 
         Time += delta;
-        GlobalPosition += CurrentCommand.VelocityFunc(Time) * delta;
-        GlobalRotation = CurrentCommand.HeadingFunc(Time);
+        CurrentCommand.Update(CurrentState, delta);
+        SyncState();
         if (Time >= CurrentCommand.Period)
         {
             Time = 0;
@@ -52,8 +53,14 @@ public class ActionUnit : Area2D
         Time = 0f;
         if (CurrentCommand != null)
         {
-            GlobalPosition = CurrentCommand.Start;
-            GlobalRotation = CurrentCommand.HeadingFunc(0f);
+            CurrentState = CurrentCommand.Initial.Clone();
+            SyncState();
         }
+    }
+
+    public void SyncState()
+    {
+        GlobalPosition = CurrentState.Position;
+        GlobalRotation = CurrentState.Rotation;
     }
 }

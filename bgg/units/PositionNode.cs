@@ -44,18 +44,22 @@ public class PositionNode : Node2D
         get => __Command;
         set
         {
-            var p = value.PreviewPath(20);
-            GlobalRotation = value.HeadingFunc.Invoke(value.Period);
-            GlobalPosition = p.Last();
+            GlobalRotation = value.Final.Rotation;
+            GlobalPosition = value.Final.Position;
             // Do local conversoins after changing position
-            Path.Points = p.Select(s => ToLocal(s)).ToArray();
+            Path.Points = value.Preview.Select(s => ToLocal(s.Position)).ToArray();
             Path.Gradient = new Gradient();
             var baseColor = Colors.Red;
             var highColor = Colors.Green;
-            foreach (var sp in value.PreviewSpeed(20))
+            var dist = 0f;
+            var lastPos = value.Initial.Position;
+            foreach (var st in value.Preview)
             {
-                GD.Print($"Len {sp[0]} Speed {sp[1]}");
-                Path.Gradient.AddPoint(sp[0], baseColor.LinearInterpolate(highColor, sp[1]/MAX_SPEED));
+                var sp = st.Velocity.Length();
+                dist += st.Position.DistanceTo(lastPos);
+                lastPos = st.Position;
+                GD.Print($"Len {dist} Speed {sp}");
+                Path.Gradient.AddPoint(dist, baseColor.LinearInterpolate(highColor, sp/MAX_SPEED));
             }
             Path.Gradient.RemovePoint(1);
             Path.Gradient.RemovePoint(0);

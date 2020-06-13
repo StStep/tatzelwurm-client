@@ -1,97 +1,90 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Trig;
 
 public class MoveCommand
 {
-    public float Period { get; private set; } = 2.5f;
+    public delegate void UpdateState(MovementState state, float delta);
 
-    public Vector2 Start { get; private set; }
-    public Func<float, Vector2> VelocityFunc { get; private set; }
-    public Func<float, float> HeadingFunc { get; private set; }
+    private List<MovementState> _preview = new List<MovementState>();
 
-    public float StartHeading => HeadingFunc?.Invoke(0) ?? 0f;
-    public float EndHeading => HeadingFunc?.Invoke(Period) ?? 0f;
-    public Vector2 StartVelocity => VelocityFunc?.Invoke(0) ?? Vector2.Zero;
-    public Vector2 EndVelocity => VelocityFunc?.Invoke(Period) ?? Vector2.Zero;
+    public float Period { get; private set; }
 
-    public Ray[] Preview(int samples)
+    public UpdateState Update { get; private set; }
+    public MovementState Initial => _preview.First();
+    public MovementState Final => _preview.Last();
+    public IEnumerable<MovementState> Preview => _preview;
+
+    MoveCommand (float period, UpdateState update, MovementState initial)
     {
-        var step = Period/(samples - 1);
-        var ray = new Ray[samples];
-        ray[0] = new Ray(Start, HeadingFunc.Invoke(0));
-        for(int i = 1; i < samples; i++)
+        Period = period;
+        Update = update;
+        _preview.Add(initial.Clone());
+
+        var temp = initial;
+        var delta = period/20f;
+        for (var t = 0f; t < Period; t += delta)
         {
-            ray[i] = new Ray(ray[i - 1].Origin + step * VelocityFunc.Invoke(step * (i - 1)), HeadingFunc.Invoke(step * (i -1)));
+            Update(temp, delta);
+            _preview.Add(temp.Clone());
         }
-
-        return ray;
     }
 
-    public Vector2[] PreviewSpeed(int samples)
+    private static void RotationUpdate(Mobility mob, float rot, MovementState state, float delta)
     {
-        var step = Period/(samples - 1);
-        var speed = new Vector2[samples];
-        var pos = Start;
-        speed[0] = new Vector2(0, StartVelocity.Length());
-        for(int i = 1; i < samples; i++)
+        var dr = Mathf.PosMod(rot, 2 * Mathf.Pi);
+        // TODO Update Rot Vel
+        throw new NotImplementedException();
+        state.Position += state.Velocity * delta;
+        state.Rotation = Mathf.PosMod(state.Rotation + state.RotVelocity * delta, 2 * Mathf.Pi);
+    }
+
+    public static MoveCommand MakeRotation(float period, Mobility mob, MovementState initial, float rot)
+    {
+        UpdateState up = (st, delta) =>
         {
-            var npos = pos + step * VelocityFunc.Invoke(step * (i - 1));
-            var dist = npos.DistanceTo(pos);
-            speed[i] = new Vector2(dist + speed[i - 1][0], VelocityFunc.Invoke(step * (i - 1)).Length());
-            pos = npos;
-        }
-
-        return speed;
+            MoveCommand.RotationUpdate(mob, rot, st, delta);
+        };
+        return new MoveCommand(period, up, initial);
     }
 
-    public Vector2[] PreviewPath(int samples)
+    /// <summary>
+    /// Create a straight MoveCommand based on given parameters.
+    /// </summary>
+    /// <param name="speed">Defaults to 0, the speed to maintain during movement; if 0, min. speed needed will be used.</param>
+    public static MoveCommand MakeStraight(float period, Mobility mob, MovementState initial, Utility.Quarter quarter, Vector2 end, float speed = 0)
     {
-        var step = Period/(samples - 1);
-        var pos = new Vector2[samples];
-        pos[0] = Start;
-        for(int i = 1; i < samples; i++)
+        var endRot = (end - initial.Position).AngleTo(Vector2.Right);
+        var sideRot = Utility.GetRotation(quarter);
+        var desireRot = Mathf.PosMod(endRot - sideRot, 2 * Mathf.Pi);
+        UpdateState up = (st, delta) =>
         {
-            pos[i] = pos[i - 1] + step * VelocityFunc.Invoke(step * (i - 1));
-        }
+            // First zero any rotational vel
+            if (st.Rotation != desireRot)
+            {
+                MoveCommand.RotationUpdate(mob, desireRot, st, delta);
+            }
+            else
+            {
+                // TODO: Handle movement
+                throw new NotImplementedException();
+                st.Position += st.Velocity * delta;
+                st.Rotation = Mathf.PosMod(st.Rotation + st.RotVelocity * delta, 2 * Mathf.Pi);
+            }
 
-        return pos;
+        };
+        return new MoveCommand(period, up, initial);
     }
 
-    public static MoveCommand MakeRotation(Vector2 gpos, float startRot, float endRot)
+    public static MoveCommand MakeWheel(float period, Mobility mob, MovementState initial, Arc arc)
     {
-        var ret = new MoveCommand();
-        ret.Start = gpos;
-        ret.VelocityFunc = t => Vector2.Zero;
-        ret.HeadingFunc = t => Mathf.LerpAngle(startRot, endRot, t/ret.Period);
-        return ret;
+        throw new NotImplementedException();
     }
 
-    public static MoveCommand MakeStraight(Vector2 start, Vector2 end, float rot)
+    public static MoveCommand MakeWait(float period, Mobility mob, MovementState initial)
     {
-        var ret = new MoveCommand();
-        ret.Start = start;
-        ret.VelocityFunc = t => (end - start)/ret.Period;
-        ret.HeadingFunc = t => rot;
-        return ret;
-    }
-
-    public static MoveCommand MakeWheel(Arc arc)
-    {
-        var ret = new MoveCommand();
-        ret.Start = arc.Start;
-        ret.VelocityFunc = t => Vector2.Right.Rotated(ret.HeadingFunc.Invoke(t)) * (arc.Length/ret.Period);
-        ret.HeadingFunc = t =>  Mathf.LerpAngle(arc.StartDir.Angle(), arc.EndDir.Angle(), t/ret.Period);
-        return ret;
-    }
-
-    public static MoveCommand MakeWait(Vector2 start, float rot)
-    {
-        var ret = new MoveCommand();
-        ret.Start = start;
-        ret.VelocityFunc = t => Vector2.Zero;
-        ret.HeadingFunc = t => rot;
-        return ret;
+        throw new NotImplementedException();
     }
 }

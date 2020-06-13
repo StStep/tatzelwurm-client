@@ -10,6 +10,39 @@ public enum MoveType { None, March, Reposition, Wheel, Rotate };
 
 public class MoveUnit : Node2D, IUnit
 {
+    public int MoveNodeLimit { get; set; } = 4;
+    public const float Period = 2.5f;
+    public readonly Mobility Mobility = new Mobility()
+        {
+            MaxRotVelocity = 2f * Mathf.Pi / 5f,
+            CwAcceleration = Mathf.Pi / 5f,
+            CcwAcceleration = Mathf.Pi / 5f,
+            Front = new DirectionalMobility()
+            {
+                MaxSpeed = 200f,
+                Acceleration = 400f,
+                Deceleration = 320f,
+            },
+            Back = new DirectionalMobility()
+            {
+                MaxSpeed = 100f,
+                Acceleration = 200f,
+                Deceleration = 160f,
+            },
+            Left = new DirectionalMobility()
+            {
+                MaxSpeed = 100f,
+                Acceleration = 200f,
+                Deceleration = 160f,
+            },
+            Right = new DirectionalMobility()
+            {
+                MaxSpeed = 100f,
+                Acceleration = 200f,
+                Deceleration = 160f,
+            },
+        };
+
     private enum State { NotSelected, Idle, AddingNodes, RotatingNode, AdjustingNode }
 
     private Color colNotSelected = new Color("ffffff"); // White
@@ -23,6 +56,7 @@ public class MoveUnit : Node2D, IUnit
 
     private PackedScene _posNodeScene = GD.Load<PackedScene>("res://units/PositionNode.tscn"); // Will load when the script is instanced.
 
+    private MovementState _mstate;
     private State _state;
     private Color _prevMarkerCol;
     private Color _prevPathCol;
@@ -82,18 +116,12 @@ public class MoveUnit : Node2D, IUnit
 
             if (ret.Count() == 0)
             {
-                ret.Add(MoveCommand.MakeWait(GlobalPosition, GlobalRotation));
+                ret.Add(MoveCommand.MakeWait(Period, Mobility, _mstate));
             }
 
             return ret;
         }
     }
-
-    public int MoveNodeLimit { get; set; } = 4;
-
-    public float MaxFwdDistance { get; set; } = 500f;
-    public float MaxSideDistance { get; set; } = 250f;
-    public float MaxRvrDistance { get; set; } = 125f;
 
     public Action<MoveUnit> Moved;
     public Action<Boolean> BusyChanged;
@@ -220,18 +248,19 @@ public class MoveUnit : Node2D, IUnit
                 {
                     if (_moveType == MoveType.March)
                     {
-                        var mc = MoveCommand.MakeStraight(GetTailGpos(), _ghost.GlobalPosition, _ghost.GlobalRotation);
+                        var mc = MoveCommand.MakeStraight(Period, Mobility, GetTailState(), Utility.Quarter.front, _ghost.GlobalPosition, Mobility.Front.MaxSpeed);
                         AddMoveNode(mc, Enumerable.Empty<String>());
                     }
                     else if (_moveType == MoveType.Reposition)
                     {
-                        var mc = MoveCommand.MakeStraight(GetTailGpos(), _ghost.GlobalPosition, _ghost.GlobalRotation);
+                        // TODO: Select different quarters
+                        var mc = MoveCommand.MakeStraight(Period, Mobility, GetTailState(), Utility.Quarter.back, _ghost.GlobalPosition, Mobility.Back.MaxSpeed);
                         AddMoveNode(mc, new List<String> {"reposition"});
                     }
                     else if (_moveType == MoveType.Wheel)
                     {
 
-                        var mc = MoveCommand.MakeWheel(new Trig.Arc(GetTailGpos(), GetTailGrot(), _ghost.GlobalPosition));
+                        var mc = MoveCommand.MakeWheel(Period, Mobility, GetTailState(), new Trig.Arc(GetTailGpos(), GetTailGrot(), _ghost.GlobalPosition));
                         AddMoveNode(mc, new List<String> {"wheel"});
                     }
                     GetTree().SetInputAsHandled();
@@ -257,16 +286,17 @@ public class MoveUnit : Node2D, IUnit
                 {
                     if (_moveType == MoveType.March)
                     {
-                        AdjustingNode.Command = MoveCommand.MakeStraight(GetNodeStartGpos(AdjustingNode), AdjustingNode.GlobalPosition, GetNodeStartGrot(AdjustingNode));
+                        AdjustingNode.Command = MoveCommand.MakeStraight(Period, Mobility, AdjustingNode.Command.Initial, Utility.Quarter.front, AdjustingNode.GlobalPosition, Mobility.Front.MaxSpeed);
                     }
                     else if (_moveType == MoveType.Reposition)
                     {
-                        AdjustingNode.Command = MoveCommand.MakeStraight(GetNodeStartGpos(AdjustingNode), AdjustingNode.GlobalPosition, GetNodeStartGrot(AdjustingNode));
+                        // TODO: Select different quarters
+                        AdjustingNode.Command = MoveCommand.MakeStraight(Period, Mobility, AdjustingNode.Command.Initial, Utility.Quarter.back, AdjustingNode.GlobalPosition, Mobility.Back.MaxSpeed);
                         AdjustingNode.add_annotation("reposition");
                     }
                     else if (_moveType == MoveType.Wheel)
                     {
-                        AdjustingNode.Command = MoveCommand.MakeWheel(new Trig.Arc(GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), AdjustingNode.GlobalPosition));
+                        AdjustingNode.Command = MoveCommand.MakeWheel(Period, Mobility, AdjustingNode.Command.Initial, new Trig.Arc(GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), AdjustingNode.GlobalPosition));
                         AdjustingNode.add_annotation("wheel");
                     }
                     else
@@ -435,7 +465,7 @@ public class MoveUnit : Node2D, IUnit
             else
             {
                 GD.Print($"Stopped dragging {marker.Name} with ind {index}");
-                var mc = MoveCommand.MakeRotation(marker.GlobalPosition, GetTailGrot(), _ghost.GlobalRotation);
+                var mc = MoveCommand.MakeRotation(Period, Mobility, GetTailState(), _ghost.GlobalRotation);
                 AddMoveNode(mc, new List<String>() { "rotation" });
                 ChangeState(State.Idle);
             }
@@ -448,6 +478,11 @@ public class MoveUnit : Node2D, IUnit
 
     private bool MoveNode(Node2D node, Vector2 gpos, float grot, Vector2 mpos)
     {
+        // TODO: Use Move Commands to display moves?
+        var MaxFwdDistance = Mobility.Front.MaxSpeed * Period;
+        var MaxSideDistance = Mobility.Left.MaxSpeed * Period;
+        var MaxRvrDistance = Mobility.Back.MaxSpeed * Period;
+
         var dir = Vector2.Right.Rotated(grot);
         var quarter = Utility.GetQuarter(gpos, dir, mpos);
         var side = Utility.GetSide(gpos, dir, mpos, 136f, 65f);
@@ -747,4 +782,6 @@ public class MoveUnit : Node2D, IUnit
 
     public Vector2 GetTailGpos() => _nodeTail != null ? _nodeTail.GlobalPosition : GlobalPosition;
     public float GetTailGrot() => _nodeTail != null ? _nodeTail.GlobalRotation : GlobalRotation;
+
+    public MovementState GetTailState() => _nodeTail != null ? _nodeTail.Command.Final : _mstate;
 }

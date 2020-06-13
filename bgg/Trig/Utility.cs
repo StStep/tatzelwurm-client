@@ -46,7 +46,7 @@ namespace Trig
             return (dir.Direction.AngleTo(pnt - dir.Origin) <= 0f) ? ParaHalf.left : ParaHalf.right;
         }
 
-        // Image a plane bisected by bath a parallel and perpendicular line thorugh origin
+        // Image a plane bisected by both a parallel and perpendicular line thorugh origin
         public enum Halves {frontleft, frontright, backleft, backright}
         public static Halves GetHalves(Vector2 Origin, Vector2 direction, Vector2 pnt)
         {
@@ -70,10 +70,31 @@ namespace Trig
         // Imagine an X centered on origin, cutting a plane into four quarters
         public enum Quarter {front, back, left, right};
 
+        public static float GetRotation(Quarter quarter)
+        {
+            switch(quarter)
+            {
+                case Quarter.front:
+                    return 0f;
+                case Quarter.back:
+                    return Mathf.Pi;
+                case Quarter.left:
+                    return 3 * Mathf.Pi/2f;
+                default:
+                    return Mathf.Pi/2f;
+            }
+        }
+
+        public static Quarter GetQuarter(Vector2 origin, float rotation, Vector2 pnt)
+        {
+            return GetQuarter(new Ray(origin, rotation), pnt);
+        }
+
         public static Quarter GetQuarter(Vector2 origin, Vector2 direction, Vector2 pnt)
         {
             return GetQuarter(new Ray(origin, direction), pnt);
         }
+
         public static Quarter GetQuarter(Ray dir, Vector2 pnt)
         {
             Vector2 v = pnt - dir.Origin;
