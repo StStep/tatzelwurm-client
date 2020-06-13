@@ -8,6 +8,9 @@ public class MovementState: ICloneable
     public Vector2 Position { get; set; }
     public float Rotation { get; set; }
 
+    public MovementState()
+    { }
+
     public MovementState(MovementState other)
     {
         Velocity = other.Velocity;

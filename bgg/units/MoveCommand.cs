@@ -8,35 +8,67 @@ public class MoveCommand
 {
     public delegate void UpdateState(MovementState state, float delta);
 
-    private List<MovementState> _preview = new List<MovementState>();
+    private List<Tuple<float, MovementState>> _preview = new List<Tuple<float, MovementState>>();
 
     public float Period { get; private set; }
 
     public UpdateState Update { get; private set; }
-    public MovementState Initial => _preview.First();
-    public MovementState Final => _preview.Last();
-    public IEnumerable<MovementState> Preview => _preview;
+    public MovementState Initial => _preview.First().Item2;
+    public MovementState Final => _preview.Last().Item2;
+    public IEnumerable<Tuple<float, MovementState>> Preview => _preview;
 
     MoveCommand (float period, UpdateState update, MovementState initial)
     {
         Period = period;
         Update = update;
-        _preview.Add(initial.Clone());
+        _preview.Add(new Tuple<float, MovementState>(0f, initial.Clone()));
 
         var temp = initial;
-        var delta = period/20f;
-        for (var t = 0f; t < Period; t += delta)
+        var delta = Period/100f;
+        for (var t = delta; t <= Period; t += delta)
         {
             Update(temp, delta);
-            _preview.Add(temp.Clone());
+            _preview.Add(new Tuple<float, MovementState>(t, temp.Clone()));
         }
     }
 
     private static void RotationUpdate(Mobility mob, float rot, MovementState state, float delta)
     {
-        var dr = Mathf.PosMod(rot, 2 * Mathf.Pi);
-        // TODO Update Rot Vel
-        throw new NotImplementedException();
+        var desireRot = Mathf.PosMod(rot, 2f * Mathf.Pi);
+        var dist = Mathf.PosMod(desireRot - state.Rotation, 2f * Mathf.Pi);
+
+        // TODO: Take into account current Rot Velocity for choseing direction
+        if (Mathf.IsEqualApprox(state.Rotation, desireRot))
+        {
+            state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, 0f, delta);
+        }
+        // Ccw
+        else if (dist > Mathf.Pi)
+        {
+            // Outside deceleration region
+            if (dist > state.RotVelocity * state.RotVelocity / (2f * mob.CwAcceleration))
+            {
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, -mob.MaxRotVelocity, delta);
+            }
+            else
+            {
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, Mathf.Sqrt(2f * mob.CwAcceleration * dist), delta);
+            }
+        }
+        // Cw
+        else
+        {
+            // Outside deceleration region
+            if (dist > state.RotVelocity * state.RotVelocity / (2f * mob.CcwAcceleration))
+            {
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, mob.MaxRotVelocity, delta);
+            }
+            else
+            {
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, Mathf.Sqrt(2f * mob.CwAcceleration * dist), delta);
+            }
+        }
+
         state.Position += state.Velocity * delta;
         state.Rotation = Mathf.PosMod(state.Rotation + state.RotVelocity * delta, 2 * Mathf.Pi);
     }
@@ -62,7 +94,7 @@ public class MoveCommand
         UpdateState up = (st, delta) =>
         {
             // First zero any rotational vel
-            if (st.Rotation != desireRot)
+            if (!Mathf.IsEqualApprox(st.Rotation, desireRot))
             {
                 MoveCommand.RotationUpdate(mob, desireRot, st, delta);
             }

@@ -47,13 +47,13 @@ public class PositionNode : Node2D
             GlobalRotation = value.Final.Rotation;
             GlobalPosition = value.Final.Position;
             // Do local conversoins after changing position
-            Path.Points = value.Preview.Select(s => ToLocal(s.Position)).ToArray();
+            Path.Points = value.Preview.Select(s => ToLocal(s.Item2.Position)).ToArray();
             Path.Gradient = new Gradient();
             var baseColor = Colors.Red;
             var highColor = Colors.Green;
             var dist = 0f;
             var lastPos = value.Initial.Position;
-            foreach (var st in value.Preview)
+            foreach (var st in value.Preview.Select(p => p.Item2))
             {
                 var sp = st.Velocity.Length();
                 dist += st.Position.DistanceTo(lastPos);

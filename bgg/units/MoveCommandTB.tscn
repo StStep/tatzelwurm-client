@@ -119,10 +119,18 @@ __meta__ = {
 
 [node name="Button" type="Button" parent="HBoxContainer"]
 margin_top = 20.0
-margin_right = 65.0
+margin_right = 77.0
 margin_bottom = 40.0
 size_flags_vertical = 4
-text = "Rotation"
+text = "Rotation V"
+
+[node name="Button2" type="Button" parent="HBoxContainer"]
+margin_left = 81.0
+margin_top = 20.0
+margin_right = 158.0
+margin_bottom = 40.0
+size_flags_vertical = 4
+text = "Rotation P"
 
 [node name="ViewportContainer" type="ViewportContainer" parent="."]
 anchor_left = 0.1
@@ -142,6 +150,9 @@ render_target_update_mode = 3
 
 [node name="Axis" type="Line2D" parent="ViewportContainer/Viewport"]
 points = PoolVector2Array( 0, 0, 0, 862.5, 1540, 862.5 )
+
+[node name="Target" type="Line2D" parent="ViewportContainer/Viewport"]
+default_color = Color( 0, 0.419608, 0.0745098, 1 )
 
 [node name="Plot" type="Line2D" parent="ViewportContainer/Viewport"]
 default_color = Color( 1, 0.4, 0.764706, 1 )
@@ -181,5 +192,6 @@ grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 text = "Reset"
-[connection signal="pressed" from="HBoxContainer/Button" to="." method="PlotRotation"]
+[connection signal="pressed" from="HBoxContainer/Button" to="." method="PlotRotation" binds= [ true ]]
+[connection signal="pressed" from="HBoxContainer/Button2" to="." method="PlotRotation" binds= [ false ]]
 [connection signal="pressed" from="Error/Button" to="." method="Reset"]
