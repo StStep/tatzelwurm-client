@@ -29,6 +29,14 @@ public class MoveCommandTB : Control
         _xZero = axis.Points[1].x;
         _xMax = axis.Points[2].x;
 
+        Reset();
+    }
+
+    public void Reset()
+    {
+        var errscreen = GetNode<Control>("Error");
+        errscreen.Hide();
+
         // Test Values
         var pnts = new List<Vector2>
         {
@@ -39,6 +47,14 @@ public class MoveCommandTB : Control
             new Vector2(100f, 75f),
         };
         Plot(pnts, new Vector2(0f, 100f), new Vector2(0f, 100f));
+    }
+
+    public void Error(String error)
+    {
+        var errscreen = GetNode<Control>("Error");
+        var errtxt = errscreen.GetNode<Label>("Label");
+        errtxt.Text = error;
+        errscreen.Show();
     }
 
     public void Plot(IEnumerable<Vector2> points, Vector2 xRange, Vector2 yRange)
