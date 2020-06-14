@@ -132,6 +132,14 @@ margin_bottom = 40.0
 size_flags_vertical = 4
 text = "Rotation P"
 
+[node name="Button3" type="Button" parent="HBoxContainer"]
+margin_left = 162.0
+margin_top = 20.0
+margin_right = 228.0
+margin_bottom = 40.0
+size_flags_vertical = 4
+text = "App. Rot"
+
 [node name="ViewportContainer" type="ViewportContainer" parent="."]
 anchor_left = 0.1
 anchor_top = 0.1
@@ -194,4 +202,5 @@ size_flags_vertical = 4
 text = "Reset"
 [connection signal="pressed" from="HBoxContainer/Button" to="." method="PlotRotation" binds= [ true ]]
 [connection signal="pressed" from="HBoxContainer/Button2" to="." method="PlotRotation" binds= [ false ]]
+[connection signal="pressed" from="HBoxContainer/Button3" to="." method="PlotApproach" binds= [ false ]]
 [connection signal="pressed" from="Error/Button" to="." method="Reset"]

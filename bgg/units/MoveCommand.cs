@@ -52,7 +52,7 @@ public class MoveCommand
             }
             else
             {
-                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, Mathf.Sqrt(2f * mob.CwAcceleration * dist), delta);
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, -Mathf.Sqrt(2f * mob.CwAcceleration * dist), delta);
             }
         }
         // Cw
@@ -65,7 +65,7 @@ public class MoveCommand
             }
             else
             {
-                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, Mathf.Sqrt(2f * mob.CwAcceleration * dist), delta);
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, Mathf.Sqrt(2f * mob.CcwAcceleration * dist), delta);
             }
         }
 

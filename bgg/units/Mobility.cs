@@ -31,7 +31,7 @@ public class Mobility
     public float ApproachRotVelocity(float current, float desired, float delta)
     {
         var des = Mathf.Abs(desired) <= MaxRotVelocity ? desired : (desired < 0f) ? -MaxRotVelocity : MaxRotVelocity;
-        if (current == des)
+        if (Mathf.IsEqualApprox(current, des))
         {
             return des;
         }

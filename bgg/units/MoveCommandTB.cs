@@ -93,7 +93,7 @@ public class MoveCommandTB : Control
 
     public readonly Mobility Mobility = new Mobility()
     {
-        MaxRotVelocity = 2f * Mathf.Pi / 5f,
+        MaxRotVelocity = Mathf.Pi / 5f,
         CwAcceleration = Mathf.Pi / 5f,
         CcwAcceleration = Mathf.Pi / 5f,
         Front = new DirectionalMobility()
@@ -126,6 +126,9 @@ public class MoveCommandTB : Control
     {
         var u = new MoveUnit();
         var period = 4f;
+        var desRot = Mathf.Pi/2f;
+        var yrange = new Vector2(0f, 2 * Mathf.Pi);
+        var xrange = new Vector2(0f, period);
         var init = new MovementState()
         {
             Position = new Vector2(0f, 0f),
@@ -135,17 +138,57 @@ public class MoveCommandTB : Control
         };
         try
         {
-            var testState = MoveCommand.MakeRotation(period, Mobility, init, Mathf.Pi/2f);
+            var testState = MoveCommand.MakeRotation(period, Mobility, init, desRot);
             GD.Print($"{testState.Preview.Count()} Entries, ends at Rot: {testState.Final.Rotation} Vrot: {testState.Final.RotVelocity} t: {testState.Preview.Last().Item1}");
             if (velocity)
             {
                 SetTarget(0f, new Vector2(-Mathf.Pi, Mathf.Pi));
-                Plot(testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.RotVelocity)), new Vector2(0f, period), new Vector2(-Mathf.Pi, Mathf.Pi), "Time", "Rot. Velocity");
+                Plot(testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.RotVelocity)), xrange, new Vector2(-Mathf.Pi, Mathf.Pi), "Time", "Rot. Velocity");
             }
             else
             {
-                SetTarget(Mathf.Pi/2f, new Vector2(0f, Mathf.Pi));
-                Plot(testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Rotation)), new Vector2(0f, period), new Vector2(0f, Mathf.Pi), "Time", "Rotation");
+                SetTarget(desRot, yrange);
+                Plot(testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Rotation)), xrange, yrange, "Time", "Rotation");
+            }
+        }
+        catch(Exception ex)
+        {
+            Error(ex.Message);
+        }
+    }
+
+    public void PlotApproach(Boolean velocity)
+    {
+        var u = new MoveUnit();
+        var period = 4f;
+        var desRotVel = Mobility.MaxRotVelocity;
+        var yrange = new Vector2(-Mathf.Pi/2f, Mathf.Pi/2f);
+        var xrange = new Vector2(0f, period);
+
+        var st = new MovementState()
+        {
+            Position = new Vector2(0f, 0f),
+            Rotation = 0f,
+            RotVelocity = -Mobility.MaxRotVelocity,
+            Velocity = new Vector2(0f, 0f)
+        };
+        try
+        {
+            if (velocity)
+            {
+                throw new NotImplementedException("Haven't implemented velocity approach");
+            }
+            else
+            {
+                SetTarget(desRotVel, yrange);
+                var delta = period/100f;
+                var _pnts = new List<Vector2>() { new Vector2(0f, st.RotVelocity) };
+                for (var t = delta; t <= period; t += delta)
+                {
+                    st.RotVelocity = Mobility.ApproachRotVelocity(st.RotVelocity, desRotVel, delta);
+                    _pnts.Add(new Vector2(t, st.RotVelocity));
+                }
+                Plot(_pnts, xrange, yrange, "Time", "Rot. Velocity");
             }
         }
         catch(Exception ex)
