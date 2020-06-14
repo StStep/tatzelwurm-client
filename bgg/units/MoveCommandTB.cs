@@ -126,7 +126,7 @@ public class MoveCommandTB : Control
     {
         var u = new MoveUnit();
         var period = 4f;
-        var desRot = Mathf.Pi/2f;
+        var desRot = 3*Mathf.Pi/2f;
         var yrange = new Vector2(0f, 2 * Mathf.Pi);
         var xrange = new Vector2(0f, period);
         var init = new MovementState()

@@ -34,8 +34,9 @@ public class MoveCommand
 
     private static void RotationUpdate(Mobility mob, float rot, MovementState state, float delta)
     {
-        var desireRot = Mathf.PosMod(rot, 2f * Mathf.Pi);
-        var dist = Mathf.PosMod(desireRot - state.Rotation, 2f * Mathf.Pi);
+        var desireRot = Mathf.PosMod(rot, Mathf.Tau);
+        var dist = Mathf.PosMod(desireRot - state.Rotation, Mathf.Tau);
+        var eqdist = dist > Mathf.Pi ? dist - Mathf.Tau : dist;
 
         // TODO: Take into account current Rot Velocity for choseing direction
         if (Mathf.IsEqualApprox(state.Rotation, desireRot))
@@ -43,29 +44,29 @@ public class MoveCommand
             state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, 0f, delta);
         }
         // Ccw
-        else if (dist > Mathf.Pi)
+        else if (eqdist < 0f)
         {
             // Outside deceleration region
-            if (dist > state.RotVelocity * state.RotVelocity / (2f * mob.CwAcceleration))
+            if (-eqdist > state.RotVelocity * state.RotVelocity / (2f * mob.CwAcceleration))
             {
                 state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, -mob.MaxRotVelocity, delta);
             }
             else
             {
-                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, -Mathf.Sqrt(2f * mob.CwAcceleration * dist), delta);
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, -Mathf.Sqrt(2f * mob.CwAcceleration * -eqdist), delta);
             }
         }
         // Cw
         else
         {
             // Outside deceleration region
-            if (dist > state.RotVelocity * state.RotVelocity / (2f * mob.CcwAcceleration))
+            if (eqdist > state.RotVelocity * state.RotVelocity / (2f * mob.CcwAcceleration))
             {
                 state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, mob.MaxRotVelocity, delta);
             }
             else
             {
-                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, Mathf.Sqrt(2f * mob.CcwAcceleration * dist), delta);
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, Mathf.Sqrt(2f * mob.CcwAcceleration * eqdist), delta);
             }
         }
 
