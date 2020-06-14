@@ -9,8 +9,11 @@ public class MoveCommandTB : Control
     private float _yMax;
     private float _xZero;
     private float _xMax;
+    private Line2D _xgrid;
+    private Line2D _ygrid;
     private Line2D _plot;
     private Line2D _target;
+    private Label _title;
     private Label _xMinLabel;
     private Label _xMaxLabel;
     private Label _yMinLabel;
@@ -21,8 +24,11 @@ public class MoveCommandTB : Control
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        _xgrid = GetNode<Line2D>("ViewportContainer/Viewport/Xgrid");
+        _ygrid = GetNode<Line2D>("ViewportContainer/Viewport/Ygrid");
         _plot = GetNode<Line2D>("ViewportContainer/Viewport/Plot");
         _target = GetNode<Line2D>("ViewportContainer/Viewport/Target");
+        _title = GetNode<Label>("Title");
         _xMinLabel = GetNode<Label>("XminLabel");
         _xMaxLabel = GetNode<Label>("XmaxLabel");
         _yMinLabel = GetNode<Label>("YminLabel");
@@ -44,15 +50,19 @@ public class MoveCommandTB : Control
         errscreen.Hide();
 
         // Test Values
+        var xrange = new Vector2(0f, 10f);
+        var yrange = new Vector2(0f, 100f);
         var pnts = new List<Vector2>
         {
             new Vector2(0f, 0f),
-            new Vector2(25f, 25f),
-            new Vector2(50f, 25f),
-            new Vector2(75f, 75f),
-            new Vector2(100f, 75f),
+            new Vector2(2.5f, 25f),
+            new Vector2(5f, 25f),
+            new Vector2(7.5f, 75f),
+            new Vector2(10f, 75f),
         };
-        Plot(pnts, new Vector2(0f, 100f), new Vector2(0f, 100f), "Time", "Velocity");
+        SetGrid(2.5f, 25f, xrange, yrange);
+        SetTarget(75f, yrange);
+        Plot("Example", pnts, xrange, yrange, "Time (s)", "Velocity (m/s)");
     }
 
     public void Error(String error)
@@ -63,23 +73,24 @@ public class MoveCommandTB : Control
         errscreen.Show();
     }
 
-    public void Plot(IEnumerable<Vector2> points, Vector2 xRange, Vector2 yRange, String xlabel, String ylabel)
+    public void Plot(String title, IEnumerable<Vector2> points, Vector2 xRange, Vector2 yRange, String xlabel, String ylabel)
     {
-       _plot.ClearPoints();
-       _xMinLabel.Text = xRange[0].ToString();
-       _xMaxLabel.Text = xRange[1].ToString();
-       _yMinLabel.Text = yRange[0].ToString();
-       _yMaxLabel.Text = yRange[1].ToString();
-       _xAxisLabel.Text = xlabel;
-       _yAxisLabel.Text = ylabel;
-       foreach (var p in points)
-       {
-           var xWeight = (p.x - xRange[0])/(xRange[1] - xRange[0]);
-           var yWeight = (p.y - yRange[0])/(yRange[1] - yRange[0]);
-           var x = Mathf.Lerp(_xZero, _xMax, xWeight);
-           var y = Mathf.Lerp(_yZero, _yMax, yWeight);
-           _plot.AddPoint(new Vector2(x, y));
-       }
+        _plot.ClearPoints();
+        _title.Text = title;
+        _xMinLabel.Text = xRange[0].ToString();
+        _xMaxLabel.Text = xRange[1].ToString();
+        _yMinLabel.Text = yRange[0].ToString();
+        _yMaxLabel.Text = yRange[1].ToString();
+        _xAxisLabel.Text = xlabel;
+        _yAxisLabel.Text = ylabel;
+        foreach (var p in points)
+        {
+            var xWeight = (p.x - xRange[0])/(xRange[1] - xRange[0]);
+            var yWeight = (p.y - yRange[0])/(yRange[1] - yRange[0]);
+            var x = Mathf.Lerp(_xZero, _xMax, xWeight);
+            var y = Mathf.Lerp(_yZero, _yMax, yWeight);
+            _plot.AddPoint(new Vector2(x, y));
+        }
     }
 
     public void SetTarget(float ty, Vector2 yRange)
@@ -89,6 +100,30 @@ public class MoveCommandTB : Control
         _target.ClearPoints();
         _target.AddPoint(new Vector2(_xZero, y));
         _target.AddPoint(new Vector2(_xMax, y));
+    }
+
+    public void SetGrid(float xspacing, float yspacing, Vector2 xRange, Vector2 yRange)
+    {
+        _xgrid.ClearPoints();
+        for(float ix = xRange[0]; ix <= xRange[1]; ix += xspacing)
+        {
+            var xWeight = (ix - xRange[0])/(xRange[1] - xRange[0]);
+            var x = Mathf.Lerp(_xZero, _xMax, xWeight);
+            _xgrid.AddPoint(new Vector2(x, _yZero));
+            _xgrid.AddPoint(new Vector2(x, _yMax));
+            _xgrid.AddPoint(new Vector2(x, _yZero));
+        }
+
+        _ygrid.ClearPoints();
+        for(float iy = yRange[0]; iy <= yRange[1]; iy += yspacing)
+        {
+            var yWeight = (iy - yRange[0])/(yRange[1] - yRange[0]);
+            var y = Mathf.Lerp(_yZero, _yMax, yWeight);
+            _ygrid.AddPoint(new Vector2(_xZero, y));
+            _ygrid.AddPoint(new Vector2(_xMax, y));
+            _ygrid.AddPoint(new Vector2(_xZero, y));
+        }
+
     }
 
     public readonly Mobility Mobility = new Mobility()
@@ -143,12 +178,14 @@ public class MoveCommandTB : Control
             if (velocity)
             {
                 SetTarget(0f, new Vector2(-Mathf.Pi, Mathf.Pi));
-                Plot(testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.RotVelocity)), xrange, new Vector2(-Mathf.Pi, Mathf.Pi), "Time", "Rot. Velocity");
+                SetGrid(period/(testState.Preview.Count() - 1f), Mathf.Pi/4f, xrange, yrange);
+                Plot("Rotating Body Velocity", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.RotVelocity)), xrange, new Vector2(-Mathf.Pi, Mathf.Pi), "Time (s)", "Rot. Velocity\n(rad/s)");
             }
             else
             {
                 SetTarget(desRot, yrange);
-                Plot(testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Rotation)), xrange, yrange, "Time", "Rotation");
+                SetGrid(period/(testState.Preview.Count() - 1f), Mathf.Pi/4f, xrange, yrange);
+                Plot("Rotating Body Rotation", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Rotation)), xrange, yrange, "Time (s)", "Rotation (rad)");
             }
         }
         catch(Exception ex)
@@ -182,13 +219,14 @@ public class MoveCommandTB : Control
             {
                 SetTarget(desRotVel, yrange);
                 var delta = period/100f;
+                SetGrid(delta, Mathf.Pi/4f, xrange, yrange);
                 var _pnts = new List<Vector2>() { new Vector2(0f, st.RotVelocity) };
                 for (var t = delta; t <= period; t += delta)
                 {
                     st.RotVelocity = Mobility.ApproachRotVelocity(st.RotVelocity, desRotVel, delta);
                     _pnts.Add(new Vector2(t, st.RotVelocity));
                 }
-                Plot(_pnts, xrange, yrange, "Time", "Rot. Velocity");
+                Plot($"Rotational Velocity Approaching PI/5", _pnts, xrange, yrange, "Time (s)", "Rot. Velocity\n(rad/s)");
             }
         }
         catch(Exception ex)
