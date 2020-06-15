@@ -60,7 +60,7 @@ public class MoveCommand
             }
             else
             {
-                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, -Mathf.Sqrt(2f * mob.CwAcceleration * -eqdist), delta);
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, 0f, delta);
             }
         }
         // Cw
@@ -79,7 +79,7 @@ public class MoveCommand
             }
             else
             {
-                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, Mathf.Sqrt(2f * mob.CcwAcceleration * eqdist), delta);
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, 0f, delta);
             }
         }
 
