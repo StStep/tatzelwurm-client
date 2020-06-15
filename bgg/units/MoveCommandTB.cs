@@ -129,8 +129,8 @@ public class MoveCommandTB : Control
     public readonly Mobility Mobility = new Mobility()
     {
         MaxRotVelocity = Mathf.Pi / 5f,
-        CwAcceleration = Mathf.Pi / 5f,
-        CcwAcceleration = Mathf.Pi / 5f,
+        CwAcceleration = 2f*Mathf.Pi / 5f,
+        CcwAcceleration = 2f*Mathf.Pi / 5f,
         Front = new DirectionalMobility()
         {
             MaxSpeed = 200f,
@@ -198,7 +198,7 @@ public class MoveCommandTB : Control
     {
         var u = new MoveUnit();
         var period = 4f;
-        var desRotVel = Mobility.MaxRotVelocity;
+        var desRotVel = -Mobility.MaxRotVelocity;
         var yrange = new Vector2(-Mathf.Pi/2f, Mathf.Pi/2f);
         var xrange = new Vector2(0f, period);
 
@@ -206,7 +206,7 @@ public class MoveCommandTB : Control
         {
             Position = new Vector2(0f, 0f),
             Rotation = 0f,
-            RotVelocity = -Mobility.MaxRotVelocity,
+            RotVelocity = Mobility.MaxRotVelocity,
             Velocity = new Vector2(0f, 0f)
         };
         try

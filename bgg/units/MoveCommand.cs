@@ -32,13 +32,14 @@ public class MoveCommand
         }
     }
 
+    // TODO: Take into account current Rot Velocity for choseing direction
     private static void RotationUpdate(Mobility mob, float rot, MovementState state, float delta)
     {
         var desireRot = Mathf.PosMod(rot, Mathf.Tau);
         var dist = Mathf.PosMod(desireRot - state.Rotation, Mathf.Tau);
         var eqdist = dist > Mathf.Pi ? dist - Mathf.Tau : dist;
+        var estRot = Mathf.PosMod(state.Rotation + state.RotVelocity * delta, 2 * Mathf.Pi);
 
-        // TODO: Take into account current Rot Velocity for choseing direction
         if (Mathf.IsEqualApprox(state.Rotation, desireRot))
         {
             state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, 0f, delta);
@@ -46,8 +47,14 @@ public class MoveCommand
         // Ccw
         else if (eqdist < 0f)
         {
+            // If velocity will take rotation past desired rotation, and there is enough acceleration to zero out velocity, then zero them out
+            if (eqdist >= state.RotVelocity*delta && state.RotVelocity >= -mob.CwAcceleration * delta)
+            {
+                state.RotVelocity = 0;
+                state.Rotation = desireRot;
+            }
             // Outside deceleration region
-            if (-eqdist > state.RotVelocity * state.RotVelocity / (2f * mob.CwAcceleration))
+            else if (-eqdist > state.RotVelocity * state.RotVelocity / (2f * mob.CwAcceleration))
             {
                 state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, -mob.MaxRotVelocity, delta);
             }
@@ -59,8 +66,14 @@ public class MoveCommand
         // Cw
         else
         {
+            // If velocity will take rotation past desired rotation, and there is enough acceleration to zero out velocity, then zero them out
+            if (eqdist <= state.RotVelocity*delta && state.RotVelocity <= mob.CcwAcceleration * delta)
+            {
+                state.RotVelocity = 0;
+                state.Rotation = desireRot;
+            }
             // Outside deceleration region
-            if (eqdist > state.RotVelocity * state.RotVelocity / (2f * mob.CcwAcceleration))
+            else if (eqdist > state.RotVelocity * state.RotVelocity / (2f * mob.CcwAcceleration))
             {
                 state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, mob.MaxRotVelocity, delta);
             }
