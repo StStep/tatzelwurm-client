@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 public class MoveCommandTB : Control
 {
@@ -174,6 +175,12 @@ public class MoveCommandTB : Control
         try
         {
             var testState = MoveCommand.MakeRotation(period, Mobility, init, desRot);
+            System.IO.Directory.CreateDirectory(".logs");
+            using(var w = new StreamWriter(".logs/Rotation.csv"))
+            {
+                w.WriteLine("time|position|rotation|velocity|rotational velocity");
+                testState.Preview.ToList().ForEach(x => w.WriteLine($"{x.Item1}|{x.Item2.Position}|{x.Item2.Rotation}|{x.Item2.Velocity}|{x.Item2.RotVelocity}"));
+            }
             GD.Print($"{testState.Preview.Count()} Entries, ends at Rot: {testState.Final.Rotation} Vrot: {testState.Final.RotVelocity} t: {testState.Preview.Last().Item1}");
             if (velocity)
             {

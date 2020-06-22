@@ -15,3 +15,5 @@ bin
 # System/tool-specific ignores
 .directory
 *~
+
+.logs
