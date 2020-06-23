@@ -1,8 +1,9 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://units/MoveCommandTB.cs" type="Script" id=1]
+[ext_resource path="res://units/Plot.tscn" type="PackedScene" id=2]
 
-[node name="Control" type="Control"]
+[node name="MoveCommandTB" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
@@ -13,114 +14,12 @@ __meta__ = {
 [node name="ColorRect" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color( 0.545098, 0.545098, 0.545098, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="YaxisLabel" type="Label" parent="."]
-modulate = Color( 0.113725, 0.113725, 0.113725, 1 )
-anchor_right = 0.06
-anchor_bottom = 1.0
-text = "Velocity"
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="XaxisLabel" type="Label" parent="."]
-modulate = Color( 0.113725, 0.113725, 0.113725, 1 )
-anchor_top = 0.93
-anchor_right = 1.0
-anchor_bottom = 0.96
-text = "Time"
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="XminLabel" type="Label" parent="."]
-modulate = Color( 0.113725, 0.113725, 0.113725, 1 )
-anchor_left = 0.1
-anchor_top = 0.9
-anchor_right = 0.1
-anchor_bottom = 0.9
-margin_left = -4.24463
-margin_top = 0.5271
-margin_right = 3.75537
-margin_bottom = 14.5271
-text = "0"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="YminLabel" type="Label" parent="."]
-modulate = Color( 0.113725, 0.113725, 0.113725, 1 )
-anchor_left = 0.1
-anchor_top = 0.9
-anchor_right = 0.1
-anchor_bottom = 0.9
-margin_left = -26.4
-margin_top = -11.0
-margin_right = -2.4
-margin_bottom = 3.0
-grow_horizontal = 0
-text = "100"
-align = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="YmaxLabel" type="Label" parent="."]
-modulate = Color( 0.113725, 0.113725, 0.113725, 1 )
-anchor_left = 0.1
-anchor_top = 0.1
-anchor_right = 0.1
-anchor_bottom = 0.1
-margin_left = -36.739
-margin_top = -5.1777
-margin_right = -4.73897
-margin_bottom = 8.8223
-grow_horizontal = 0
-text = "1000"
-align = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="XmaxLabel" type="Label" parent="."]
-modulate = Color( 0.113725, 0.113725, 0.113725, 1 )
-anchor_left = 0.9
-anchor_top = 0.9
-anchor_right = 0.9
-anchor_bottom = 0.9
-margin_left = -3.95129
-margin_right = 4.04871
-margin_bottom = 14.0
-grow_horizontal = 2
-text = "10"
-align = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Title" type="Label" parent="."]
-modulate = Color( 0, 0, 0, 1 )
-anchor_top = 0.05
-anchor_right = 0.5
-anchor_bottom = 0.08
-rect_scale = Vector2( 2, 2 )
-text = "Title"
-align = 1
-valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
-anchor_left = 0.01
+anchor_left = 0.51
 anchor_right = 0.99
 anchor_bottom = 0.05
 margin_left = -2.15845
@@ -130,101 +29,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Button" parent="HBoxContainer"]
+[node name="Rotation" type="Button" parent="HBoxContainer"]
 margin_top = 5.0
-margin_right = 77.0
+margin_right = 65.0
 margin_bottom = 25.0
 size_flags_vertical = 4
-text = "Rotation V"
+text = "Rotation"
 
-[node name="Button2" type="Button" parent="HBoxContainer"]
-margin_left = 81.0
-margin_top = 5.0
-margin_right = 158.0
-margin_bottom = 25.0
-size_flags_vertical = 4
-text = "Rotation P"
+[node name="PositionPlot" parent="." instance=ExtResource( 2 )]
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_right = -6.10352e-05
 
-[node name="Button3" type="Button" parent="HBoxContainer"]
-margin_left = 162.0
-margin_top = 5.0
-margin_right = 228.0
-margin_bottom = 25.0
-size_flags_vertical = 4
-text = "App. Rot"
-
-[node name="ViewportContainer" type="ViewportContainer" parent="."]
-anchor_left = 0.1
-anchor_top = 0.1
-anchor_right = 0.9
-anchor_bottom = 0.9
-stretch = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Viewport" type="Viewport" parent="ViewportContainer"]
-size = Vector2( 819, 480 )
-handle_input_locally = false
-disable_3d = true
-usage = 0
-render_target_update_mode = 3
-
-[node name="Xgrid" type="Line2D" parent="ViewportContainer/Viewport"]
-points = PoolVector2Array( -58, 63 )
-width = 4.0
-default_color = Color( 0.0862745, 0.0862745, 0.0862745, 1 )
-
-[node name="Ygrid" type="Line2D" parent="ViewportContainer/Viewport"]
-points = PoolVector2Array( -58, 63 )
-width = 4.0
-default_color = Color( 0.0862745, 0.0862745, 0.0862745, 1 )
-
-[node name="Axis" type="Line2D" parent="ViewportContainer/Viewport"]
-points = PoolVector2Array( 0, 0, 0, 864, 1536, 864 )
-
-[node name="Target" type="Line2D" parent="ViewportContainer/Viewport"]
-default_color = Color( 0, 0.419608, 0.0745098, 1 )
-
-[node name="Plot" type="Line2D" parent="ViewportContainer/Viewport"]
-default_color = Color( 1, 0.4, 0.764706, 1 )
-
-[node name="Error" type="ColorRect" parent="."]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-color = Color( 0.572549, 0.164706, 0.164706, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Error"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_right = 40.0
-margin_bottom = 14.0
-text = "EXCEPTION: Something went wrong"
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Button" type="Button" parent="Error"]
-anchor_left = 0.47
-anchor_top = 0.1
-anchor_right = 0.53
-anchor_bottom = 0.1
-margin_left = 500.0
-margin_top = -5.0
-margin_right = -500.0
-margin_bottom = 15.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-text = "Reset"
-[connection signal="pressed" from="HBoxContainer/Button" to="." method="PlotRotation" binds= [ true ]]
-[connection signal="pressed" from="HBoxContainer/Button2" to="." method="PlotRotation" binds= [ false ]]
-[connection signal="pressed" from="HBoxContainer/Button3" to="." method="PlotApproach" binds= [ false ]]
-[connection signal="pressed" from="Error/Button" to="." method="Reset"]
+[node name="VelocityPlot" parent="." instance=ExtResource( 2 )]
+anchor_top = 0.5
+anchor_right = 0.5
+[connection signal="pressed" from="HBoxContainer/Rotation" to="." method="PlotRotation"]

@@ -64,6 +64,7 @@
     <Compile Include="units\MovementState.cs" />
     <Compile Include="units\MoveUnit.cs" />
     <Compile Include="units\DragUnit.cs" />
+    <Compile Include="units\Plot.cs" />
     <Compile Include="units\PositionNode.cs" />
     <Compile Include="units\Mobility.cs" />
     <Compile Include="Trig\Utility.cs" />

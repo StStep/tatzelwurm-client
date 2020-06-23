@@ -42,7 +42,6 @@ public class MoveCommand
         var estDist = Mathf.PosMod(desireRot - estRot, Mathf.Tau);
         var estEqdist = estDist > Mathf.Pi ? estDist - Mathf.Tau : estDist;
 
-
         // Ccw
         if (eqdist < 0f)
         {
