@@ -129,7 +129,7 @@ __meta__ = {
 }
 
 [node name="Viewport" type="Viewport" parent="ViewportContainer"]
-size = Vector2( 800, 400 )
+size = Vector2( 819, 480 )
 size_override_stretch = true
 handle_input_locally = false
 disable_3d = true
@@ -148,6 +148,10 @@ default_color = Color( 0.0862745, 0.0862745, 0.0862745, 1 )
 
 [node name="Axis" type="Line2D" parent="ViewportContainer/Viewport"]
 points = PoolVector2Array( 0, 0, 0, 400, 800, 400 )
+
+[node name="Current" type="Line2D" parent="ViewportContainer/Viewport"]
+width = 2.0
+default_color = Color( 0.498039, 0.254902, 0.584314, 1 )
 
 [node name="Target" type="Line2D" parent="ViewportContainer/Viewport"]
 default_color = Color( 0, 0.419608, 0.0745098, 1 )

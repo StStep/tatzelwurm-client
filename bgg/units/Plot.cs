@@ -10,10 +10,12 @@ public class Plot : Control
     private float _yMax;
     private float _xZero;
     private float _xMax;
+
     private Line2D _xgrid;
     private Line2D _ygrid;
     private Line2D _plot;
     private Line2D _target;
+    private Line2D _current;
     private Label _title;
     private Label _xMinLabel;
     private Label _xMaxLabel;
@@ -29,6 +31,7 @@ public class Plot : Control
         _ygrid = GetNode<Line2D>("ViewportContainer/Viewport/Ygrid");
         _plot = GetNode<Line2D>("ViewportContainer/Viewport/Plot");
         _target = GetNode<Line2D>("ViewportContainer/Viewport/Target");
+        _current = GetNode<Line2D>("ViewportContainer/Viewport/Current");
         _title = GetNode<Label>("Title");
         _xMinLabel = GetNode<Label>("XminLabel");
         _xMaxLabel = GetNode<Label>("XmaxLabel");
@@ -77,6 +80,7 @@ public class Plot : Control
         };
         SetGrid(2.5f, 25f, xrange, yrange);
         SetTarget(75f, yrange);
+        SetCurrent(5f, xrange);
         SetPlot("Example", pnts, xrange, yrange, "Time (s)", "Velocity (m/s)");
     }
 
@@ -115,6 +119,15 @@ public class Plot : Control
         _target.ClearPoints();
         _target.AddPoint(new Vector2(_xZero, y));
         _target.AddPoint(new Vector2(_xMax, y));
+    }
+
+    public void SetCurrent(float tx, Vector2 xRange)
+    {
+        var xWeight = (tx - xRange[0])/(xRange[1] - xRange[0]);
+        var x = Mathf.Lerp(_xZero, _xMax, xWeight);
+        _current.ClearPoints();
+        _current.AddPoint(new Vector2(x, _yZero));
+        _current.AddPoint(new Vector2(x, _yMax));
     }
 
     public void SetGrid(float xspacing, float yspacing, Vector2 xRange, Vector2 yRange)
