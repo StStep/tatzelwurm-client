@@ -22,8 +22,8 @@ public class MoveCommandTB : Control
         posPlot = GetNode<Plot>("PositionPlot");
         velPlot = GetNode<Plot>("VelocityPlot");
         moveAnim = GetNode<MoveAnimator>("MoveAnimator");
-        tLabel = GetNode<Label>("CurrentT");
-        tSlider = GetNode<Slider>("TimeSlider");
+        tLabel = GetNode<Label>("PlaybackBox/CurrentT");
+        tSlider = GetNode<Slider>("PlaybackBox/TimeSlider");
 
         // Start with Rotation Plot
         PlotRotation();
