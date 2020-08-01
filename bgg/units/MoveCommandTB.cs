@@ -60,7 +60,7 @@ public class MoveCommandTB : Control
         tSlider.Value = t * 100f;
         tSlider.MinValue = rangeT[0] * 100f;
         tSlider.MaxValue = rangeT[1] * 100f;
-        moveAnim.SetT(curT, 0.02f);
+        moveAnim.SetT(curT);
     }
 
     public readonly Mobility Mobility = new Mobility()
@@ -134,9 +134,9 @@ public class MoveCommandTB : Control
             posPlot.SetGrid(deltaT, Mathf.Pi/4f, xrange, yrange);
             posPlot.SetPlot("Rotating Body Rotation", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Rotation)), xrange, yrange, "Time (s)", "Rotation (rad)");
 
-            SetT(rangeT[0]);
+            moveAnim.SetMove(testState, deltaT, rangeT);
 
-            moveAnim.SetMove(testState, rangeT);
+            SetT(rangeT[0]);
         }
         catch(Exception ex)
         {

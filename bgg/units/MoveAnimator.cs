@@ -8,6 +8,7 @@ public class MoveAnimator : Control
 {
     MoveUnit moveUnit;
     MoveCommand moveCommand;
+    float deltaT;
     Vector2 rangeT;
 
     public override void _Ready()
@@ -15,16 +16,17 @@ public class MoveAnimator : Control
         moveUnit = GetNode<MoveUnit>("ViewportContainer/Viewport/Unit");
     }
 
-    public void SetMove(MoveCommand mc, Vector2 tRange)
+    public void SetMove(MoveCommand mc, float delta, Vector2 tRange)
     {
         moveCommand = mc;
+        deltaT = delta;
         rangeT = tRange;
 
         moveUnit.Position = moveCommand.Initial.Position;
         moveUnit.Rotation = moveCommand.Initial.Rotation;
     }
 
-    public void SetT(float time, float delta)
+    public void SetT(float time)
     {
         if (moveCommand == null)
             return;
@@ -32,9 +34,9 @@ public class MoveAnimator : Control
         var finalT = Mathf.Clamp(time, rangeT[0], rangeT[1]) - rangeT[0];
         var temp = moveCommand.Initial.Clone();
         var i = 0;
-        for (var t = delta; t <= finalT; t += delta)
+        for (var t = deltaT; t <= finalT; t += deltaT)
         {
-            moveCommand.Update(temp, delta);
+            moveCommand.Update(temp, deltaT);
             i++;
         }
 
