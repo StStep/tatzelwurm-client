@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://units/MoveCommandTB.cs" type="Script" id=1]
 [ext_resource path="res://units/Plot.tscn" type="PackedScene" id=2]
+[ext_resource path="res://units/MoveAnimator.tscn" type="PackedScene" id=3]
 
 [node name="MoveCommandTB" type="Control"]
 anchor_right = 1.0
@@ -83,6 +84,10 @@ margin_right = -6.10352e-05
 [node name="VelocityPlot" parent="." instance=ExtResource( 2 )]
 anchor_top = 0.5
 anchor_right = 0.5
+
+[node name="MoveAnimator" parent="." instance=ExtResource( 3 )]
+anchor_left = 0.5
+anchor_top = 0.5
 [connection signal="pressed" from="HBoxContainer/Rotation" to="." method="PlotRotation"]
 [connection signal="toggled" from="PlaybackBox/PlayToggle" to="." method="PlayPause"]
 [connection signal="value_changed" from="TimeSlider" to="." method="OnSliderSet"]

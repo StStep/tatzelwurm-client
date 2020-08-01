@@ -23,7 +23,7 @@ public class MoveCommand
         Update = update;
         _preview.Add(new Tuple<float, MovementState>(0f, initial.Clone()));
 
-        var temp = initial;
+        var temp = initial.Clone();
         var delta = Period/100f;
         for (var t = delta; t <= Period; t += delta)
         {

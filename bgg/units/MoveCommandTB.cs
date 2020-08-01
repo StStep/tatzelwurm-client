@@ -8,6 +8,7 @@ public class MoveCommandTB : Control
 {
     Plot posPlot;
     Plot velPlot;
+    MoveAnimator moveAnim;
     Label tLabel;
     Slider tSlider;
 
@@ -20,6 +21,7 @@ public class MoveCommandTB : Control
     {
         posPlot = GetNode<Plot>("PositionPlot");
         velPlot = GetNode<Plot>("VelocityPlot");
+        moveAnim = GetNode<MoveAnimator>("MoveAnimator");
         tLabel = GetNode<Label>("CurrentT");
         tSlider = GetNode<Slider>("TimeSlider");
 
@@ -46,7 +48,6 @@ public class MoveCommandTB : Control
         if (playing)
             return;
 
-        GD.Print(value);
         SetT(value/100f);
     }
 
@@ -59,6 +60,7 @@ public class MoveCommandTB : Control
         tSlider.Value = t * 100f;
         tSlider.MinValue = rangeT[0] * 100f;
         tSlider.MaxValue = rangeT[1] * 100f;
+        moveAnim.SetT(curT, 0.02f);
     }
 
     public readonly Mobility Mobility = new Mobility()
@@ -106,7 +108,7 @@ public class MoveCommandTB : Control
         var xrange = new Vector2(0f, period);
         var init = new MovementState()
         {
-            Position = new Vector2(0f, 0f),
+            Position = new Vector2(250f, 250f),
             Rotation = 0f,
             RotVelocity = 0f,
             Velocity = new Vector2(0f, 0f)
@@ -133,6 +135,8 @@ public class MoveCommandTB : Control
             posPlot.SetPlot("Rotating Body Rotation", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Rotation)), xrange, yrange, "Time (s)", "Rotation (rad)");
 
             SetT(rangeT[0]);
+
+            moveAnim.SetMove(testState, rangeT);
         }
         catch(Exception ex)
         {
