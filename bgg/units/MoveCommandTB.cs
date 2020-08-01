@@ -11,6 +11,7 @@ public class MoveCommandTB : Control
     MoveAnimator moveAnim;
     Label tLabel;
     Slider tSlider;
+    MobilityEditor mobEditor;
 
     Vector2 rangeT;
     float curT;
@@ -24,6 +25,7 @@ public class MoveCommandTB : Control
         moveAnim = GetNode<MoveAnimator>("MoveAnimator");
         tLabel = GetNode<Label>("PlaybackBox/CurrentT");
         tSlider = GetNode<Slider>("PlaybackBox/TimeSlider");
+        mobEditor = GetNode<MobilityEditor>("MobilityEditor");
 
         // Start with Rotation Plot
         PlotRotation();
@@ -63,37 +65,6 @@ public class MoveCommandTB : Control
         moveAnim.SetT(curT);
     }
 
-    public readonly Mobility Mobility = new Mobility()
-    {
-        MaxRotVelocity = Mathf.Pi / 5f,
-        CwAcceleration = 2f*Mathf.Pi / 5f,
-        CcwAcceleration = 2f*Mathf.Pi / 5f,
-        Front = new DirectionalMobility()
-        {
-            MaxSpeed = 200f,
-            Acceleration = 400f,
-            Deceleration = 320f,
-        },
-        Back = new DirectionalMobility()
-        {
-            MaxSpeed = 100f,
-            Acceleration = 200f,
-            Deceleration = 160f,
-        },
-        Left = new DirectionalMobility()
-        {
-            MaxSpeed = 100f,
-            Acceleration = 200f,
-            Deceleration = 160f,
-        },
-        Right = new DirectionalMobility()
-        {
-            MaxSpeed = 100f,
-            Acceleration = 200f,
-            Deceleration = 160f,
-        },
-    };
-
     public void PlotRotation()
     {
         if (playing)
@@ -115,7 +86,7 @@ public class MoveCommandTB : Control
         };
         try
         {
-            var testState = MoveCommand.MakeRotation(period, Mobility, init, desRot);
+            var testState = MoveCommand.MakeRotation(period, mobEditor.Mobility, init, desRot);
             System.IO.Directory.CreateDirectory(".logs");
             using(var w = new StreamWriter(".logs/Rotation.csv"))
             {

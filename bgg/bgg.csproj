@@ -60,6 +60,7 @@
     <Compile Include="PreBattle.cs" />
     <Compile Include="units\ActionUnit.cs" />
     <Compile Include="units\IUnit.cs" />
+    <Compile Include="units\MobilityEditor.cs" />
     <Compile Include="units\MoveCommand.cs" />
     <Compile Include="units\MoveCommandTB.cs" />
     <Compile Include="units\MovementState.cs" />

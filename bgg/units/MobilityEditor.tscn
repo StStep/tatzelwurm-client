@@ -1,0 +1,402 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://units/MobilityEditor.cs" type="Script" id=1]
+
+[node name="MobilityEditor" type="GridContainer"]
+columns = 4
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lRotMob" type="Label" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+margin_top = 5.0
+margin_right = 124.0
+margin_bottom = 19.0
+text = "Rotational Mobility:"
+
+[node name="CwAccel" type="HBoxContainer" parent="."]
+margin_left = 128.0
+margin_right = 277.0
+margin_bottom = 25.0
+
+[node name="Label" type="Label" parent="CwAccel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "CW Accel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="CwAccel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="CcwAccel" type="HBoxContainer" parent="."]
+margin_left = 281.0
+margin_right = 430.0
+margin_bottom = 25.0
+
+[node name="Label" type="Label" parent="CcwAccel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "CCW Accel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="CcwAccel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="MaxRotVel" type="HBoxContainer" parent="."]
+margin_left = 434.0
+margin_right = 583.0
+margin_bottom = 25.0
+
+[node name="Label" type="Label" parent="MaxRotVel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "MaxRotVel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="MaxRotVel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="lFrtMob" type="Label" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+margin_top = 34.0
+margin_right = 124.0
+margin_bottom = 48.0
+text = "Front Mobility:"
+
+[node name="FAccel" type="HBoxContainer" parent="."]
+margin_left = 128.0
+margin_top = 29.0
+margin_right = 277.0
+margin_bottom = 54.0
+
+[node name="Label" type="Label" parent="FAccel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Accel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="FAccel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="FDecel" type="HBoxContainer" parent="."]
+margin_left = 281.0
+margin_top = 29.0
+margin_right = 430.0
+margin_bottom = 54.0
+
+[node name="Label" type="Label" parent="FDecel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Decel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="FDecel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="FMaxSpd" type="HBoxContainer" parent="."]
+margin_left = 434.0
+margin_top = 29.0
+margin_right = 583.0
+margin_bottom = 54.0
+
+[node name="Label" type="Label" parent="FMaxSpd"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Max Speed"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="FMaxSpd"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="lBckMob" type="Label" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+margin_top = 63.0
+margin_right = 124.0
+margin_bottom = 77.0
+text = "Back Mobility:"
+
+[node name="BAccel" type="HBoxContainer" parent="."]
+margin_left = 128.0
+margin_top = 58.0
+margin_right = 277.0
+margin_bottom = 83.0
+
+[node name="Label" type="Label" parent="BAccel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Accel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="BAccel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="BDecel" type="HBoxContainer" parent="."]
+margin_left = 281.0
+margin_top = 58.0
+margin_right = 430.0
+margin_bottom = 83.0
+
+[node name="Label" type="Label" parent="BDecel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Decel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="BDecel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="BMaxSpd" type="HBoxContainer" parent="."]
+margin_left = 434.0
+margin_top = 58.0
+margin_right = 583.0
+margin_bottom = 83.0
+
+[node name="Label" type="Label" parent="BMaxSpd"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Max Speed"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="BMaxSpd"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="lLeftMob" type="Label" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+margin_top = 92.0
+margin_right = 124.0
+margin_bottom = 106.0
+text = "Left Mobility:"
+
+[node name="LAccel" type="HBoxContainer" parent="."]
+margin_left = 128.0
+margin_top = 87.0
+margin_right = 277.0
+margin_bottom = 112.0
+
+[node name="Label" type="Label" parent="LAccel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Accel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="LAccel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="LDecel" type="HBoxContainer" parent="."]
+margin_left = 281.0
+margin_top = 87.0
+margin_right = 430.0
+margin_bottom = 112.0
+
+[node name="Label" type="Label" parent="LDecel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Decel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="LDecel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="LMaxSpd" type="HBoxContainer" parent="."]
+margin_left = 434.0
+margin_top = 87.0
+margin_right = 583.0
+margin_bottom = 112.0
+
+[node name="Label" type="Label" parent="LMaxSpd"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Max Speed"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="LMaxSpd"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="lRightMob" type="Label" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+margin_top = 121.0
+margin_right = 124.0
+margin_bottom = 135.0
+text = "Right Mobility:"
+
+[node name="RAccel" type="HBoxContainer" parent="."]
+margin_left = 128.0
+margin_top = 116.0
+margin_right = 277.0
+margin_bottom = 141.0
+
+[node name="Label" type="Label" parent="RAccel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Accel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="RAccel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="RDecel" type="HBoxContainer" parent="."]
+margin_left = 281.0
+margin_top = 116.0
+margin_right = 430.0
+margin_bottom = 141.0
+
+[node name="Label" type="Label" parent="RDecel"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Decel"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="RDecel"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
+
+[node name="RMaxSpd" type="HBoxContainer" parent="."]
+margin_left = 434.0
+margin_top = 116.0
+margin_right = 583.0
+margin_bottom = 141.0
+
+[node name="Label" type="Label" parent="RMaxSpd"]
+margin_right = 75.0
+margin_bottom = 25.0
+grow_vertical = 2
+rect_min_size = Vector2( 75, 25 )
+size_flags_vertical = 5
+text = "Max Speed"
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit" type="LineEdit" parent="RMaxSpd"]
+margin_left = 79.0
+margin_right = 149.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 70, 25 )
