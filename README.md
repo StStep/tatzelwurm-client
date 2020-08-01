@@ -10,7 +10,7 @@ See the GitHub [wiki](https://github.com/StStep/tatzelwurm-client/wiki) and issu
 
 ## Requirements
 
-* [Godot Game Engine](https://godotengine.org/) - The most recent tested version is `3.2.1`
+* [Godot Game Engine](https://godotengine.org/) - The most recent tested version is `3.2.2`
 
 ## Known Issues
 
