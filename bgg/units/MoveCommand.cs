@@ -33,7 +33,7 @@ public class MoveCommand
     }
 
     // TODO: Take into account current Rot Velocity for choseing direction
-    private static void RotationUpdate(Mobility mob, float rot, MovementState state, float delta)
+    private static void RotationUpdate(IMobility mob, float rot, MovementState state, float delta)
     {
         var desireRot = Mathf.PosMod(rot, Mathf.Tau);
         var dist = Mathf.PosMod(desireRot - state.Rotation, Mathf.Tau);
@@ -85,7 +85,7 @@ public class MoveCommand
         state.Rotation = Mathf.PosMod(state.Rotation + state.RotVelocity * delta, 2 * Mathf.Pi);
     }
 
-    public static MoveCommand MakeRotation(float period, Mobility mob, MovementState initial, float rot)
+    public static MoveCommand MakeRotation(float period, IMobility mob, MovementState initial, float rot)
     {
         UpdateState up = (st, delta) =>
         {
@@ -98,7 +98,7 @@ public class MoveCommand
     /// Create a straight MoveCommand based on given parameters.
     /// </summary>
     /// <param name="speed">Defaults to 0, the speed to maintain during movement; if 0, min. speed needed will be used.</param>
-    public static MoveCommand MakeStraight(float period, Mobility mob, MovementState initial, Utility.Quarter quarter, Vector2 end, float speed = 0)
+    public static MoveCommand MakeStraight(float period, IMobility mob, MovementState initial, Utility.Quarter quarter, Vector2 end, float speed = 0)
     {
         var endRot = (end - initial.Position).AngleTo(Vector2.Right);
         var sideRot = Utility.GetRotation(quarter);
@@ -122,12 +122,12 @@ public class MoveCommand
         return new MoveCommand(period, up, initial);
     }
 
-    public static MoveCommand MakeWheel(float period, Mobility mob, MovementState initial, Arc arc)
+    public static MoveCommand MakeWheel(float period, IMobility mob, MovementState initial, Arc arc)
     {
         throw new NotImplementedException();
     }
 
-    public static MoveCommand MakeWait(float period, Mobility mob, MovementState initial)
+    public static MoveCommand MakeWait(float period, IMobility mob, MovementState initial)
     {
         throw new NotImplementedException();
     }

@@ -2,26 +2,67 @@
 
 [ext_resource path="res://units/MobilityEditor.cs" type="Script" id=1]
 
-[node name="MobilityEditor" type="GridContainer"]
-columns = 4
+[node name="MobilityEditor" type="VBoxContainer"]
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="lRotMob" type="Label" parent="."]
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+margin_right = 583.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 0, 20 )
+text = "Mobility Editor"
+
+[node name="Buttons" type="HBoxContainer" parent="."]
+margin_top = 24.0
+margin_right = 583.0
+margin_bottom = 44.0
+custom_constants/separation = 10
+
+[node name="Label" type="Label" parent="Buttons"]
+modulate = Color( 0, 0, 0, 1 )
+margin_right = 43.0
+margin_bottom = 20.0
+size_flags_vertical = 5
+text = "Set To:"
+valign = 1
+
+[node name="Default" type="Button" parent="Buttons"]
+margin_left = 53.0
+margin_right = 111.0
+margin_bottom = 20.0
+text = "Default"
+
+[node name="Faster" type="Button" parent="Buttons"]
+margin_left = 121.0
+margin_right = 172.0
+margin_bottom = 20.0
+text = "Faster"
+
+[node name="Grid" type="GridContainer" parent="."]
+margin_top = 48.0
+margin_right = 583.0
+margin_bottom = 189.0
+columns = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lRotMob" type="Label" parent="Grid"]
 modulate = Color( 0, 0, 0, 1 )
 margin_top = 5.0
 margin_right = 124.0
 margin_bottom = 19.0
 text = "Rotational Mobility:"
+valign = 1
 
-[node name="CwAccel" type="HBoxContainer" parent="."]
+[node name="CwAccel" type="HBoxContainer" parent="Grid"]
 margin_left = 128.0
 margin_right = 277.0
 margin_bottom = 25.0
 
-[node name="Label" type="Label" parent="CwAccel"]
+[node name="Label" type="Label" parent="Grid/CwAccel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -33,18 +74,18 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="CwAccel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/CwAccel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="CcwAccel" type="HBoxContainer" parent="."]
+[node name="CcwAccel" type="HBoxContainer" parent="Grid"]
 margin_left = 281.0
 margin_right = 430.0
 margin_bottom = 25.0
 
-[node name="Label" type="Label" parent="CcwAccel"]
+[node name="Label" type="Label" parent="Grid/CcwAccel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -56,18 +97,18 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="CcwAccel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/CcwAccel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="MaxRotVel" type="HBoxContainer" parent="."]
+[node name="MaxRotVel" type="HBoxContainer" parent="Grid"]
 margin_left = 434.0
 margin_right = 583.0
 margin_bottom = 25.0
 
-[node name="Label" type="Label" parent="MaxRotVel"]
+[node name="Label" type="Label" parent="Grid/MaxRotVel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -79,26 +120,27 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="MaxRotVel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/MaxRotVel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="lFrtMob" type="Label" parent="."]
+[node name="lFrtMob" type="Label" parent="Grid"]
 modulate = Color( 0, 0, 0, 1 )
 margin_top = 34.0
 margin_right = 124.0
 margin_bottom = 48.0
 text = "Front Mobility:"
+valign = 1
 
-[node name="FAccel" type="HBoxContainer" parent="."]
+[node name="FAccel" type="HBoxContainer" parent="Grid"]
 margin_left = 128.0
 margin_top = 29.0
 margin_right = 277.0
 margin_bottom = 54.0
 
-[node name="Label" type="Label" parent="FAccel"]
+[node name="Label" type="Label" parent="Grid/FAccel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -110,19 +152,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="FAccel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/FAccel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="FDecel" type="HBoxContainer" parent="."]
+[node name="FDecel" type="HBoxContainer" parent="Grid"]
 margin_left = 281.0
 margin_top = 29.0
 margin_right = 430.0
 margin_bottom = 54.0
 
-[node name="Label" type="Label" parent="FDecel"]
+[node name="Label" type="Label" parent="Grid/FDecel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -134,19 +176,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="FDecel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/FDecel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="FMaxSpd" type="HBoxContainer" parent="."]
+[node name="FMaxSpd" type="HBoxContainer" parent="Grid"]
 margin_left = 434.0
 margin_top = 29.0
 margin_right = 583.0
 margin_bottom = 54.0
 
-[node name="Label" type="Label" parent="FMaxSpd"]
+[node name="Label" type="Label" parent="Grid/FMaxSpd"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -158,26 +200,27 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="FMaxSpd"]
+[node name="LineEdit" type="LineEdit" parent="Grid/FMaxSpd"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="lBckMob" type="Label" parent="."]
+[node name="lBckMob" type="Label" parent="Grid"]
 modulate = Color( 0, 0, 0, 1 )
 margin_top = 63.0
 margin_right = 124.0
 margin_bottom = 77.0
 text = "Back Mobility:"
+valign = 1
 
-[node name="BAccel" type="HBoxContainer" parent="."]
+[node name="BAccel" type="HBoxContainer" parent="Grid"]
 margin_left = 128.0
 margin_top = 58.0
 margin_right = 277.0
 margin_bottom = 83.0
 
-[node name="Label" type="Label" parent="BAccel"]
+[node name="Label" type="Label" parent="Grid/BAccel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -189,19 +232,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="BAccel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/BAccel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="BDecel" type="HBoxContainer" parent="."]
+[node name="BDecel" type="HBoxContainer" parent="Grid"]
 margin_left = 281.0
 margin_top = 58.0
 margin_right = 430.0
 margin_bottom = 83.0
 
-[node name="Label" type="Label" parent="BDecel"]
+[node name="Label" type="Label" parent="Grid/BDecel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -213,19 +256,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="BDecel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/BDecel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="BMaxSpd" type="HBoxContainer" parent="."]
+[node name="BMaxSpd" type="HBoxContainer" parent="Grid"]
 margin_left = 434.0
 margin_top = 58.0
 margin_right = 583.0
 margin_bottom = 83.0
 
-[node name="Label" type="Label" parent="BMaxSpd"]
+[node name="Label" type="Label" parent="Grid/BMaxSpd"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -237,26 +280,27 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="BMaxSpd"]
+[node name="LineEdit" type="LineEdit" parent="Grid/BMaxSpd"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="lLeftMob" type="Label" parent="."]
+[node name="lLeftMob" type="Label" parent="Grid"]
 modulate = Color( 0, 0, 0, 1 )
 margin_top = 92.0
 margin_right = 124.0
 margin_bottom = 106.0
 text = "Left Mobility:"
+valign = 1
 
-[node name="LAccel" type="HBoxContainer" parent="."]
+[node name="LAccel" type="HBoxContainer" parent="Grid"]
 margin_left = 128.0
 margin_top = 87.0
 margin_right = 277.0
 margin_bottom = 112.0
 
-[node name="Label" type="Label" parent="LAccel"]
+[node name="Label" type="Label" parent="Grid/LAccel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -268,19 +312,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="LAccel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/LAccel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="LDecel" type="HBoxContainer" parent="."]
+[node name="LDecel" type="HBoxContainer" parent="Grid"]
 margin_left = 281.0
 margin_top = 87.0
 margin_right = 430.0
 margin_bottom = 112.0
 
-[node name="Label" type="Label" parent="LDecel"]
+[node name="Label" type="Label" parent="Grid/LDecel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -292,19 +336,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="LDecel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/LDecel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="LMaxSpd" type="HBoxContainer" parent="."]
+[node name="LMaxSpd" type="HBoxContainer" parent="Grid"]
 margin_left = 434.0
 margin_top = 87.0
 margin_right = 583.0
 margin_bottom = 112.0
 
-[node name="Label" type="Label" parent="LMaxSpd"]
+[node name="Label" type="Label" parent="Grid/LMaxSpd"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -316,26 +360,27 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="LMaxSpd"]
+[node name="LineEdit" type="LineEdit" parent="Grid/LMaxSpd"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="lRightMob" type="Label" parent="."]
+[node name="lRightMob" type="Label" parent="Grid"]
 modulate = Color( 0, 0, 0, 1 )
 margin_top = 121.0
 margin_right = 124.0
 margin_bottom = 135.0
 text = "Right Mobility:"
+valign = 1
 
-[node name="RAccel" type="HBoxContainer" parent="."]
+[node name="RAccel" type="HBoxContainer" parent="Grid"]
 margin_left = 128.0
 margin_top = 116.0
 margin_right = 277.0
 margin_bottom = 141.0
 
-[node name="Label" type="Label" parent="RAccel"]
+[node name="Label" type="Label" parent="Grid/RAccel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -347,19 +392,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="RAccel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/RAccel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="RDecel" type="HBoxContainer" parent="."]
+[node name="RDecel" type="HBoxContainer" parent="Grid"]
 margin_left = 281.0
 margin_top = 116.0
 margin_right = 430.0
 margin_bottom = 141.0
 
-[node name="Label" type="Label" parent="RDecel"]
+[node name="Label" type="Label" parent="Grid/RDecel"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -371,19 +416,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="RDecel"]
+[node name="LineEdit" type="LineEdit" parent="Grid/RDecel"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
 
-[node name="RMaxSpd" type="HBoxContainer" parent="."]
+[node name="RMaxSpd" type="HBoxContainer" parent="Grid"]
 margin_left = 434.0
 margin_top = 116.0
 margin_right = 583.0
 margin_bottom = 141.0
 
-[node name="Label" type="Label" parent="RMaxSpd"]
+[node name="Label" type="Label" parent="Grid/RMaxSpd"]
 margin_right = 75.0
 margin_bottom = 25.0
 grow_vertical = 2
@@ -395,8 +440,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="RMaxSpd"]
+[node name="LineEdit" type="LineEdit" parent="Grid/RMaxSpd"]
 margin_left = 79.0
 margin_right = 149.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 25 )
+[connection signal="pressed" from="Buttons/Default" to="." method="SetDefault"]
+[connection signal="pressed" from="Buttons/Faster" to="." method="SetFaster"]

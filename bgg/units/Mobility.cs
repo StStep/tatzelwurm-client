@@ -1,12 +1,31 @@
-
 using Godot;
 using System;
 
-public class Mobility
+public interface IMobility
+{
+    float CwAcceleration { get; }
+    float CcwAcceleration { get; }
+    float MaxRotVelocity { get; }
+
+    IDirectionalMobility Front { get; }
+    IDirectionalMobility Back { get; }
+    IDirectionalMobility Left { get; }
+    IDirectionalMobility Right { get; }
+
+    DirectionalMobility GetDirectionalMobility(Trig.Utility.Quarter quarter);
+    float ApproachRotVelocity(float current, float desired, float delta);
+}
+
+public class Mobility: IMobility
 {
     public float CwAcceleration { get; set; }
     public float CcwAcceleration { get; set; }
     public float MaxRotVelocity { get; set; }
+
+    IDirectionalMobility IMobility.Front => Front;
+    IDirectionalMobility IMobility.Back => Back;
+    IDirectionalMobility IMobility.Left => Left;
+    IDirectionalMobility IMobility.Right => Right;
 
     public DirectionalMobility Front { get; set; }
     public DirectionalMobility Back { get; set; }
@@ -46,7 +65,16 @@ public class Mobility
     }
 }
 
-public class DirectionalMobility
+public interface IDirectionalMobility
+{
+    float Acceleration { get; }
+    float Deceleration { get; }
+    float MaxSpeed { get; }
+
+    float ApproachSpeed(float current, float desired, float delta);
+}
+
+public class DirectionalMobility: IDirectionalMobility
 {
     public float Acceleration { get; set; }
     public float Deceleration { get; set; }
