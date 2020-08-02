@@ -9,6 +9,7 @@ public class MoveCommandTB : Control
     Plot posPlot;
     Plot velPlot;
     MoveAnimator moveAnim;
+    CheckButton playToggle;
     Label tLabel;
     Slider tSlider;
     MobilityEditor mobEditor;
@@ -23,9 +24,12 @@ public class MoveCommandTB : Control
         posPlot = GetNode<Plot>("PositionPlot");
         velPlot = GetNode<Plot>("VelocityPlot");
         moveAnim = GetNode<MoveAnimator>("MoveAnimator");
+        playToggle = GetNode<CheckButton>("PlaybackBox/PlayToggle");
         tLabel = GetNode<Label>("PlaybackBox/CurrentT");
         tSlider = GetNode<Slider>("PlaybackBox/TimeSlider");
         mobEditor = GetNode<MobilityEditor>("MobilityEditor");
+
+        playToggle.Connect("toggled", this, nameof(PlayPause));
 
         // Start with Rotation Plot
         PlotRotation();
@@ -43,6 +47,8 @@ public class MoveCommandTB : Control
     {
         this.playing = playing;
         tSlider.Editable = !playing;
+        if (playToggle.Pressed != playing)
+            playToggle.Pressed = playing;
     }
 
     public void OnSliderSet(float value)

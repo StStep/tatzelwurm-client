@@ -101,5 +101,4 @@ anchor_right = 0.5
 anchor_left = 0.5
 anchor_top = 0.5
 [connection signal="pressed" from="HBoxContainer/Rotation" to="." method="PlotRotation"]
-[connection signal="toggled" from="PlaybackBox/PlayToggle" to="." method="PlayPause"]
 [connection signal="value_changed" from="PlaybackBox/TimeSlider" to="." method="OnSliderSet"]
