@@ -66,6 +66,8 @@ public class MobilityEditor : GridContainer
         },
     };
 
+    public Boolean MarkChanges { get; private set; } = true;
+
     private LineEdit leCwAccel;
     private LineEdit leCcwAccel;
     private LineEdit leMaxRotVel;
@@ -73,22 +75,40 @@ public class MobilityEditor : GridContainer
     private void CwAccelChanged(String _) => SetCwAccel(Single.TryParse(leCwAccel.Text, out float v) ? v : Default.CwAcceleration);
     public void SetCwAccel(float v)
     {
+        var prevText = Mobility.CwAcceleration.ToString(FloatFormat);
         Mobility.CwAcceleration = v;
-        leCwAccel.Text = Mobility.CwAcceleration.ToString(FloatFormat);
+        var newText = Mobility.CwAcceleration.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leCwAccel.Modulate = Colors.Red;
+        }
+        leCwAccel.Text = newText;
     }
 
     private void CcwAccelChanged(String _) => SetCcwAccel(Single.TryParse(leCcwAccel.Text, out float v) ? v : Default.CcwAcceleration);
     public void SetCcwAccel(float v)
     {
+        var prevText = Mobility.CcwAcceleration.ToString(FloatFormat);
         Mobility.CcwAcceleration = v;
-        leCcwAccel.Text = Mobility.CcwAcceleration.ToString(FloatFormat);
+        var newText = Mobility.CcwAcceleration.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leCcwAccel.Modulate = Colors.Red;
+        }
+        leCcwAccel.Text = newText;
     }
 
     private void MaxRotVelChanged(String _) => SetMaxRotVel(Single.TryParse(leMaxRotVel.Text, out float v) ? v : Default.MaxRotVelocity);
     public void SetMaxRotVel(float v)
     {
+        var prevText = Mobility.MaxRotVelocity.ToString(FloatFormat);
         Mobility.MaxRotVelocity = v;
-        leMaxRotVel.Text = Mobility.MaxRotVelocity.ToString(FloatFormat);
+        var newText = Mobility.MaxRotVelocity.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leMaxRotVel.Modulate = Colors.Red;
+        }
+        leMaxRotVel.Text = newText;
     }
 
     private LineEdit leFrontAccel;
@@ -98,22 +118,40 @@ public class MobilityEditor : GridContainer
     private void FrontAccelChanged(String _) => SetFrontAccel(Single.TryParse(leFrontAccel.Text, out float v) ? v : Default.Front.Acceleration);
     public void SetFrontAccel(float v)
     {
+        var prevText = Mobility.Front.Acceleration.ToString(FloatFormat);
         Mobility.Front.Acceleration = v;
-        leFrontAccel.Text = Mobility.Front.Acceleration.ToString(FloatFormat);
+        var newText = Mobility.Front.Acceleration.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leFrontAccel.Modulate = Colors.Red;
+        }
+        leFrontAccel.Text = newText;
     }
 
     private void FrontDecelChanged(String _) => SetFrontDecel(Single.TryParse(leFrontDecel.Text, out float v) ? v : Default.Front.Deceleration);
     public void SetFrontDecel(float v)
     {
+        var prevText = Mobility.Front.Deceleration.ToString(FloatFormat);
         Mobility.Front.Deceleration = v;
-        leFrontDecel.Text = Mobility.Front.Deceleration.ToString(FloatFormat);
+        var newText = Mobility.Front.Deceleration.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leFrontDecel.Modulate = Colors.Red;
+        }
+        leFrontDecel.Text = newText;
     }
 
     private void FrontMaxSpeedChanged(String _) => SetFrontMaxSpeed(Single.TryParse(leFrontMaxSpeed.Text, out float v) ? v : Default.Front.MaxSpeed);
     public void SetFrontMaxSpeed(float v)
     {
+        var prevText = Mobility.Front.MaxSpeed.ToString(FloatFormat);
         Mobility.Front.MaxSpeed= v;
-        leFrontMaxSpeed.Text = Mobility.Front.MaxSpeed.ToString(FloatFormat);
+        var newText = Mobility.Front.MaxSpeed.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leFrontMaxSpeed.Modulate = Colors.Red;
+        }
+        leFrontMaxSpeed.Text = newText;
     }
 
     private LineEdit leBackAccel;
@@ -123,22 +161,40 @@ public class MobilityEditor : GridContainer
     private void BackAccelChanged(String _) => SetBackAccel(Single.TryParse(leBackAccel.Text, out float v) ? v : Default.Back.Acceleration);
     public void SetBackAccel(float v)
     {
+        var prevText = Mobility.Back.Acceleration.ToString(FloatFormat);
         Mobility.Back.Acceleration = v;
-        leBackAccel.Text = Mobility.Back.Acceleration.ToString(FloatFormat);
+        var newText = Mobility.Back.Acceleration.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leBackAccel.Modulate = Colors.Red;
+        }
+        leBackAccel.Text = newText;
     }
 
     private void BackDecelChanged(String _) => SetBackDecel(Single.TryParse(leBackDecel.Text, out float v) ? v : Default.Back.Deceleration);
     public void SetBackDecel(float v)
     {
+        var prevText = Mobility.Back.Deceleration.ToString(FloatFormat);
         Mobility.Back.Deceleration = v;
-        leBackDecel.Text = Mobility.Back.Deceleration.ToString(FloatFormat);
+        var newText = Mobility.Back.Deceleration.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leBackDecel.Modulate = Colors.Red;
+        }
+        leBackDecel.Text = newText;
     }
 
     private void BackMaxSpeedChanged(String _) => SetBackMaxSpeed(Single.TryParse(leBackMaxSpeed.Text, out float v) ? v : Default.Back.MaxSpeed);
     public void SetBackMaxSpeed(float v)
     {
+        var prevText = Mobility.Back.MaxSpeed.ToString(FloatFormat);
         Mobility.Back.MaxSpeed= v;
-        leBackMaxSpeed.Text = Mobility.Back.MaxSpeed.ToString(FloatFormat);
+        var newText = Mobility.Back.MaxSpeed.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leBackMaxSpeed.Modulate = Colors.Red;
+        }
+        leBackMaxSpeed.Text = newText;
     }
 
     private LineEdit leLeftAccel;
@@ -148,22 +204,40 @@ public class MobilityEditor : GridContainer
     private void LeftAccelChanged(String _) => SetLeftAccel(Single.TryParse(leLeftAccel.Text, out float v) ? v : Default.Left.Acceleration);
     public void SetLeftAccel(float v)
     {
+        var prevText = Mobility.Left.Acceleration.ToString(FloatFormat);
         Mobility.Left.Acceleration = v;
-        leLeftAccel.Text = Mobility.Left.Acceleration.ToString(FloatFormat);
+        var newText = Mobility.Left.Acceleration.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leLeftAccel.Modulate = Colors.Red;
+        }
+        leLeftAccel.Text = newText;
     }
 
     private void LeftDecelChanged(String _) => SetLeftDecel(Single.TryParse(leLeftDecel.Text, out float v) ? v : Default.Left.Deceleration);
     public void SetLeftDecel(float v)
     {
+        var prevText = Mobility.Left.Deceleration.ToString(FloatFormat);
         Mobility.Left.Deceleration = v;
-        leLeftDecel.Text = Mobility.Left.Deceleration.ToString(FloatFormat);
+        var newText = Mobility.Left.Deceleration.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leLeftDecel.Modulate = Colors.Red;
+        }
+        leLeftDecel.Text = newText;
     }
 
     private void LeftMaxSpeedChanged(String _) => SetLeftMaxSpeed(Single.TryParse(leLeftMaxSpeed.Text, out float v) ? v : Default.Left.MaxSpeed);
     public void SetLeftMaxSpeed(float v)
     {
+        var prevText = Mobility.Left.MaxSpeed.ToString(FloatFormat);
         Mobility.Left.MaxSpeed= v;
-        leLeftMaxSpeed.Text = Mobility.Left.MaxSpeed.ToString(FloatFormat);
+        var newText = Mobility.Left.MaxSpeed.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leLeftMaxSpeed.Modulate = Colors.Red;
+        }
+        leLeftMaxSpeed.Text = newText;
     }
 
     private LineEdit leRightAccel;
@@ -172,23 +246,42 @@ public class MobilityEditor : GridContainer
 
     private void RightAccelChanged(String _) => SetRightAccel(Single.TryParse(leRightAccel.Text, out float v) ? v : Default.Right.Acceleration);
     public void SetRightAccel(float v)
+
     {
+        var prevText = Mobility.Right.Acceleration.ToString(FloatFormat);
         Mobility.Right.Acceleration = v;
-        leRightAccel.Text = Mobility.Right.Acceleration.ToString(FloatFormat);
+        var newText = Mobility.Right.Acceleration.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leRightAccel.Modulate = Colors.Red;
+        }
+        leRightAccel.Text = newText;
     }
 
     private void RightDecelChanged(String _) => SetRightDecel(Single.TryParse(leRightDecel.Text, out float v) ? v : Default.Right.Deceleration);
     public void SetRightDecel(float v)
     {
+        var prevText = Mobility.Right.Deceleration.ToString(FloatFormat);
         Mobility.Right.Deceleration = v;
-        leRightDecel.Text = Mobility.Right.Deceleration.ToString(FloatFormat);
+        var newText = Mobility.Right.Deceleration.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leRightDecel.Modulate = Colors.Red;
+        }
+        leRightDecel.Text = newText;
     }
 
     private void RightMaxSpeedChanged(String _) => SetRightMaxSpeed(Single.TryParse(leRightMaxSpeed.Text, out float v) ? v : Default.Right.MaxSpeed);
     public void SetRightMaxSpeed(float v)
     {
+        var prevText = Mobility.Right.MaxSpeed.ToString(FloatFormat);
         Mobility.Right.MaxSpeed= v;
-        leRightMaxSpeed.Text = Mobility.Right.MaxSpeed.ToString(FloatFormat);
+        var newText = Mobility.Right.MaxSpeed.ToString(FloatFormat);
+        if (MarkChanges && prevText != newText)
+        {
+            leRightMaxSpeed.Modulate = Colors.Red;
+        }
+        leRightMaxSpeed.Text = newText;
     }
 
     public override void _Ready()
@@ -272,6 +365,30 @@ public class MobilityEditor : GridContainer
         SetRightMaxSpeed(Mobility.Right.MaxSpeed);
 	    leRightMaxSpeed.Connect("text_entered", this, nameof(RightMaxSpeedChanged));
 	    leRightMaxSpeed.Connect("focus_exited", this, nameof(RightMaxSpeedChanged), new Godot.Collections.Array() { String.Empty });
+
+        ClearMarks();
     }
 
+    public void ClearMarks()
+    {
+        leCwAccel.Modulate = Colors.White;
+        leCcwAccel.Modulate = Colors.White;
+        leMaxRotVel.Modulate = Colors.White;
+
+        leFrontAccel.Modulate = Colors.White;
+        leFrontDecel.Modulate = Colors.White;
+        leFrontMaxSpeed.Modulate = Colors.White;
+
+        leBackAccel.Modulate = Colors.White;
+        leBackDecel.Modulate = Colors.White;
+        leBackMaxSpeed.Modulate = Colors.White;
+
+        leLeftAccel.Modulate = Colors.White;
+        leLeftDecel.Modulate = Colors.White;
+        leLeftMaxSpeed.Modulate = Colors.White;
+
+        leRightAccel.Modulate = Colors.White;
+        leRightDecel.Modulate = Colors.White;
+        leRightMaxSpeed.Modulate = Colors.White;
+    }
 }

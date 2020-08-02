@@ -87,6 +87,9 @@ public class MoveCommandTB : Control
         try
         {
             var testState = MoveCommand.MakeRotation(period, mobEditor.Mobility, init, desRot);
+            mobEditor.ClearMarks();
+
+            // Log rotation values
             System.IO.Directory.CreateDirectory(".logs");
             using(var w = new StreamWriter(".logs/Rotation.csv"))
             {
