@@ -16,7 +16,7 @@ public interface IMobility
     float ApproachRotVelocity(float current, float desired, float delta);
 }
 
-public class Mobility: IMobility
+public class Mobility: IMobility, ICloneable
 {
     public float CwAcceleration { get; set; }
     public float CcwAcceleration { get; set; }
@@ -63,6 +63,24 @@ public class Mobility: IMobility
             return Mathf.Abs(des - current) < CcwAcceleration * delta ? des : current - CcwAcceleration * delta;
         }
     }
+
+    public Mobility()
+    { }
+
+    public Mobility(Mobility other)
+    {
+        CwAcceleration = other.CwAcceleration;
+        CcwAcceleration = other.CcwAcceleration;
+        MaxRotVelocity = other.MaxRotVelocity;
+        Front = other.Front.Clone();
+        Back = other.Back.Clone();
+        Left = other.Left.Clone();
+        Right = other.Right.Clone();
+    }
+
+    public Mobility Clone() => new Mobility(this);
+
+    object ICloneable.Clone() => Clone();
 }
 
 public interface IDirectionalMobility
@@ -74,7 +92,7 @@ public interface IDirectionalMobility
     float ApproachSpeed(float current, float desired, float delta);
 }
 
-public class DirectionalMobility: IDirectionalMobility
+public class DirectionalMobility: IDirectionalMobility, ICloneable
 {
     public float Acceleration { get; set; }
     public float Deceleration { get; set; }
@@ -96,4 +114,18 @@ public class DirectionalMobility: IDirectionalMobility
             return des - current < Deceleration * delta ? des : current - Deceleration * delta;
         }
     }
+
+    public DirectionalMobility()
+    { }
+
+    public DirectionalMobility(DirectionalMobility other)
+    {
+        Acceleration = other.Acceleration;
+        Deceleration = other.Deceleration;
+        MaxSpeed = other.MaxSpeed;
+    }
+
+    public DirectionalMobility Clone() => new DirectionalMobility(this);
+
+    object ICloneable.Clone() => Clone();
 }

@@ -70,7 +70,7 @@ public class MobilityEditor : Control
         },
     };
 
-    public IMobility Mobility => this.mobility;
+    public IMobility Mobility => this.mobility.Clone();
     private Mobility mobility = new Mobility()
     {
         MaxRotVelocity = Mathf.Pi / 5f,
