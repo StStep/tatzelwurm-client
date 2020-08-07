@@ -33,12 +33,15 @@ public class MoveCommandTB : Control
         mobEditor = GetNode<MobilityEditor>("MobilityEditor");
 
         lePeriod = new LineEditWrapper<Single>(GetNode<LineEdit>("MiscFields/lePeriod"), 4f, "0.00");
+        lePeriod.ValueChanged = (v) => { lePeriod.LineEdit.Modulate = Colors.Red; };
 
         leDelta = new LineEditWrapper<Single>(GetNode<LineEdit>("MiscFields/leDelta"), 0.04f, "0.00");
+        leDelta.ValueChanged = (v) => { leDelta.LineEdit.Modulate = Colors.Red; };
 
         // Hook up Desired Rotation and restrict to radians
         leDesiredRot = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/Rotation/Parameters/leDrot"), 3*Mathf.Pi/2f, "0.###");
         leDesiredRot.ValueChanged = (v) => { if (v < 0f || v > Mathf.Tau) leDesiredRot.SetValue(Mathf.Wrap(v, 0f, Mathf.Tau)); };
+        leDesiredRot.ValueChanged += (v) => { leDesiredRot.LineEdit.Modulate = Colors.Red; };
 
         playToggle.Connect("toggled", this, nameof(PlayPause));
 
@@ -125,6 +128,10 @@ public class MoveCommandTB : Control
             moveAnim.SetMove(testState, leDelta.Value, rangeT);
 
             SetT(rangeT[0]);
+
+            lePeriod.LineEdit.Modulate = Colors.White;
+            leDelta.LineEdit.Modulate = Colors.White;
+            leDesiredRot.LineEdit.Modulate = Colors.White;
         }
         catch(Exception ex)
         {

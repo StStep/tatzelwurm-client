@@ -4,9 +4,9 @@ using Godot;
 
 public class LineEditWrapper<T> : Godot.Object where T: IFormattable {
 
-    private LineEdit LineEdit;
     private T PrevValue;
 
+    public LineEdit LineEdit { get; private set; }
     public T Value { get; private set; }
     public T DefaultValue { get; private set; }
     public String FormatString { get; set; }
