@@ -17,17 +17,16 @@ public class MoveCommand
     public MovementState Final => _preview.Last().Item2;
     public IEnumerable<Tuple<float, MovementState>> Preview => _preview;
 
-    MoveCommand (float period, UpdateState update, MovementState initial)
+    MoveCommand (float period, UpdateState update, MovementState initial, float previewDelta)
     {
         Period = period;
         Update = update;
         _preview.Add(new Tuple<float, MovementState>(0f, initial.Clone()));
 
         var temp = initial.Clone();
-        var delta = Period/100f;
-        for (var t = delta; t <= Period; t += delta)
+        for (var t = previewDelta; t <= Period; t += previewDelta)
         {
-            Update(temp, delta);
+            Update(temp, previewDelta);
             _preview.Add(new Tuple<float, MovementState>(t, temp.Clone()));
         }
     }
@@ -85,13 +84,13 @@ public class MoveCommand
         state.Rotation = Mathf.PosMod(state.Rotation + state.RotVelocity * delta, 2 * Mathf.Pi);
     }
 
-    public static MoveCommand MakeRotation(float period, IMobility mob, MovementState initial, float rot)
+    public static MoveCommand MakeRotation(float period, IMobility mob, MovementState initial, float rot, float previewDelta)
     {
         UpdateState up = (st, delta) =>
         {
             MoveCommand.RotationUpdate(mob, rot, st, delta);
         };
-        return new MoveCommand(period, up, initial);
+        return new MoveCommand(period, up, initial, previewDelta);
     }
 
     /// <summary>
@@ -119,7 +118,7 @@ public class MoveCommand
             }
 
         };
-        return new MoveCommand(period, up, initial);
+        return new MoveCommand(period, up, initial, 0.04f);
     }
 
     public static MoveCommand MakeWheel(float period, IMobility mob, MovementState initial, Arc arc)

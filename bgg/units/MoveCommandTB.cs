@@ -14,6 +14,8 @@ public class MoveCommandTB : Control
     Slider tSlider;
     MobilityEditor mobEditor;
     LineEditWrapper<Single> leDesiredRot;
+    LineEditWrapper<Single> lePeriod;
+    LineEditWrapper<Single> leDelta;
 
     Vector2 rangeT;
     float curT;
@@ -29,6 +31,10 @@ public class MoveCommandTB : Control
         tLabel = GetNode<Label>("PlaybackBox/CurrentT");
         tSlider = GetNode<Slider>("PlaybackBox/TimeSlider");
         mobEditor = GetNode<MobilityEditor>("MobilityEditor");
+
+        lePeriod = new LineEditWrapper<Single>(GetNode<LineEdit>("MiscFields/lePeriod"), 4f, "0.00");
+
+        leDelta = new LineEditWrapper<Single>(GetNode<LineEdit>("MiscFields/leDelta"), 0.04f, "0.00");
 
         // Hook up Desired Rotation and restrict to radians
         leDesiredRot = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/Rotation/Parameters/leDrot"), 3*Mathf.Pi/2f, "0.###");
@@ -84,9 +90,8 @@ public class MoveCommandTB : Control
         }
 
         var u = new MoveUnit();
-        var period = 4f;
         var yrange = new Vector2(0f, 2 * Mathf.Pi);
-        var xrange = new Vector2(0f, period);
+        var xrange = new Vector2(0f, lePeriod.Value);
         var init = new MovementState()
         {
             Position = new Vector2(250f, 250f),
@@ -96,7 +101,7 @@ public class MoveCommandTB : Control
         };
         try
         {
-            var testState = MoveCommand.MakeRotation(period, mobEditor.Mobility, init, leDesiredRot.Value);
+            var testState = MoveCommand.MakeRotation(lePeriod.Value, mobEditor.Mobility, init, leDesiredRot.Value, leDelta.Value);
             mobEditor.ClearMarks();
 
             // Log rotation values
@@ -107,18 +112,17 @@ public class MoveCommandTB : Control
                 testState.Preview.ToList().ForEach(x => w.WriteLine($"{x.Item1}|{x.Item2.Position}|{x.Item2.Rotation}|{x.Item2.Velocity}|{x.Item2.RotVelocity}"));
             }
 
-            var deltaT = period/(testState.Preview.Count() - 1f);
             rangeT = xrange;
             GD.Print($"{testState.Preview.Count()} Entries, ends at Rot: {testState.Final.Rotation} Vrot: {testState.Final.RotVelocity} t: {testState.Preview.Last().Item1}");
 
             velPlot.SetTarget(0f, new Vector2(-Mathf.Pi, Mathf.Pi));
-            velPlot.SetGrid(deltaT, Mathf.Pi/4f, xrange, yrange);
+            velPlot.SetGrid(leDelta.Value, Mathf.Pi/4f, xrange, yrange);
             velPlot.SetPlot("Rotating Body Velocity", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.RotVelocity)), xrange, new Vector2(-Mathf.Pi, Mathf.Pi), "Time (s)", "Rot. Velocity\n(rad/s)");
             posPlot.SetTarget(leDesiredRot.Value, yrange);
-            posPlot.SetGrid(deltaT, Mathf.Pi/4f, xrange, yrange);
+            posPlot.SetGrid(leDelta.Value, Mathf.Pi/4f, xrange, yrange);
             posPlot.SetPlot("Rotating Body Rotation", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Rotation)), xrange, yrange, "Time (s)", "Rotation (rad)");
 
-            moveAnim.SetMove(testState, deltaT, rangeT);
+            moveAnim.SetMove(testState, leDelta.Value, rangeT);
 
             SetT(rangeT[0]);
         }

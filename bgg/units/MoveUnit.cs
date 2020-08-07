@@ -465,7 +465,7 @@ public class MoveUnit : Node2D, IUnit
             else
             {
                 GD.Print($"Stopped dragging {marker.Name} with ind {index}");
-                var mc = MoveCommand.MakeRotation(Period, Mobility, GetTailState(), _ghost.GlobalRotation);
+                var mc = MoveCommand.MakeRotation(Period, Mobility, GetTailState(), _ghost.GlobalRotation, 0.04f);
                 AddMoveNode(mc, new List<String>() { "rotation" });
                 ChangeState(State.Idle);
             }

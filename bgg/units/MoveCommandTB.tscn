@@ -63,8 +63,51 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="MobilityEditor" parent="." instance=ExtResource( 4 )]
+[node name="MiscFields" type="GridContainer" parent="."]
 anchor_left = 0.51
+anchor_top = 0.05
+anchor_right = 0.65
+anchor_bottom = 0.25
+columns = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lbPeriod" type="Label" parent="MiscFields"]
+margin_top = 5.0
+margin_right = 60.0
+margin_bottom = 19.0
+text = "Period (s)"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lePeriod" type="LineEdit" parent="MiscFields"]
+margin_left = 64.0
+margin_right = 122.0
+margin_bottom = 24.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="lbDelta" type="Label" parent="MiscFields"]
+margin_top = 33.0
+margin_right = 60.0
+margin_bottom = 47.0
+text = "Delta (s)"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="leDelta" type="LineEdit" parent="MiscFields"]
+margin_left = 64.0
+margin_top = 28.0
+margin_right = 122.0
+margin_bottom = 52.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MobilityEditor" parent="." instance=ExtResource( 4 )]
+anchor_left = 0.65
 anchor_top = 0.05
 anchor_right = 0.99
 anchor_bottom = 0.25
@@ -83,6 +126,10 @@ __meta__ = {
 [node name="Rotation" type="Tabs" parent="MoveTabs"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
 
 [node name="Parameters" type="HBoxContainer" parent="MoveTabs/Rotation"]
 anchor_left = 0.01
@@ -119,6 +166,10 @@ __meta__ = {
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
 
 [node name="PositionPlot" parent="." instance=ExtResource( 2 )]
 anchor_right = 0.5
