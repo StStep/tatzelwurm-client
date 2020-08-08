@@ -10,6 +10,8 @@ public class MoveCommand
 
     private List<Tuple<float, MovementState>> _preview = new List<Tuple<float, MovementState>>();
 
+    public const float RotationSnapDist = 0.001f;
+
     public float Period { get; private set; }
 
     public UpdateState Update { get; private set; }
@@ -37,12 +39,20 @@ public class MoveCommand
         var desireRot = Mathf.PosMod(rot, Mathf.Tau);
         var dist = Mathf.PosMod(desireRot - state.Rotation, Mathf.Tau);
         var eqdist = dist > Mathf.Pi ? dist - Mathf.Tau : dist;
+        eqdist = Mathf.Abs(eqdist) < RotationSnapDist ? 0f : eqdist;
+
         var estRot = Mathf.PosMod(state.Rotation + state.RotVelocity * delta, 2 * Mathf.Pi);
         var estDist = Mathf.PosMod(desireRot - estRot, Mathf.Tau);
         var estEqdist = estDist > Mathf.Pi ? estDist - Mathf.Tau : estDist;
+        estEqdist = Mathf.Abs(estEqdist) < RotationSnapDist ? 0f : estEqdist;
 
+        // At target
+        if (eqdist == 0f && state.RotVelocity == 0f)
+        {
+            // Do nothing
+        }
         // Ccw
-        if (eqdist < 0f)
+        else if (eqdist < 0f)
         {
             // If velocity will take rotation past desired rotation, and there is enough acceleration to zero out velocity, then zero them out
             if (eqdist >= state.RotVelocity * delta && state.RotVelocity >= -mob.CwAcceleration * delta)
