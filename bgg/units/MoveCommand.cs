@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using Trig;
 
 public class MoveCommand
@@ -11,9 +12,11 @@ public class MoveCommand
     private List<Tuple<float, MovementState>> _preview = new List<Tuple<float, MovementState>>();
 
     public const float RotationSnapDist = 0.001f;
+    public const float MoveSnapDist = 0.001f;
 
     public float Period { get; private set; }
 
+    public String Description { get; private set; }
     public UpdateState Update { get; private set; }
     public MovementState Initial => _preview.First().Item2;
     public MovementState Final => _preview.Last().Item2;
@@ -33,7 +36,7 @@ public class MoveCommand
         }
     }
 
-    // TODO: Take into account current Rot Velocity for choseing direction
+    // TODO: Take into account current Rot Velocity for chooseing direction
     private static void RotationUpdate(IMobility mob, float rot, MovementState state, float delta)
     {
         var desireRot = Mathf.PosMod(rot, Mathf.Tau);
@@ -115,18 +118,44 @@ public class MoveCommand
         UpdateState up = (st, delta) =>
         {
             // First zero any rotational vel
-            if (!Mathf.IsEqualApprox(st.Rotation, desireRot))
+            if (Mathf.Abs(st.Rotation - desireRot) > RotationSnapDist)
             {
                 MoveCommand.RotationUpdate(mob, desireRot, st, delta);
             }
             else
             {
-                // TODO: Handle movement
-                throw new NotImplementedException();
+                var dmob = mob.GetDirectionalMobility(quarter);
+                var dir = st.Position.DirectionTo(end);
+
+                var dist = st.Position.DistanceTo(end);
+                dist = dist < MoveSnapDist ? 0f : dist;
+
+                var estPos = st.Position + st.Velocity * delta;
+                var estDist = estPos.DistanceTo(end);
+                estDist = estDist < MoveSnapDist ? 0f : estDist;
+
                 st.Position += st.Velocity * delta;
-                st.Rotation = Mathf.PosMod(st.Rotation + st.RotVelocity * delta, 2 * Mathf.Pi);
+
+                // If velocity will take rotation past desired rotation, and there is enough acceleration to zero out velocity, then zero them out
+                // TODO: Worry about if move past end?
+                if (dist <= (st.Velocity*delta).Length() && st.Velocity.Length() <= dmob.Deceleration * delta)
+                {
+                    st.Velocity = Vector2.Zero;
+                    st.Position = end;
+                }
+                // Need to start decelerating when est rotation is within 0.5% deceleration region
+                else if (estDist*1.005 > st.Velocity.LengthSquared() / (2f * dmob.Deceleration))
+                {
+                    st.Velocity = dmob.ApproachSpeed(st.Velocity.Length(), dmob.MaxSpeed, delta) * dir;
+                }
+                else
+                {
+                    st.Velocity = dmob.ApproachSpeed(st.Velocity.Length(), 0, delta) * dir;
+                }
             }
 
+            st.Position += st.Velocity * delta;
+            st.Rotation = Mathf.PosMod(st.Rotation + st.RotVelocity * delta, 2 * Mathf.Pi);
         };
         return new MoveCommand(period, up, initial, 0.04f);
     }
@@ -139,5 +168,14 @@ public class MoveCommand
     public static MoveCommand MakeWait(float period, IMobility mob, MovementState initial)
     {
         throw new NotImplementedException();
+    }
+
+    public void Log(String dir) {
+        var dinfo = System.IO.Directory.CreateDirectory(dir);
+        using(var w = new StreamWriter(System.IO.Path.Combine(dinfo.ToString(), "MoveCommand.csv")))
+        {
+            w.WriteLine("time|position|rotation|velocity|rotational velocity");
+            Preview.ToList().ForEach(x => w.WriteLine($"{x.Item1}|{x.Item2.Position}|{x.Item2.Rotation}|{x.Item2.Velocity}|{x.Item2.RotVelocity}"));
+        }
     }
 }

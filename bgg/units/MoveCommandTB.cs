@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using Trig;
 
 public class MoveCommandTB : Control
 {
@@ -105,25 +106,18 @@ public class MoveCommandTB : Control
         try
         {
             var testState = MoveCommand.MakeRotation(lePeriod.Value, mobEditor.Mobility, init, leDesiredRot.Value, leDelta.Value);
+            testState.Log(".logs");
             mobEditor.ClearMarks();
-
-            // Log rotation values
-            System.IO.Directory.CreateDirectory(".logs");
-            using(var w = new StreamWriter(".logs/Rotation.csv"))
-            {
-                w.WriteLine("time|position|rotation|velocity|rotational velocity");
-                testState.Preview.ToList().ForEach(x => w.WriteLine($"{x.Item1}|{x.Item2.Position}|{x.Item2.Rotation}|{x.Item2.Velocity}|{x.Item2.RotVelocity}"));
-            }
 
             rangeT = xrange;
             GD.Print($"{testState.Preview.Count()} Entries, ends at Rot: {testState.Final.Rotation} Vrot: {testState.Final.RotVelocity} t: {testState.Preview.Last().Item1}");
 
-            velPlot.SetTarget(0f, new Vector2(-Mathf.Pi, Mathf.Pi));
-            velPlot.SetGrid(leDelta.Value, Mathf.Pi/4f, xrange, yrange);
-            velPlot.SetPlot("Rotating Body Velocity", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.RotVelocity)), xrange, new Vector2(-Mathf.Pi, Mathf.Pi), "Time (s)", "Rot. Velocity\n(rad/s)");
             posPlot.SetTarget(leDesiredRot.Value, yrange);
             posPlot.SetGrid(leDelta.Value, Mathf.Pi/4f, xrange, yrange);
             posPlot.SetPlot("Rotating Body Rotation", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Rotation)), xrange, yrange, "Time (s)", "Rotation (rad)");
+            velPlot.SetTarget(0f, new Vector2(-Mathf.Pi, Mathf.Pi));
+            velPlot.SetGrid(leDelta.Value, Mathf.Pi/4f, xrange, yrange);
+            velPlot.SetPlot("Rotating Body Velocity", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.RotVelocity)), xrange, new Vector2(-Mathf.Pi, Mathf.Pi), "Time (s)", "Rot. Velocity\n(rad/s)");
 
             moveAnim.SetMove(testState, leDelta.Value, rangeT);
 
@@ -132,6 +126,56 @@ public class MoveCommandTB : Control
             lePeriod.LineEdit.Modulate = Colors.White;
             leDelta.LineEdit.Modulate = Colors.White;
             leDesiredRot.LineEdit.Modulate = Colors.White;
+        }
+        catch(Exception ex)
+        {
+            velPlot.Error(ex.Message);
+            posPlot.Error(ex.Message);
+        }
+    }
+
+    public void PlotMarch()
+    {
+        if (playing)
+        {
+            PlayPause(false);
+        }
+
+        var mvQuarter = Utility.Quarter.front;
+        var mvSpeed = 0f;
+        var mvEnd = new Vector2(600f,250f);
+
+        var u = new MoveUnit();
+        var init = new MovementState()
+        {
+            Position = new Vector2(250f, 250f),
+            Rotation = 0f,
+            RotVelocity = 0f,
+            Velocity = new Vector2(0f, 0f)
+        };
+        try
+        {
+            var testState = MoveCommand.MakeStraight(lePeriod.Value, mobEditor.Mobility, init, mvQuarter, mvEnd, mvSpeed);
+            testState.Log(".logs");
+            mobEditor.ClearMarks();
+
+            rangeT = new Vector2(0f, lePeriod.Value);
+            var velrange = new Vector2(-mobEditor.Mobility.Back.MaxSpeed * 1.1f, mobEditor.Mobility.Front.MaxSpeed * 1.1f);
+            var distrange = new Vector2(-500f, 100f);
+
+            posPlot.SetTarget(0f, distrange);
+            posPlot.SetGrid(leDelta.Value, 50f, rangeT, distrange);
+            posPlot.SetPlot("Distance to Target", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Position.x - mvEnd.x)), rangeT, distrange, "Time (s)", "Horiz. Dist. (px)");
+            velPlot.SetTarget(0f, velrange);
+            velPlot.SetGrid(leDelta.Value, 25f, rangeT, velrange);
+            velPlot.SetPlot("Horizontal Speed", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Velocity.Dot(Vector2.Right))), rangeT, velrange, "Time (s)", "Horiz. Speed\n(px/s)");
+
+            moveAnim.SetMove(testState, leDelta.Value, rangeT);
+
+            SetT(rangeT[0]);
+
+            lePeriod.LineEdit.Modulate = Colors.White;
+            leDelta.LineEdit.Modulate = Colors.White;
         }
         catch(Exception ex)
         {
