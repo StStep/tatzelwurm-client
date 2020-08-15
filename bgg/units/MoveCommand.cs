@@ -120,8 +120,6 @@ public class MoveCommand
         var estDist = estPos.DistanceTo(end);
         estDist = estDist < MoveSnapDist ? 0f : estDist;
 
-        state.Position += state.Velocity * delta;
-
         // If velocity will take rotation past desired rotation, and there is enough acceleration to zero out velocity, then zero them out
         // TODO: Worry about if move past end?
         if (dist <= (state.Velocity*delta).Length() && state.Velocity.Length() <= dmob.Deceleration * delta)
@@ -129,7 +127,7 @@ public class MoveCommand
             state.Velocity = Vector2.Zero;
             state.Position = end;
         }
-        // Need to start decelerating when est rotation is within 0.5% deceleration region
+        // Need to start decelerating when est dist is within 0.5% deceleration region
         else if (estDist*1.005 > state.Velocity.LengthSquared() / (2f * dmob.Deceleration))
         {
             state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), dmob.MaxSpeed, delta) * dir;
