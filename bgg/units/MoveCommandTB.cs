@@ -14,9 +14,15 @@ public class MoveCommandTB : Control
     Label tLabel;
     Slider tSlider;
     MobilityEditor mobEditor;
-    LineEditWrapper<Single> leDesiredRot;
     LineEditWrapper<Single> lePeriod;
     LineEditWrapper<Single> leDelta;
+
+    // Rotation Controls
+    LineEditWrapper<Single> leDesiredRot;
+
+    // March Controls
+    LineEditWrapper<Single> leDesiredSpeed;
+    LineEditWrapper<Single> leDesiredDist;
 
     Vector2 rangeT;
     float curT;
@@ -43,6 +49,9 @@ public class MoveCommandTB : Control
         leDesiredRot = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/Rotation/Parameters/leDrot"), 3*Mathf.Pi/2f, "0.###");
         leDesiredRot.ValueChanged = (v) => { if (v < 0f || v > Mathf.Tau) leDesiredRot.SetValue(Mathf.Wrap(v, 0f, Mathf.Tau)); };
         leDesiredRot.ValueChanged += (v) => { leDesiredRot.LineEdit.Modulate = Colors.Red; };
+
+        leDesiredSpeed = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/March/Parameters/leDspd"), 0, "0.###");
+        leDesiredDist = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/March/Parameters/leDdist"), 350f, "0");
 
         playToggle.Connect("toggled", this, nameof(PlayPause));
 
@@ -141,10 +150,6 @@ public class MoveCommandTB : Control
             PlayPause(false);
         }
 
-        var mvQuarter = Utility.Quarter.front;
-        var mvSpeed = 0f;
-        var mvEnd = new Vector2(600f,250f);
-
         var u = new MoveUnit();
         var init = new MovementState()
         {
@@ -153,9 +158,11 @@ public class MoveCommandTB : Control
             RotVelocity = 0f,
             Velocity = new Vector2(0f, 0f)
         };
+        var mvQuarter = Utility.Quarter.front;
+        var mvEnd = init.Position + new Vector2(leDesiredDist.Value, 0);
         try
         {
-            var testState = MoveCommand.MakeStraight(lePeriod.Value, leDelta.Value, mobEditor.Mobility, init, mvQuarter, mvEnd, mvSpeed);
+            var testState = MoveCommand.MakeStraight(lePeriod.Value, leDelta.Value, mobEditor.Mobility, init, mvQuarter, mvEnd, leDesiredSpeed.Value);
             testState.Log(".logs");
             mobEditor.ClearMarks();
 

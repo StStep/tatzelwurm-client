@@ -171,6 +171,38 @@ margin_top = 32.0
 margin_right = -4.0
 margin_bottom = -4.0
 
+[node name="Parameters" type="HBoxContainer" parent="MoveTabs/March"]
+anchor_left = 0.01
+anchor_right = 0.99
+margin_left = -1.52588e-05
+margin_bottom = 24.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lbDspd" type="Label" parent="MoveTabs/March/Parameters"]
+margin_top = 8.0
+margin_right = 132.0
+margin_bottom = 22.0
+text = "Desired Speed (px/s)"
+
+[node name="leDspd" type="LineEdit" parent="MoveTabs/March/Parameters"]
+margin_left = 136.0
+margin_right = 194.0
+margin_bottom = 31.0
+
+[node name="lbDdist" type="Label" parent="MoveTabs/March/Parameters"]
+margin_left = 198.0
+margin_top = 8.0
+margin_right = 335.0
+margin_bottom = 22.0
+text = "Desired Distance (px)"
+
+[node name="leDdist" type="LineEdit" parent="MoveTabs/March/Parameters"]
+margin_left = 339.0
+margin_right = 397.0
+margin_bottom = 31.0
+
 [node name="Calculate" type="Button" parent="MoveTabs/March"]
 anchor_top = 1.0
 anchor_bottom = 1.0
