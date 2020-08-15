@@ -63,14 +63,14 @@ public class MoveCommand
                 state.RotVelocity = 0;
                 state.Rotation = desireRot;
             }
-            // Need to start decelerating when est rotation is within 0.5% deceleration region
-            else if (-estEqdist*1.005 > state.RotVelocity * state.RotVelocity / (2f * mob.CwAcceleration))
+            // Need to start decelerating when est rotation is within deceleration region
+            else if (-estEqdist > state.RotVelocity * state.RotVelocity / (2f * mob.CwAcceleration))
             {
                 state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, -mob.MaxRotVelocity, delta);
             }
             else
             {
-                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, 0f, delta);
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, Mathf.Sqrt(2f * mob.CwAcceleration * -eqdist), delta);
             }
         }
         // Cw
@@ -82,14 +82,14 @@ public class MoveCommand
                 state.RotVelocity = 0;
                 state.Rotation = desireRot;
             }
-            // Need to start decelerating when est rotation is within 0.5% deceleration region
-            else if (estEqdist*1.005 > state.RotVelocity * state.RotVelocity / (2f * mob.CcwAcceleration))
+            // Need to start decelerating when est rotation is within deceleration region
+            else if (estEqdist > state.RotVelocity * state.RotVelocity / (2f * mob.CcwAcceleration))
             {
                 state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, mob.MaxRotVelocity, delta);
             }
             else
             {
-                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, 0f, delta);
+                state.RotVelocity = mob.ApproachRotVelocity(state.RotVelocity, Mathf.Sqrt(2f * mob.CcwAcceleration * eqdist), delta);
             }
         }
 
@@ -127,14 +127,14 @@ public class MoveCommand
             state.Velocity = Vector2.Zero;
             state.Position = end;
         }
-        // Need to start decelerating when est dist is within 0.5% deceleration region
-        else if (estDist*1.005 > state.Velocity.LengthSquared() / (2f * dmob.Deceleration))
+        // Need to start decelerating when est dist is withen deceleration region
+        else if (estDist > state.Velocity.LengthSquared() / (2f * dmob.Deceleration))
         {
             state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), dmob.MaxSpeed, delta) * dir;
         }
         else
         {
-            state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), 0, delta) * dir;
+            state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), Mathf.Sqrt(2f*dmob.Deceleration * estDist), delta) * dir;
         }
 
         state.Position += state.Velocity * delta;
