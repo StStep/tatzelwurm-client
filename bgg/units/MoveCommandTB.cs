@@ -105,7 +105,7 @@ public class MoveCommandTB : Control
         };
         try
         {
-            var testState = MoveCommand.MakeRotation(lePeriod.Value, mobEditor.Mobility, init, leDesiredRot.Value, leDelta.Value);
+            var testState = MoveCommand.MakeRotation(lePeriod.Value, leDelta.Value, mobEditor.Mobility, init, leDesiredRot.Value);
             testState.Log(".logs");
             mobEditor.ClearMarks();
 
@@ -155,7 +155,7 @@ public class MoveCommandTB : Control
         };
         try
         {
-            var testState = MoveCommand.MakeStraight(lePeriod.Value, mobEditor.Mobility, init, mvQuarter, mvEnd, mvSpeed);
+            var testState = MoveCommand.MakeStraight(lePeriod.Value, leDelta.Value, mobEditor.Mobility, init, mvQuarter, mvEnd, mvSpeed);
             testState.Log(".logs");
             mobEditor.ClearMarks();
 

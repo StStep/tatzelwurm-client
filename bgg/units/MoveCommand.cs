@@ -97,7 +97,7 @@ public class MoveCommand
         state.Rotation = Mathf.PosMod(state.Rotation + state.RotVelocity * delta, 2 * Mathf.Pi);
     }
 
-    public static MoveCommand MakeRotation(float period, IMobility mob, MovementState initial, float rot, float previewDelta)
+    public static MoveCommand MakeRotation(float period, float previewDelta, IMobility mob, MovementState initial, float rot)
     {
         UpdateState up = (st, delta) =>
         {
@@ -106,58 +106,54 @@ public class MoveCommand
         return new MoveCommand(period, up, initial, previewDelta);
     }
 
+    // TODO: Implement speed
+    // TODO: Worry about orientation
+    private static void MarchUpdate(IMobility mob, Utility.Quarter quarter, Vector2 end, float speed, MovementState state, float delta)
+    {
+        var dmob = mob.GetDirectionalMobility(quarter);
+        var dir = state.Position.DirectionTo(end);
+
+        var dist = state.Position.DistanceTo(end);
+        dist = dist < MoveSnapDist ? 0f : dist;
+
+        var estPos = state.Position + state.Velocity * delta;
+        var estDist = estPos.DistanceTo(end);
+        estDist = estDist < MoveSnapDist ? 0f : estDist;
+
+        state.Position += state.Velocity * delta;
+
+        // If velocity will take rotation past desired rotation, and there is enough acceleration to zero out velocity, then zero them out
+        // TODO: Worry about if move past end?
+        if (dist <= (state.Velocity*delta).Length() && state.Velocity.Length() <= dmob.Deceleration * delta)
+        {
+            state.Velocity = Vector2.Zero;
+            state.Position = end;
+        }
+        // Need to start decelerating when est rotation is within 0.5% deceleration region
+        else if (estDist*1.005 > state.Velocity.LengthSquared() / (2f * dmob.Deceleration))
+        {
+            state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), dmob.MaxSpeed, delta) * dir;
+        }
+        else
+        {
+            state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), 0, delta) * dir;
+        }
+
+        state.Position += state.Velocity * delta;
+        state.Rotation = Mathf.PosMod(state.Rotation + state.RotVelocity * delta, 2 * Mathf.Pi);
+    }
+
     /// <summary>
     /// Create a straight MoveCommand based on given parameters.
     /// </summary>
     /// <param name="speed">Defaults to 0, the speed to maintain during movement; if 0, min. speed needed will be used.</param>
-    public static MoveCommand MakeStraight(float period, IMobility mob, MovementState initial, Utility.Quarter quarter, Vector2 end, float speed = 0)
+    public static MoveCommand MakeStraight(float period, float previewDelta, IMobility mob, MovementState initial, Utility.Quarter quarter, Vector2 end, float speed = 0)
     {
-        var endRot = (end - initial.Position).AngleTo(Vector2.Right);
-        var sideRot = Utility.GetRotation(quarter);
-        var desireRot = Mathf.PosMod(endRot - sideRot, 2 * Mathf.Pi);
         UpdateState up = (st, delta) =>
         {
-            // First zero any rotational vel
-            if (Mathf.Abs(st.Rotation - desireRot) > RotationSnapDist)
-            {
-                MoveCommand.RotationUpdate(mob, desireRot, st, delta);
-            }
-            else
-            {
-                var dmob = mob.GetDirectionalMobility(quarter);
-                var dir = st.Position.DirectionTo(end);
-
-                var dist = st.Position.DistanceTo(end);
-                dist = dist < MoveSnapDist ? 0f : dist;
-
-                var estPos = st.Position + st.Velocity * delta;
-                var estDist = estPos.DistanceTo(end);
-                estDist = estDist < MoveSnapDist ? 0f : estDist;
-
-                st.Position += st.Velocity * delta;
-
-                // If velocity will take rotation past desired rotation, and there is enough acceleration to zero out velocity, then zero them out
-                // TODO: Worry about if move past end?
-                if (dist <= (st.Velocity*delta).Length() && st.Velocity.Length() <= dmob.Deceleration * delta)
-                {
-                    st.Velocity = Vector2.Zero;
-                    st.Position = end;
-                }
-                // Need to start decelerating when est rotation is within 0.5% deceleration region
-                else if (estDist*1.005 > st.Velocity.LengthSquared() / (2f * dmob.Deceleration))
-                {
-                    st.Velocity = dmob.ApproachSpeed(st.Velocity.Length(), dmob.MaxSpeed, delta) * dir;
-                }
-                else
-                {
-                    st.Velocity = dmob.ApproachSpeed(st.Velocity.Length(), 0, delta) * dir;
-                }
-            }
-
-            st.Position += st.Velocity * delta;
-            st.Rotation = Mathf.PosMod(st.Rotation + st.RotVelocity * delta, 2 * Mathf.Pi);
+            MoveCommand.MarchUpdate(mob, quarter, end, speed, st, delta);
         };
-        return new MoveCommand(period, up, initial, 0.04f);
+        return new MoveCommand(period, up, initial, previewDelta);
     }
 
     public static MoveCommand MakeWheel(float period, IMobility mob, MovementState initial, Arc arc)

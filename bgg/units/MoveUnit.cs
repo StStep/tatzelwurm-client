@@ -248,13 +248,13 @@ public class MoveUnit : Node2D, IUnit
                 {
                     if (_moveType == MoveType.March)
                     {
-                        var mc = MoveCommand.MakeStraight(Period, Mobility, GetTailState(), Utility.Quarter.front, _ghost.GlobalPosition, Mobility.Front.MaxSpeed);
+                        var mc = MoveCommand.MakeStraight(Period, 0.04f, Mobility, GetTailState(), Utility.Quarter.front, _ghost.GlobalPosition, Mobility.Front.MaxSpeed);
                         AddMoveNode(mc, Enumerable.Empty<String>());
                     }
                     else if (_moveType == MoveType.Reposition)
                     {
                         // TODO: Select different quarters
-                        var mc = MoveCommand.MakeStraight(Period, Mobility, GetTailState(), Utility.Quarter.back, _ghost.GlobalPosition, Mobility.Back.MaxSpeed);
+                        var mc = MoveCommand.MakeStraight(Period, 0.04f, Mobility, GetTailState(), Utility.Quarter.back, _ghost.GlobalPosition, Mobility.Back.MaxSpeed);
                         AddMoveNode(mc, new List<String> {"reposition"});
                     }
                     else if (_moveType == MoveType.Wheel)
@@ -286,12 +286,12 @@ public class MoveUnit : Node2D, IUnit
                 {
                     if (_moveType == MoveType.March)
                     {
-                        AdjustingNode.Command = MoveCommand.MakeStraight(Period, Mobility, AdjustingNode.Command.Initial, Utility.Quarter.front, AdjustingNode.GlobalPosition, Mobility.Front.MaxSpeed);
+                        AdjustingNode.Command = MoveCommand.MakeStraight(Period, 0.04f, Mobility, AdjustingNode.Command.Initial, Utility.Quarter.front, AdjustingNode.GlobalPosition, Mobility.Front.MaxSpeed);
                     }
                     else if (_moveType == MoveType.Reposition)
                     {
                         // TODO: Select different quarters
-                        AdjustingNode.Command = MoveCommand.MakeStraight(Period, Mobility, AdjustingNode.Command.Initial, Utility.Quarter.back, AdjustingNode.GlobalPosition, Mobility.Back.MaxSpeed);
+                        AdjustingNode.Command = MoveCommand.MakeStraight(Period, 0.04f, Mobility, AdjustingNode.Command.Initial, Utility.Quarter.back, AdjustingNode.GlobalPosition, Mobility.Back.MaxSpeed);
                         AdjustingNode.add_annotation("reposition");
                     }
                     else if (_moveType == MoveType.Wheel)
@@ -465,7 +465,7 @@ public class MoveUnit : Node2D, IUnit
             else
             {
                 GD.Print($"Stopped dragging {marker.Name} with ind {index}");
-                var mc = MoveCommand.MakeRotation(Period, Mobility, GetTailState(), _ghost.GlobalRotation, 0.04f);
+                var mc = MoveCommand.MakeRotation(Period, 0.04f, Mobility, GetTailState(), _ghost.GlobalRotation);
                 AddMoveNode(mc, new List<String>() { "rotation" });
                 ChangeState(State.Idle);
             }
