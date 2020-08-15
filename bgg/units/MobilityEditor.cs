@@ -69,35 +69,34 @@ public class MobilityEditor : Control
         },
     };
 
-    public IMobility Mobility => this.mobility.Clone();
-    private Mobility mobility = new Mobility()
+    public IMobility Mobility => new Mobility()
     {
-        MaxRotVelocity = Mathf.Pi / 5f,
-        CwAcceleration = 2f*Mathf.Pi / 5f,
-        CcwAcceleration = 2f*Mathf.Pi / 5f,
+        MaxRotVelocity = leMaxRotVel.Value,
+        CwAcceleration = leCwAccel.Value,
+        CcwAcceleration = leCcwAccel.Value,
         Front = new DirectionalMobility()
         {
-            MaxSpeed = 200f,
-            Acceleration = 400f,
-            Deceleration = 320f,
+            MaxSpeed = leFrontMaxSpeed.Value,
+            Acceleration = leFrontAccel.Value,
+            Deceleration = leFrontDecel.Value,
         },
         Back = new DirectionalMobility()
         {
-            MaxSpeed = 100f,
-            Acceleration = 200f,
-            Deceleration = 160f,
+            MaxSpeed = leBackMaxSpeed.Value,
+            Acceleration = leBackAccel.Value,
+            Deceleration = leBackDecel.Value,
         },
         Left = new DirectionalMobility()
         {
-            MaxSpeed = 100f,
-            Acceleration = 200f,
-            Deceleration = 160f,
+            MaxSpeed = leLeftMaxSpeed.Value,
+            Acceleration = leLeftAccel.Value,
+            Deceleration = leLeftDecel.Value,
         },
         Right = new DirectionalMobility()
         {
-            MaxSpeed = 100f,
-            Acceleration = 200f,
-            Deceleration = 160f,
+            MaxSpeed = leRightMaxSpeed.Value,
+            Acceleration = leRightAccel.Value,
+            Deceleration = leRightDecel.Value,
         },
     };
 

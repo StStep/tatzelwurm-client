@@ -111,7 +111,7 @@ public class DirectionalMobility: IDirectionalMobility, ICloneable
         }
         else
         {
-            return des - current < Deceleration * delta ? des : current - Deceleration * delta;
+            return current - des < Deceleration * delta ? des : current - Deceleration * delta;
         }
     }
 
