@@ -120,14 +120,36 @@ public class MoveCommand
         var estDist = estPos.DistanceTo(end);
         estDist = estDist < MoveSnapDist ? 0f : estDist;
 
-        // If velocity will take rotation past desired rotation, and there is enough acceleration to zero out velocity, then zero them out
-        // TODO: Worry about if move past end?
-        if (dist <= (state.Velocity*delta).Length() && state.Velocity.Length() <= dmob.Deceleration * delta)
+        // Calculate Max/Min move distance in single delta for current velocity, if within a delta's movement
+        // TODO: v_i < 0 should never happen, should be using different dmob
+        // TODO: Length should always be on same axis of movement, but not enforced yet
+        var v_i = state.Velocity.Length();
+        var a_a = dmob.Acceleration;
+        var a_d = dmob.Deceleration;
+        bool isWithinDelta = v_i >= 0 && v_i < a_d*delta;
+        var maxDist = 0f;
+        var minDist = 0f;
+        if (isWithinDelta)
+        {
+            var x_0_max = (a_d * delta - v_i) / (a_a + a_d);
+            maxDist = (v_i * x_0_max) + (a_a * x_0_max * x_0_max * 0.5f) + 0.5f * (delta - x_0_max) * (a_a * x_0_max + v_i);
+            var x_0_min = (a_a * delta + v_i) / (a_a + a_d);
+            minDist = (v_i * v_i) / (2 * a_d) - (-a_d * x_0_min + v_i) * (0.5f * (x_0_min - v_i / a_d) + 0.5f * (delta - x_0_min));
+            GD.Print($"v_i: {v_i} Max: {maxDist:0.####} Min: {minDist:0.####} Dist {dist:0.####} EstDist {estDist:0.####} DecelVel: {Mathf.Sqrt(2f*dmob.Deceleration * estDist):0.####}");
+        }
+
+        // If within a delta of stopping, check min/max dist vs remaining dist
+        if (isWithinDelta && dist >= minDist && dist <= maxDist)
         {
             state.Velocity = Vector2.Zero;
             state.Position = end;
         }
-        // Need to start decelerating when est dist is withen deceleration region
+        // If est position is within delta, than maintain velocity
+        else if (isWithinDelta && estDist >= minDist && estDist <= maxDist)
+        {
+            // Do nothing
+        }
+        // MaxSpeed, only start decelerating when est dist is within deceleration region
         else if (estDist > state.Velocity.LengthSquared() / (2f * dmob.Deceleration))
         {
             state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), dmob.MaxSpeed, delta) * dir;
