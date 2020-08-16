@@ -138,6 +138,7 @@ public class MoveCommand
             GD.Print($"v_i: {v_i} Max: {maxDist:0.####} Min: {minDist:0.####} Dist {dist:0.####} EstDist {estDist:0.####} DecelVel: {Mathf.Sqrt(2f*dmob.Deceleration * estDist):0.####}");
         }
 
+        // TODO: Don't handle small distances well when accelerating
         // If within a delta of stopping, check min/max dist vs remaining dist
         if (isWithinDelta && dist >= minDist && dist <= maxDist)
         {
@@ -149,14 +150,15 @@ public class MoveCommand
         {
             // Do nothing
         }
-        // MaxSpeed, only start decelerating when est dist is within deceleration region
-        else if (estDist > state.Velocity.LengthSquared() / (2f * dmob.Deceleration))
-        {
-            state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), dmob.MaxSpeed, delta) * dir;
-        }
-        else
+        // Deceleration Region, only start decelerating when est dist is within deceleration region
+        else if (estDist <= state.Velocity.LengthSquared() / (2f * dmob.Deceleration))
         {
             state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), Mathf.Sqrt(2f*dmob.Deceleration * estDist), delta) * dir;
+        }
+        // MaxSpeed Region
+        else
+        {
+            state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), dmob.MaxSpeed, delta) * dir;
         }
 
         state.Position += state.Velocity * delta;
