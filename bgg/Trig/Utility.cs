@@ -85,6 +85,21 @@ namespace Trig
             }
         }
 
+        public static Vector2 GetDirection(Quarter quarter)
+        {
+            switch(quarter)
+            {
+                case Quarter.front:
+                    return Vector2.Right;
+                case Quarter.back:
+                    return Vector2.Left;
+                case Quarter.left:
+                    return Vector2.Up;
+                default:
+                    return Vector2.Down;
+            }
+        }
+
         public static Quarter GetQuarter(Vector2 origin, float rotation, Vector2 pnt)
         {
             return GetQuarter(new Ray(origin, rotation), pnt);
@@ -260,5 +275,29 @@ namespace Trig
             }
             return r_area_pnts.Concat(l_area_pnts).ToArray();
         }
+
+        // Return the area under a line with negative slope passing through a point on the y-axis with value y
+        // Math: m,h > 0
+        // Right triangle on origin with height h and width w, line with given slope m makes up hypotenuse has equation y = -m*x + h
+        // Line crosses axis at w, with 0 = -m*w + h, w = h/m
+        // Area under line A = 0.5 * w * h = 0.5 * h/m * h = h^2/(2*m)
+        public static float AreaUnderDownRamp(float h, float m) => h * h / (2f * m);
+
+        // Return the Height for a ramp with a given negative slope at a point with the given remaining area under ramp
+        // Math: m,A > 0
+        // Area under line A = h^2/(2*m)
+        // h = sqrt(A*2*m)
+        public static float HeightOnDownRamp(float m, float A) => Mathf.Sqrt(2f* m * A);
+
+        // Return the height at which two lines with given slopes produce a triangle containing given area and initial point at x = 0, y_1
+        // Math:
+        // A = a + b + c
+        // a = y_1 * x_1
+        // b = (y_2 - y_1) * x_1 * 0.5
+        // c = (x_2 - X_1) * y_2 * 0.5
+        // y_2 = m_1 * x_1 + y_1; x_1 = (y_2 - y_1) / m_1
+        // y_2 = -m_2 * x_1 + m_2 * x_2; x_2 = (y_2 + m_2 * x_1) / m_2
+        // y_2 = Mathf.Sqrt(2 * m_1 * A + y_1 * y_1) / Mathf.Sqrt(m_1 / m_2 + 1)
+        public static float HeightOfTriWithGivenSlopesArea(float y_1, float m_1, float m_2, float A) => Mathf.Sqrt(2 * m_1 * A + y_1 * y_1) / Mathf.Sqrt(m_1 / m_2 + 1);
     }
 }

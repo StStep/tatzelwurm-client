@@ -129,3 +129,47 @@ public class DirectionalMobility: IDirectionalMobility, ICloneable
 
     object ICloneable.Clone() => Clone();
 }
+
+// TODO: Figure out wha to do with these functions, consider moving them with approach funcs
+public static class MobilityUtility
+{
+        // Return the max and min distance that can travel given current speed, accel, and decel
+        // Max is essentially area under a triangle within a single delta where final velocity is 0, accel as much as possible but still end with 0 velocity
+        // Min tries to decel as quickly as possible to zero velocity
+        // Only valid if cspeed >= 0 && cspeed < decel * delta
+        public static Vector2 GetDeltaStopRange(float delta, float accel, float decel, float cspeed)
+        {
+            if (cspeed < 0 || cspeed >= decel * delta)
+                return new Vector2(float.NaN, float.NaN);
+
+            var minDist = (cspeed * cspeed) / (2 * decel);
+
+            var x_0_max = (decel * delta - cspeed) / (accel + decel);
+            var maxDist = (cspeed * x_0_max) + (accel * x_0_max * x_0_max * 0.5f) + 0.5f * (delta - x_0_max) * (accel * x_0_max + cspeed);
+
+            // TODO: Take into account reversing within a delta? Would need additional decel and accel for opposing dmob
+            // var x_0_min = (accel * delta + cspeed) / (accel + decel);
+            // var minDist = (cspeed * cspeed) / (2 * decel) - (-decel * x_0_min + cspeed) * (0.5f * (x_0_min - cspeed / decel) + 0.5f * (delta - x_0_min));
+
+            return new Vector2(minDist, maxDist);
+        }
+
+        // Return the speed for the next tick given current speed, distance to target and accel, decel and maxspeed
+        public static float GetNextSpeed(IDirectionalMobility dmob, float delta, float cdist, float cspeed)
+        {
+            // If decelerating now wouldn't give enough distance, increase or maintain speed
+            float dspeed;
+            if (cdist > Trig.Utility.AreaUnderDownRamp(cspeed, dmob.Deceleration))
+            {
+                dspeed = Trig.Utility.HeightOfTriWithGivenSlopesArea(cspeed, dmob.Acceleration, dmob.Deceleration, cdist);
+            }
+            // Else decel based on remaining dist
+            else
+            {
+                dspeed = Trig.Utility.HeightOnDownRamp(dmob.Deceleration, cdist);
+            }
+
+            return dmob.ApproachSpeed(cspeed, dspeed, delta);
+        }
+
+}

@@ -107,11 +107,11 @@ public class MoveCommand
     }
 
     // TODO: Implement speed
-    // TODO: Worry about orientation
+    // TODO: Worry about orientation, better way of getting dir or knowing if not oriented for dir
     private static void MarchUpdate(IMobility mob, Utility.Quarter quarter, Vector2 end, float speed, MovementState state, float delta)
     {
         var dmob = mob.GetDirectionalMobility(quarter);
-        var dir = state.Position.DirectionTo(end);
+        var dir = Utility.GetDirection(quarter);
 
         var dist = state.Position.DistanceTo(end);
         dist = dist < MoveSnapDist ? 0f : dist;
@@ -120,45 +120,24 @@ public class MoveCommand
         var estDist = estPos.DistanceTo(end);
         estDist = estDist < MoveSnapDist ? 0f : estDist;
 
-        // Calculate Max/Min move distance in single delta for current velocity, if within a delta's movement
-        // TODO: v_i < 0 should never happen, should be using different dmob
-        // TODO: Length should always be on same axis of movement, but not enforced yet
-        var v_i = state.Velocity.Length();
-        var a_a = dmob.Acceleration;
-        var a_d = dmob.Deceleration;
-        bool isWithinDelta = v_i >= 0 && v_i < a_d*delta;
-        var maxDist = 0f;
-        var minDist = 0f;
-        if (isWithinDelta)
-        {
-            var x_0_max = (a_d * delta - v_i) / (a_a + a_d);
-            maxDist = (v_i * x_0_max) + (a_a * x_0_max * x_0_max * 0.5f) + 0.5f * (delta - x_0_max) * (a_a * x_0_max + v_i);
-            var x_0_min = (a_a * delta + v_i) / (a_a + a_d);
-            minDist = (v_i * v_i) / (2 * a_d) - (-a_d * x_0_min + v_i) * (0.5f * (x_0_min - v_i / a_d) + 0.5f * (delta - x_0_min));
-            GD.Print($"v_i: {v_i} Max: {maxDist:0.####} Min: {minDist:0.####} Dist {dist:0.####} EstDist {estDist:0.####} DecelVel: {Mathf.Sqrt(2f*dmob.Deceleration * estDist):0.####}");
-        }
+        var delatStop = MobilityUtility.GetDeltaStopRange(delta, dmob.Acceleration, dmob.Deceleration, state.Velocity.Length());
+        var isWithinDelta = !float.IsNaN(delatStop.x) && !float.IsNaN(delatStop.y);
 
-        // TODO: Don't handle small distances well when accelerating
         // If within a delta of stopping, check min/max dist vs remaining dist
-        if (isWithinDelta && dist >= minDist && dist <= maxDist)
+        if (isWithinDelta && dist >= delatStop.x && dist <= delatStop.y)
         {
             state.Velocity = Vector2.Zero;
             state.Position = end;
         }
         // If est position is within delta, than maintain velocity
-        else if (isWithinDelta && estDist >= minDist && estDist <= maxDist)
+        else if (isWithinDelta && estDist >= delatStop.x && estDist <= delatStop.y)
         {
             // Do nothing
         }
-        // Deceleration Region, only start decelerating when est dist is within deceleration region
-        else if (estDist <= state.Velocity.LengthSquared() / (2f * dmob.Deceleration))
-        {
-            state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), Mathf.Sqrt(2f*dmob.Deceleration * estDist), delta) * dir;
-        }
-        // MaxSpeed Region
+        // Otherwise get Desired Speed
         else
         {
-            state.Velocity = dmob.ApproachSpeed(state.Velocity.Length(), dmob.MaxSpeed, delta) * dir;
+            state.Velocity = MobilityUtility.GetNextSpeed(dmob, delta, estDist, state.Velocity.Length()) * dir;
         }
 
         state.Position += state.Velocity * delta;
