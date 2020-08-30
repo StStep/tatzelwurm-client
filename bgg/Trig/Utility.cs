@@ -276,6 +276,20 @@ namespace Trig
             return r_area_pnts.Concat(l_area_pnts).ToArray();
         }
 
+        // Return the area under a right trapazoid, where the right angles make the base of the shape
+        // Treated as a right triangle on top of a rectangle, with width w and height the smaller of h1 or h2
+        public static float AreaUnderRightTrapezoid(float h1, float h2, float w)
+        {
+            if (h2 > h1)
+            {
+                return (h2 - h1) * w * 0.5f + h1 * w;
+            }
+            else
+            {
+                return (h1 - h2) * w * 0.5f + h2 * w;
+            }
+        }
+
         // Return the area under a line with negative slope passing through a point on the y-axis with value y
         // Math: m,h > 0
         // Right triangle on origin with height h and width w, line with given slope m makes up hypotenuse has equation y = -m*x + h

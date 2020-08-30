@@ -120,28 +120,35 @@ public class MoveCommand
         var estDist = estPos.DistanceTo(end);
         estDist = estDist < MoveSnapDist ? 0f : estDist;
 
-        var delatStop = MobilityUtility.GetDeltaStopRange(delta, dmob.Acceleration, dmob.Deceleration, state.Velocity.Length());
-        var isWithinDelta = !float.IsNaN(delatStop.x) && !float.IsNaN(delatStop.y);
+        var deltaStop = MobilityUtility.GetDeltaStopRange(delta, dmob.Acceleration, dmob.Deceleration, state.Velocity.Length());
+        var isWithinDelta = !float.IsNaN(deltaStop.x) && !float.IsNaN(deltaStop.y);
+
+        // ! Remote
+        if (isWithinDelta)
+        {
+            GD.Print($"{state.Position} {dist} {estDist} {deltaStop}");
+        }
 
         // If within a delta of stopping, check min/max dist vs remaining dist
-        if (isWithinDelta && dist >= delatStop.x && dist <= delatStop.y)
+        Vector2 newV;
+        if (isWithinDelta && dist >= deltaStop.x && dist <= deltaStop.y)
         {
-            state.Velocity = Vector2.Zero;
+            newV = Vector2.Zero;
             state.Position = end;
         }
         // If est position is within delta, than maintain velocity
-        else if (isWithinDelta && estDist >= delatStop.x && estDist <= delatStop.y)
+        else if (isWithinDelta && estDist >= deltaStop.x && estDist <= deltaStop.y)
         {
             // Do nothing
+            newV = state.Velocity;
         }
         // Otherwise get Desired Speed
         else
         {
-            state.Velocity = MobilityUtility.GetNextSpeed(dmob, delta, estDist, state.Velocity.Length()) * dir;
+            newV = MobilityUtility.GetNextSpeed(dmob, delta, estDist, state.Velocity.Length()) * dir;
         }
 
-        state.Position += state.Velocity * delta;
-        state.Rotation = Mathf.PosMod(state.Rotation + state.RotVelocity * delta, 2 * Mathf.Pi);
+        state.Update(newV, state.RotVelocity, delta);
     }
 
     /// <summary>
