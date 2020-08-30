@@ -110,31 +110,33 @@ public class MoveCommand
     // TODO: Worry about orientation, better way of getting dir or knowing if not oriented for dir
     private static void MarchUpdate(IMobility mob, Utility.Quarter quarter, Vector2 end, float speed, MovementState state, float delta)
     {
-        var dmob = mob.GetDirectionalMobility(quarter);
-        var dir = Utility.GetDirection(quarter);
+        var eqrt = Utility.GetQuarter(state.Position, state.Rotation, end);
+        var mqrt = state.Velocity == Vector2.Zero ? eqrt : Utility.GetQuarter(Vector2.Zero, state.Rotation, state.Velocity); // Vel is relative
+        var dir = Utility.GetDirection(mqrt);
 
-        var dist = state.Position.DistanceTo(end);
-        dist = dist < MoveSnapDist ? 0f : dist;
+        var dist = (end - state.Position).Dot(dir);;
+        dist = Mathf.Abs(dist) < MoveSnapDist ? 0f : dist;
 
         var estPos = state.Position + state.Velocity * delta;
-        var estDist = estPos.DistanceTo(end);
-        estDist = estDist < MoveSnapDist ? 0f : estDist;
+        var estDist = (end - estPos).Dot(dir);;
+        estDist = Mathf.Abs(estDist) < MoveSnapDist ? 0f : estDist;
 
-        var deltaStop = MobilityUtility.GetDeltaStopRange(delta, dmob.Acceleration, dmob.Deceleration, state.Velocity.Length());
+        var dmob = mob.GetDirectionalMobility(mqrt);
+        var oppmob = mob.GetDirectionalMobility(Utility.GetOppositeQuarter(mqrt));
+        var deltaStop = MobilityUtility.GetDeltaStopRange(delta, dmob.Acceleration, dmob.Deceleration, oppmob.Acceleration, oppmob.Deceleration, state.Velocity.Length());
         var isWithinDelta = !float.IsNaN(deltaStop.x) && !float.IsNaN(deltaStop.y);
 
-        // ! Remote
-        if (isWithinDelta)
-        {
-            GD.Print($"{state.Position} {dist} {estDist} {deltaStop}");
+        if (isWithinDelta) {
+            GD.Print($"{state.Position} {state.Velocity} {dist} {estDist} {deltaStop}");
         }
 
         // If within a delta of stopping, check min/max dist vs remaining dist
         Vector2 newV;
         if (isWithinDelta && dist >= deltaStop.x && dist <= deltaStop.y)
         {
-            newV = Vector2.Zero;
+            state.Velocity = Vector2.Zero;
             state.Position = end;
+            return;
         }
         // If est position is within delta, than maintain velocity
         else if (isWithinDelta && estDist >= deltaStop.x && estDist <= deltaStop.y)
@@ -142,10 +144,14 @@ public class MoveCommand
             // Do nothing
             newV = state.Velocity;
         }
-        // Otherwise get Desired Speed
-        else
+        // If not moving or already moving in the right direction
+        else if (eqrt == mqrt)
         {
-            newV = MobilityUtility.GetNextSpeed(dmob, delta, estDist, state.Velocity.Length()) * dir;
+            newV = MobilityUtility.GetNextSpeed(dmob, delta, estDist < 0f ? 0f : estDist, state.Velocity.Length()) * dir;
+        }
+        // Else overshot, stop so it can reverse
+        else {
+            newV = dmob.ApproachSpeed(state.Velocity.Length(), 0f, delta) * dir;
         }
 
         state.Update(newV, state.RotVelocity, delta);

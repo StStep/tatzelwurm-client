@@ -128,6 +128,22 @@ namespace Trig
             return ret;
         }
 
+        public static Quarter GetOppositeQuarter(Quarter quarter)
+        {
+            switch(quarter)
+            {
+                case Quarter.front:
+                    return Quarter.back;
+                case Quarter.back:
+                    return Quarter.front;
+                case Quarter.left:
+                    return Quarter.right;
+                default:
+                    return Quarter.left;
+            }
+        }
+
+
         // Imagine a rectangle where lines are extended from the four corners outward at 45 degree angles
         public enum Facing {inside, front, back, left, right};
 

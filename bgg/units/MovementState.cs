@@ -24,6 +24,7 @@ public class MovementState: ICloneable
 
     object ICloneable.Clone() => Clone();
 
+    // TODO Need to balance/resolve-conflict between this and other Speed Calc funcs
     public void Update(Vector2 vel, float rvel, float delta) {
         var pvel = Velocity;
         Velocity = vel;

@@ -135,21 +135,19 @@ public static class MobilityUtility
 {
         // Return the max and min distance that can travel given current speed, accel, and decel
         // Max is essentially area under a triangle within a single delta where final velocity is 0, accel as much as possible but still end with 0 velocity
-        // Min tries to decel as quickly as possible to zero velocity
+        // Min tries to decel as quickly as possible to zero velocity (one triangle to zero), and then reverses and forwards back to 0 vel (two triangles, decel and accel, under 0 vel)
         // Only valid if cspeed >= 0 && cspeed < decel * delta
-        public static Vector2 GetDeltaStopRange(float delta, float accel, float decel, float cspeed)
+        public static Vector2 GetDeltaStopRange(float delta, float accel1, float decel1, float accel2, float decel2, float cspeed)
         {
-            if (cspeed < 0 || cspeed >= decel * delta)
+            if (cspeed < 0 || cspeed >= decel1 * delta)
                 return new Vector2(float.NaN, float.NaN);
 
-            var minDist = (cspeed * cspeed) / (2 * decel);
+            var x_0_max = (decel1 * delta - cspeed) / (accel1 + decel1);
+            var maxDist = (cspeed * x_0_max) + (accel1 * x_0_max * x_0_max * 0.5f) + 0.5f * (delta - x_0_max) * (accel1 * x_0_max + cspeed);
 
-            var x_0_max = (decel * delta - cspeed) / (accel + decel);
-            var maxDist = (cspeed * x_0_max) + (accel * x_0_max * x_0_max * 0.5f) + 0.5f * (delta - x_0_max) * (accel * x_0_max + cspeed);
-
-            // TODO: Take into account reversing within a delta? Would need additional decel and accel for opposing dmob
-            // var x_0_min = (accel * delta + cspeed) / (accel + decel);
-            // var minDist = (cspeed * cspeed) / (2 * decel) - (-decel * x_0_min + cspeed) * (0.5f * (x_0_min - cspeed / decel) + 0.5f * (delta - x_0_min));
+            var decel = (decel1 + decel2)/2f; // TODO Could solve this better than averaging them
+            var x_0_min = (accel2 * delta + cspeed) / (accel2 + decel);
+            var minDist = (cspeed * cspeed) / (2 * decel) + (-decel * x_0_min + cspeed) * (0.5f * (x_0_min - cspeed / decel) + 0.5f * (delta - x_0_min));
 
             return new Vector2(minDist, maxDist);
         }
