@@ -181,29 +181,95 @@ __meta__ = {
 }
 
 [node name="lbDspd" type="Label" parent="MoveTabs/March/Parameters"]
-margin_top = 8.0
+margin_top = 5.0
 margin_right = 132.0
-margin_bottom = 22.0
+margin_bottom = 19.0
 text = "Desired Speed (px/s)"
 
 [node name="leDspd" type="LineEdit" parent="MoveTabs/March/Parameters"]
 margin_left = 136.0
 margin_right = 194.0
-margin_bottom = 31.0
+margin_bottom = 24.0
 
 [node name="lbDdist" type="Label" parent="MoveTabs/March/Parameters"]
 margin_left = 198.0
-margin_top = 8.0
+margin_top = 5.0
 margin_right = 335.0
-margin_bottom = 22.0
+margin_bottom = 19.0
 text = "Desired Distance (px)"
 
 [node name="leDdist" type="LineEdit" parent="MoveTabs/March/Parameters"]
 margin_left = 339.0
 margin_right = 397.0
-margin_bottom = 31.0
+margin_bottom = 24.0
 
 [node name="Calculate" type="Button" parent="MoveTabs/March"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = -30.0907
+margin_right = 80.0
+margin_bottom = -10.0907
+size_flags_vertical = 4
+text = "Calculate"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Wheel" type="Tabs" parent="MoveTabs"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
+
+[node name="Parameters" type="HBoxContainer" parent="MoveTabs/Wheel"]
+anchor_left = 0.01
+anchor_right = 0.99
+margin_left = -1.52588e-05
+margin_bottom = 24.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lbDspd" type="Label" parent="MoveTabs/Wheel/Parameters"]
+margin_top = 5.0
+margin_right = 132.0
+margin_bottom = 19.0
+text = "Desired Speed (px/s)"
+
+[node name="leDspd" type="LineEdit" parent="MoveTabs/Wheel/Parameters"]
+margin_left = 136.0
+margin_right = 194.0
+margin_bottom = 24.0
+
+[node name="lbDx" type="Label" parent="MoveTabs/Wheel/Parameters"]
+margin_left = 198.0
+margin_top = 5.0
+margin_right = 360.0
+margin_bottom = 19.0
+text = "Desired X Coordinate (px)"
+
+[node name="leDx" type="LineEdit" parent="MoveTabs/Wheel/Parameters"]
+margin_left = 364.0
+margin_right = 422.0
+margin_bottom = 24.0
+
+[node name="lbDy" type="Label" parent="MoveTabs/Wheel/Parameters"]
+margin_left = 426.0
+margin_top = 5.0
+margin_right = 587.0
+margin_bottom = 19.0
+text = "Desired Y Coordinate (px)"
+
+[node name="leDy" type="LineEdit" parent="MoveTabs/Wheel/Parameters"]
+margin_left = 591.0
+margin_right = 649.0
+margin_bottom = 24.0
+
+[node name="Calculate" type="Button" parent="MoveTabs/Wheel"]
 anchor_top = 1.0
 anchor_bottom = 1.0
 margin_left = 10.0
@@ -231,3 +297,4 @@ anchor_top = 0.5
 [connection signal="value_changed" from="PlaybackBox/TimeSlider" to="." method="OnSliderSet"]
 [connection signal="pressed" from="MoveTabs/Rotation/Calculate" to="." method="PlotRotation"]
 [connection signal="pressed" from="MoveTabs/March/Calculate" to="." method="PlotMarch"]
+[connection signal="pressed" from="MoveTabs/Wheel/Calculate" to="." method="PlotWheel"]

@@ -260,7 +260,7 @@ public class MoveUnit : Node2D, IUnit
                     else if (_moveType == MoveType.Wheel)
                     {
 
-                        var mc = MoveCommand.MakeWheel(Period, Mobility, GetTailState(), new Trig.Arc(GetTailGpos(), GetTailGrot(), _ghost.GlobalPosition));
+                        var mc = MoveCommand.MakeWheel(Period, 0.04f, Mobility, GetTailState(), new Trig.Arc(GetTailGpos(), GetTailGrot(), _ghost.GlobalPosition));
                         AddMoveNode(mc, new List<String> {"wheel"});
                     }
                     GetTree().SetInputAsHandled();
@@ -296,7 +296,7 @@ public class MoveUnit : Node2D, IUnit
                     }
                     else if (_moveType == MoveType.Wheel)
                     {
-                        AdjustingNode.Command = MoveCommand.MakeWheel(Period, Mobility, AdjustingNode.Command.Initial, new Trig.Arc(GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), AdjustingNode.GlobalPosition));
+                        AdjustingNode.Command = MoveCommand.MakeWheel(Period, 0.04f, Mobility, AdjustingNode.Command.Initial, new Trig.Arc(GetNodeStartGpos(AdjustingNode), GetNodeStartGrot(AdjustingNode), AdjustingNode.GlobalPosition));
                         AdjustingNode.add_annotation("wheel");
                     }
                     else

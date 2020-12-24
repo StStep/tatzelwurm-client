@@ -170,7 +170,11 @@ public class MoveCommand
         return new MoveCommand(period, up, initial, previewDelta);
     }
 
-    public static MoveCommand MakeWheel(float period, IMobility mob, MovementState initial, Arc arc)
+    /// <summary>
+    /// Create a wheel MoveCommand based on given parameters.
+    /// </summary>
+    /// <param name="speed">Defaults to 0, the speed to maintain during movement; if 0, min. speed needed will be used.</param>
+    public static MoveCommand MakeWheel(float period, float previewDelta, IMobility mob, MovementState initial, Arc arc, float speed = 0)
     {
         throw new NotImplementedException();
     }

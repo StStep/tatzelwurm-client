@@ -18,11 +18,16 @@ public class MoveCommandTB : Control
     LineEditWrapper<Single> leDelta;
 
     // Rotation Controls
-    LineEditWrapper<Single> leDesiredRot;
+    LineEditWrapper<Single> leRotationDesiredRot;
 
     // March Controls
-    LineEditWrapper<Single> leDesiredSpeed;
-    LineEditWrapper<Single> leDesiredDist;
+    LineEditWrapper<Single> leMarchDesiredSpeed;
+    LineEditWrapper<Single> leMarchDesiredDist;
+
+    // Wheel Controls
+    LineEditWrapper<Single> leWheelDesiredSpeed;
+    LineEditWrapper<Single> leWheelDesiredX;
+    LineEditWrapper<Single> leWheelDesiredY;
 
     Vector2 rangeT;
     float curT;
@@ -46,12 +51,18 @@ public class MoveCommandTB : Control
         leDelta.ValueChanged = (v) => { leDelta.LineEdit.Modulate = Colors.Red; };
 
         // Hook up Desired Rotation and restrict to radians
-        leDesiredRot = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/Rotation/Parameters/leDrot"), 3*Mathf.Pi/2f, "0.###");
-        leDesiredRot.ValueChanged = (v) => { if (v < 0f || v > Mathf.Tau) leDesiredRot.SetValue(Mathf.Wrap(v, 0f, Mathf.Tau)); };
-        leDesiredRot.ValueChanged += (v) => { leDesiredRot.LineEdit.Modulate = Colors.Red; };
+        leRotationDesiredRot = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/Rotation/Parameters/leDrot"), 3*Mathf.Pi/2f, "0.###");
+        leRotationDesiredRot.ValueChanged = (v) => { if (v < 0f || v > Mathf.Tau) leRotationDesiredRot.SetValue(Mathf.Wrap(v, 0f, Mathf.Tau)); };
+        leRotationDesiredRot.ValueChanged += (v) => { leRotationDesiredRot.LineEdit.Modulate = Colors.Red; };
 
-        leDesiredSpeed = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/March/Parameters/leDspd"), 0, "0.###");
-        leDesiredDist = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/March/Parameters/leDdist"), 350f, "0");
+        // Hook up March Desired Dist and Speed
+        leMarchDesiredSpeed = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/March/Parameters/leDspd"), 0, "0.###");
+        leMarchDesiredDist = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/March/Parameters/leDdist"), 350f, "0");
+
+        // Hook up Wheel Desired Dist and Speed
+        leWheelDesiredSpeed = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/Wheel/Parameters/leDspd"), 0, "0.###");
+        leWheelDesiredX = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/Wheel/Parameters/leDx"), 350f, "0");
+        leWheelDesiredY = new LineEditWrapper<Single>(GetNode<LineEdit>("MoveTabs/Wheel/Parameters/leDy"), 350f, "0");
 
         playToggle.Connect("toggled", this, nameof(PlayPause));
 
@@ -114,14 +125,14 @@ public class MoveCommandTB : Control
         };
         try
         {
-            var testState = MoveCommand.MakeRotation(lePeriod.Value, leDelta.Value, mobEditor.Mobility, init, leDesiredRot.Value);
+            var testState = MoveCommand.MakeRotation(lePeriod.Value, leDelta.Value, mobEditor.Mobility, init, leRotationDesiredRot.Value);
             testState.Log(".logs");
             mobEditor.ClearMarks();
 
             rangeT = xrange;
             GD.Print($"{testState.Preview.Count()} Entries, ends at Rot: {testState.Final.Rotation} Vrot: {testState.Final.RotVelocity} t: {testState.Preview.Last().Item1}");
 
-            posPlot.SetTarget(leDesiredRot.Value, yrange);
+            posPlot.SetTarget(leRotationDesiredRot.Value, yrange);
             posPlot.SetGrid(leDelta.Value, Mathf.Pi/4f, xrange, yrange);
             posPlot.SetPlot("Rotating Body Rotation", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Rotation)), xrange, yrange, "Time (s)", "Rotation (rad)");
             velPlot.SetTarget(0f, new Vector2(-Mathf.Pi, Mathf.Pi));
@@ -134,7 +145,7 @@ public class MoveCommandTB : Control
 
             lePeriod.LineEdit.Modulate = Colors.White;
             leDelta.LineEdit.Modulate = Colors.White;
-            leDesiredRot.LineEdit.Modulate = Colors.White;
+            leRotationDesiredRot.LineEdit.Modulate = Colors.White;
         }
         catch(Exception ex)
         {
@@ -159,10 +170,10 @@ public class MoveCommandTB : Control
             Velocity = new Vector2(0f, 0f)
         };
         var mvQuarter = Utility.Quarter.front;
-        var mvEnd = init.Position + new Vector2(leDesiredDist.Value, 0);
+        var mvEnd = init.Position + new Vector2(leMarchDesiredDist.Value, 0);
         try
         {
-            var testState = MoveCommand.MakeStraight(lePeriod.Value, leDelta.Value, mobEditor.Mobility, init, mvQuarter, mvEnd, leDesiredSpeed.Value);
+            var testState = MoveCommand.MakeStraight(lePeriod.Value, leDelta.Value, mobEditor.Mobility, init, mvQuarter, mvEnd, leMarchDesiredSpeed.Value);
             testState.Log(".logs");
             mobEditor.ClearMarks();
 
@@ -183,6 +194,53 @@ public class MoveCommandTB : Control
 
             lePeriod.LineEdit.Modulate = Colors.White;
             leDelta.LineEdit.Modulate = Colors.White;
+        }
+        catch(Exception ex)
+        {
+            velPlot.Error(ex.Message);
+            posPlot.Error(ex.Message);
+        }
+    }
+
+    public void PlotWheel()
+    {
+        if (playing)
+        {
+            PlayPause(false);
+        }
+
+        var u = new MoveUnit();
+        var init = new MovementState()
+        {
+            Position = new Vector2(250f, 250f),
+            Rotation = 0f,
+            RotVelocity = 0f,
+            Velocity = new Vector2(0f, 0f)
+        };
+        var arc = new Trig.Arc(init.Position, init.Rotation, new Vector2(leWheelDesiredX.Value, leWheelDesiredY.Value));
+        try
+        {
+            var testState = MoveCommand.MakeWheel(lePeriod.Value, leDelta.Value, mobEditor.Mobility, init, arc, leWheelDesiredSpeed.Value);
+            testState.Log(".logs");
+            mobEditor.ClearMarks();
+
+            // rangeT = new Vector2(0f, lePeriod.Value);
+            // var velrange = new Vector2(-mobEditor.Mobility.Back.MaxSpeed * 1.1f, mobEditor.Mobility.Front.MaxSpeed * 1.1f);
+            // var distrange = new Vector2(-500f, 100f);
+
+            // posPlot.SetTarget(0f, distrange);
+            // posPlot.SetGrid(leDelta.Value, 50f, rangeT, distrange);
+            // posPlot.SetPlot("Distance to Target", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Position.x - mvEnd.x)), rangeT, distrange, "Time (s)", "Horiz. Dist. (px)");
+            // velPlot.SetTarget(0f, velrange);
+            // velPlot.SetGrid(leDelta.Value, 25f, rangeT, velrange);
+            // velPlot.SetPlot("Horizontal Speed", testState.Preview.Select(p => new Vector2(p.Item1, p.Item2.Velocity.Dot(Vector2.Right))), rangeT, velrange, "Time (s)", "Horiz. Speed\n(px/s)");
+
+            // moveAnim.SetMove(testState, leDelta.Value, rangeT);
+
+            // SetT(rangeT[0]);
+
+            // lePeriod.LineEdit.Modulate = Colors.White;
+            // leDelta.LineEdit.Modulate = Colors.White;
         }
         catch(Exception ex)
         {
