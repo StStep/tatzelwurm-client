@@ -12,7 +12,11 @@ See the GitHub [wiki](https://github.com/StStep/tatzelwurm-client/wiki) and issu
 
 * [Godot Game Engine](https://godotengine.org/) - The most recent tested version is `3.2.2`
 
+## Testing
+
+GD Script based tests will be in `./bgg/tests/` while C# tests will be in `./UnitTests` and will require VS Studio to run.
+I tried using the C# API for WAT but was unable to figure out a nice way of getting them executed in either VS Code or the Godot GUI.
+
 ## Known Issues
 
 * Case sensitive platforms, such as linux, will have issues with some of the project linking
-* `./UnitTests` implementation is broken due to recent design changes

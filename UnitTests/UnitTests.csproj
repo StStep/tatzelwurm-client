@@ -40,10 +40,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GodotSharp">
-      <HintPath>..\bgg\.mono\assemblies\GodotSharp.dll</HintPath>
+      <HintPath>..\bgg\.mono\assemblies\Debug\GodotSharp.dll</HintPath>
     </Reference>
     <Reference Include="GodotSharpEditor">
-      <HintPath>..\bgg\.mono\assemblies\GodotSharpEditor.dll</HintPath>
+      <HintPath>..\bgg\.mono\assemblies\Debug\GodotSharpEditor.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\bgg\packages\MSTest.TestFramework.1.3.2\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>

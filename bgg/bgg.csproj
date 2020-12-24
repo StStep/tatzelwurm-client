@@ -14,6 +14,7 @@
     <ApiConfiguration Condition=" '$(Configuration)' != 'ExportRelease' ">Debug</ApiConfiguration>
     <ApiConfiguration Condition=" '$(Configuration)' == 'ExportRelease' ">Release</ApiConfiguration>
     <GodotProjectGeneratorVersion>1.0.0.0</GodotProjectGeneratorVersion>
+    <RuntimeIdentifiers>win10-x64;win</RuntimeIdentifiers>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ExportDebug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,6 +53,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="addons\WAT\core\assertions\CSharp\*.cs" />
+    <Compile Include="addons\WAT\core\test\Recorder.cs" />
+    <Compile Include="addons\WAT\core\test\Test.cs" />
     <Compile Include="Battle.cs" />
     <Compile Include="battlefield\Battlefield.cs" />
     <Compile Include="demos\test_mouse_area_2d.cs" />

@@ -18,11 +18,37 @@ _global_script_classes=[ {
 "class": "FollowOnClickable",
 "language": "GDScript",
 "path": "res://decorators/FollowOnClickable.gd"
+}, {
+"base": "Reference",
+"class": "WAT",
+"language": "GDScript",
+"path": "res://addons/WAT/namespace.gd"
+}, {
+"base": "Node",
+"class": "WATTest",
+"language": "GDScript",
+"path": "res://addons/WAT/core/test/test.gd"
 } ]
 _global_script_class_icons={
 "Dragable": "",
-"FollowOnClickable": ""
+"FollowOnClickable": "",
+"WAT": "",
+"WATTest": ""
 }
+RunInEngine=true
+
+[WAT]
+
+Test_Directory="res://tests"
+Results_Directory="res://tests/results/WAT"
+Minimize_Window_When_Running_Tests=false
+TestStrategy={
+"repeat": 1,
+"strategy": "RunAll"
+}
+Tags=PoolStringArray(  )
+Window_Size=Vector2( 1280, 720 )
+Display=8
 
 [application]
 
@@ -43,7 +69,7 @@ window/size/fullscreen=true
 
 [editor_plugins]
 
-enabled=PoolStringArray( "carmel4a97.RTS_Camera2D" )
+enabled=PoolStringArray( "WAT", "carmel4a97.RTS_Camera2D" )
 
 [gdnative]
 
